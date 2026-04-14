@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Oficial - Cooperativismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            background-attachment: fixed;
+        }
+        
+        /* Efeitos visuais modernos */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .blurred-screen {
+            filter: blur(24px) grayscale(50%);
+            pointer-events: none;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        /* Animações Suaves */
+        .slide-fade { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px) scale(0.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Estilização de Selects e Inputs */
+        .select-associacao {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 0.5rem 1rem;
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #16a34a;
+            width: 100%;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2316a34a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+        }
+        .select-associacao:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+            background-color: #fff;
+        }
+
+        /* Check customizado Tailwind Peer */
+        .radio-custom:checked + div {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1);
+        }
+        .radio-custom:checked + div .radio-indicator {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+        .radio-custom:checked + div .radio-indicator::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <!-- MODAL CUSTOMIZADO (GENÉRICO PARA ALERTAS) -->
+    <div id="custom-alert" class="fixed inset-0 bg-black/50 z-[200] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in">
+            <div id="alert-icon" class="text-5xl md:text-6xl mb-4">🔔</div>
+            <h2 id="alert-title" class="text-xl md:text-2xl font-black text-gray-800 mb-2">Atenção</h2>
+            <p id="alert-message" class="text-sm md:text-base text-gray-600 mb-6 font-medium leading-relaxed"></p>
+            <div id="alert-actions" class="flex gap-3 justify-center w-full">
+                <button onclick="fecharAlerta()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 1: LOGIN ALUNO -->
+    <div id="login-screen" class="fixed inset-0 flex flex-col items-center justify-center p-4 z-[60]">
+        <button id="btn-login-prof-trigger" class="absolute top-4 right-4 text-xs font-bold text-gray-400 hover:text-green-600 transition cursor-pointer px-4 py-2 rounded-full bg-white/50 backdrop-blur-md shadow-sm z-50 flex items-center gap-2">
+            <span>🔒</span> Acesso Docente
+        </button>
+
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(22,_163,_74,_0.07)] w-full max-w-md border-t-8 border-t-green-600">
+            <div class="text-center mb-6 md:mb-8">
+                <div class="flex justify-center items-center gap-4 mb-4 bg-white/50 p-3 md:p-4 rounded-2xl shadow-sm">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6-eQz5cIxSNOsD93ZVZOuG9m33koJW2CsrQ&s" alt="Logo Escola" class="h-10 md:h-12 drop-shadow-md">
+                    <div class="h-8 w-px bg-gray-300"></div>
+                    <img src="https://www.es.gov.br/Media/PortalES/_Profiles/c4d8c6e6/d8d1f292/escola%20do%20futuro-01.png?v=638222624000245250" alt="Escola do Futuro" class="h-6 md:h-8 drop-shadow-md">
+                </div>
+                <h2 class="font-black text-gray-800 text-base md:text-lg">CEEFMTI "SENADOR DIRCEU CARDOSO"</h2>
+                <div class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full">Cooperativismo - 2ª Série</div>
+            </div>
+
+            <div class="space-y-4 md:space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Identificação do Aluno</label>
+                    <div class="relative">
+                        <select id="aluno-select" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition appearance-none font-medium text-gray-700 cursor-pointer text-sm">
+                            <option value="">-- Escolha o seu nome na lista --</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Credencial de Acesso</label>
+                    <input type="password" id="aluno-senha" placeholder="Data de nascimento (Ex: 10052009)" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition font-mono text-base md:text-lg tracking-widest" maxlength="8">
+                </div>
+                
+                <p id="login-error" class="text-red-500 text-xs md:text-sm hidden text-center font-bold bg-red-50 p-2 rounded-lg border border-red-100"></p>
+                
+                <button id="btn-login" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black py-3 md:py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 active:translate-y-0 flex justify-center items-center gap-2">
+                    Aceder ao Ambiente <span>🚀</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA: LOGIN PROFESSOR (MODAL) -->
+    <div id="modal-prof-login" class="fixed inset-0 bg-gray-900/80 z-[70] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-white/20 pop-in">
+            <div class="flex items-center gap-3 mb-4 md:mb-6">
+                <span class="text-2xl md:text-3xl">👨‍💻</span>
+                <h2 class="text-xl md:text-2xl font-black text-gray-800">Acesso Restrito</h2>
+            </div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Chave de Segurança</label>
+            <input type="password" id="prof-senha-input" placeholder="••••••••••••" class="w-full border-2 border-gray-200 p-3 md:p-4 rounded-xl mb-2 outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 font-mono">
+            <p id="prof-login-error" class="text-red-500 text-xs font-bold mb-4 hidden text-center bg-red-50 py-2 rounded-lg">❌ Credencial incorreta. Acesso negado.</p>
+            <div class="flex gap-3">
+                <button id="btn-prof-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-gray-600 transition">Voltar</button>
+                <button id="btn-prof-entrar" class="flex-1 bg-gray-800 hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition">Autenticar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA: PAINEL DO PROFESSOR -->
+    <div id="professor-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center p-4 overflow-y-auto">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-5xl border-t-8 border-green-600 my-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-100 pb-4 md:pb-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-800 mb-1 flex items-center gap-2">Painel de Gestão Docente</h1>
+                    <button id="btn-prof-sair" class="text-sm text-gray-500 font-bold hover:text-red-600 transition flex items-center gap-1">← Encerrar Sessão Segura</button>
+                </div>
+                <div class="mt-4 md:mt-0 bg-gray-50 px-4 md:px-6 py-2 md:py-3 rounded-2xl border border-gray-200 text-right">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Status da Prova</p>
+                    <p id="prof-status-display" class="text-xl md:text-2xl font-black uppercase tracking-tighter">Carregando...</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-12">
+                <button id="btn-prof-abrir" class="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 md:py-4 px-4 rounded-xl shadow-lg shadow-green-200 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">🟢 Liberar Acesso</button>
+                <button id="btn-prof-fechar" class="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-black py-3 md:py-4 px-4 rounded-xl shadow-lg shadow-red-200 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">🔴 Bloquear Acesso</button>
+                <button id="btn-prof-resultados" class="bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black py-3 md:py-4 px-4 rounded-xl shadow-lg shadow-blue-200 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">📊 Publicar Resultados</button>
+            </div>
+
+            <div class="flex justify-between items-end mb-4 md:mb-6">
+                <div>
+                    <h2 class="text-lg md:text-xl font-black text-gray-800">Entregas dos Alunos</h2>
+                    <p class="text-xs md:text-sm text-gray-500">Monitore, corrija e faça a gestão das avaliações recebidas.</p>
+                </div>
+                <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-green-50 text-green-700 px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-bold hover:bg-green-100 transition flex items-center gap-2 border border-green-100">
+                    Sincronizar <span>🔄</span>
+                </button>
+            </div>
+            <div id="lista-alunos-container" class="grid gap-3"></div>
+        </div>
+    </div>
+
+    <!-- TELA: CORREÇÃO MANUAL / REVISÃO -->
+    <div id="review-screen" class="fixed inset-0 bg-gray-50 z-[80] hidden flex-col items-center p-2 md:p-4 overflow-y-auto">
+        <div class="w-full max-w-4xl flex justify-between items-center mb-4 sticky top-0 bg-gray-50/90 backdrop-blur-md py-3 z-20 border-b border-gray-200">
+            <button id="btn-fechar-review" class="bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-100 px-4 md:px-6 py-2 rounded-xl font-black transition flex items-center gap-2 text-sm md:text-base">← Voltar</button>
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 md:px-8 py-2 rounded-full font-black text-base md:text-xl shadow-lg shadow-green-200 flex items-center gap-2">
+                Nota Total: <span id="review-nota-total" class="bg-white/20 px-2 py-1 rounded-lg">0.0</span> / 14.0
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl w-full max-w-4xl border border-gray-100">
+            <div class="mb-8 md:mb-10 text-center">
+                <p class="text-[10px] md:text-xs text-green-600 font-black uppercase tracking-widest mb-2 bg-green-50 inline-block px-3 py-1 rounded-full">Modo de Correção / Revisão</p>
+                <h1 class="text-2xl md:text-4xl font-black text-gray-800" id="review-nome-aluno">Nome do Aluno</h1>
+            </div>
+
+            <div id="review-content" class="space-y-6 md:space-y-8"></div>
+
+            <!-- Painel de Correção Docente -->
+            <div id="area-correcao-prof" class="hidden mt-10 md:mt-16 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 md:p-8 rounded-3xl border-2 border-yellow-200 shadow-sm">
+                <div class="flex items-center gap-3 mb-4 md:mb-6">
+                    <span class="text-2xl md:text-3xl">✍️</span>
+                    <h3 class="text-xl md:text-2xl font-black text-yellow-900">Avaliação Manual (Discursiva)</h3>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                    <div class="shrink-0 bg-white p-4 rounded-2xl border border-yellow-200 shadow-sm text-center w-full md:w-auto">
+                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Nota (Máx 3.0)</label>
+                        <input type="number" id="input-nota-disc" step="0.1" min="0" max="3" class="text-4xl md:text-5xl font-black text-center w-28 md:w-32 border-none focus:outline-none bg-transparent text-green-700">
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Comentários e Orientações Pedagógicas</label>
+                        <textarea id="input-feedback-prof" rows="4" class="w-full border-2 border-yellow-200 bg-white p-3 md:p-4 rounded-2xl outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition resize-none text-justify text-sm md:text-base" placeholder="Escreva aqui o feedback para o aluno compreender os seus erros e acertos..."></textarea>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6 md:mt-8">
+                    <button id="btn-salvar-correcao" class="flex-1 bg-gray-900 hover:bg-black text-white font-black py-3 md:py-4 px-6 md:px-12 rounded-2xl text-base md:text-lg shadow-lg transition transform hover:-translate-y-1">💾 Guardar Nota e Feedback</button>
+                    <button id="btn-excluir-revisao" class="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-black py-3 md:py-4 px-4 md:px-8 rounded-2xl text-sm md:text-lg shadow-sm border border-red-200 hover:border-transparent transition transform hover:-translate-y-1">🗑️ Eliminar Prova do Aluno</button>
+                </div>
+            </div>
+            
+            <!-- Feedback Visual para o Aluno -->
+            <div id="area-feedback-aluno" class="hidden mt-10 md:mt-16 bg-green-50 p-6 md:p-8 rounded-3xl border-2 border-green-100">
+                <div class="flex items-center gap-2 md:gap-3 mb-4">
+                    <span class="text-xl md:text-2xl">👨‍🏫</span>
+                    <h3 class="text-lg md:text-xl font-black text-green-900">Feedback do Professor</h3>
+                </div>
+                <div class="flex items-center gap-3 mb-4 md:mb-6 bg-white w-max px-3 md:px-4 py-2 rounded-xl border border-green-100 shadow-sm">
+                    <span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider">Pontuação na Discursiva:</span>
+                    <span id="view-nota-disc" class="text-xl md:text-2xl text-green-700 font-black">0.0</span>
+                </div>
+                <div id="view-feedback-texto" class="p-4 md:p-6 bg-white rounded-2xl italic text-gray-700 border border-green-100 shadow-sm text-sm md:text-lg leading-relaxed text-justify"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 2: INSTRUÇÕES (ALUNO) -->
+    <div id="start-screen" class="fixed inset-0 bg-white z-50 hidden flex-col items-center justify-center p-4 text-center overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            
+            <div class="relative z-10">
+                <h1 id="welcome-title" class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-700">Prepare-se!</h1>
+                
+                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-8 border-yellow-400 p-4 md:p-6 rounded-2xl text-left shadow-sm mb-6 md:mb-8">
+                    <p class="text-yellow-900 font-black italic text-lg md:text-xl mb-2 text-justify leading-relaxed">"Ter o caderno aberto é uma vantagem, mas saber o que procurar é a verdadeira inteligência."</p>
+                    <p class="text-xs md:text-sm text-yellow-800 font-medium text-justify leading-relaxed">Esta avaliação não testa sua memória robótica, mas sim sua capacidade de <strong>interpretar cenários práticos</strong> e aplicar os princípios do Cooperativismo.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-10 text-left">
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
+                        <div class="text-xl bg-green-50 p-2 rounded-xl">💾</div>
+                        <div>
+                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Salvamento Automático</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">As suas respostas são sincronizadas com o servidor a cada troca de questão.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
+                        <div class="text-xl bg-red-50 p-2 rounded-xl">🚨</div>
+                        <div>
+                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Ambiente Controlado</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">A prova ocupará o ecrã inteiro. Mudar de aba ou minimizar bloqueará o sistema.</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="btn-iniciar" class="w-full bg-gray-900 hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(0,_0,_0,_0.2)] text-lg md:text-xl transform hover:-translate-y-1 transition active:translate-y-0">Estou Pronto! Iniciar Prova 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 3: ALERTA ANTI-COLA (BLOQUEIO) -->
+    <div id="warning-screen" class="fixed inset-0 bg-red-600 text-white z-[100] hidden flex-col items-center justify-center p-4 md:p-6 text-center">
+        <div class="bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-3xl border border-white/20 max-w-2xl w-full pop-in">
+            <div class="text-6xl md:text-8xl mb-4 md:mb-6 animate-bounce">⚠️</div>
+            <h2 class="text-2xl md:text-4xl font-black mb-3 md:mb-4 tracking-tight">AVALIAÇÃO INTERROMPIDA</h2>
+            <p class="text-sm md:text-lg mb-6 md:mb-10 font-medium text-red-100 text-justify leading-relaxed">Detetamos que saiu do ambiente de prova ou tentou utilizar atalhos bloqueados. O foco total é obrigatório para a integridade do processo.</p>
+            <button id="btn-retornar" class="bg-white text-red-700 font-black py-3 md:py-4 px-8 md:px-12 rounded-xl md:rounded-2xl text-base md:text-xl shadow-2xl hover:bg-gray-100 transition transform hover:scale-105">Retornar Imediatamente ao Foco</button>
+        </div>
+    </div>
+
+    <!-- TELA 4: SUCESSO / FINALIZAÇÃO -->
+    <div id="finish-screen" class="fixed inset-0 bg-gray-50 z-[90] hidden flex-col items-center justify-center p-4 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-green-500 pop-in">
+            <div class="text-6xl md:text-7xl mb-4 md:mb-6">✅</div>
+            <h2 class="text-2xl md:text-3xl font-black text-green-600 mb-3 md:mb-4 tracking-tight">Missão Cumprida!</h2>
+            <p class="text-gray-600 mb-6 md:mb-8 italic text-sm md:text-lg leading-relaxed text-justify">"A cooperação é a convicção plena de que ninguém pode chegar à meta se não chegarem todos."</p>
+            <div class="bg-green-50 p-3 md:p-4 rounded-xl border border-green-100 mb-4 md:mb-6">
+                <p class="text-xs md:text-sm text-green-800 font-bold">Respostas transmitidas com segurança para a base de dados.</p>
+            </div>
+            <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest">Já pode fechar esta janela.</p>
+        </div>
+    </div>
+
+    <!-- TELA: RESULTADOS ALUNO -->
+    <div id="student-results-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center justify-center p-4 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl border border-white max-w-md w-full pop-in">
+            <div class="text-5xl mb-4">🏆</div>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">Boletim Oficial</h2>
+            <p class="text-sm md:text-base text-gray-500 font-bold mb-6 md:mb-8" id="res-aluno-nome"></p>
+            
+            <div class="bg-gradient-to-br from-green-600 to-emerald-700 p-6 md:p-8 rounded-3xl text-white shadow-[0_10px_30px_rgba(22,_163,_74,_0.3)] mb-6 md:mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">📝</div>
+                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 text-green-200 relative z-10">Pontuação Consolidada</p>
+                <p class="text-6xl md:text-7xl font-black relative z-10"><span id="res-nota-total">0</span><span class="text-xl md:text-2xl text-green-300">/14.0</span></p>
+            </div>
+            
+            <button id="btn-ver-prova-corrigida" class="w-full bg-white border-2 border-gray-200 text-gray-800 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-green-500 transition shadow-sm text-sm md:text-base">Visualizar Gabarito Comentado</button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (SLIDES DA PROVA) -->
+    <div id="quiz-content" class="max-w-4xl mx-auto p-4 md:p-6 bg-white shadow-2xl my-4 md:my-6 rounded-2xl md:rounded-3xl w-full hidden border border-gray-100 flex-1 flex-col relative z-10">
+        <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 pb-2 mb-4 pt-2 z-20 flex justify-between items-end">
+            <div>
+                <h2 class="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-700">Avaliação Cooperativismo</h2>
+                <p class="text-[10px] md:text-sm text-gray-400 font-bold uppercase tracking-widest mt-1"><span id="header-aluno-nome" class="text-gray-800">---</span></p>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hora Atual</span>
+                <div id="clock-display" class="font-mono text-xl md:text-2xl font-black text-green-700 bg-green-50 px-3 md:px-4 py-1 rounded-xl border border-green-100 shadow-sm">00:00</div>
+            </div>
+        </div>
+
+        <div class="w-full bg-gray-100 rounded-full h-1.5 md:h-2 mb-4 md:mb-6">
+            <div id="progress-bar" class="bg-gradient-to-r from-green-500 to-emerald-500 h-1.5 md:h-2 rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+        </div>
+
+        <form id="avaliacao-form" class="flex-1 flex flex-col">
+            <div id="container-questoes" class="flex-1"></div>
+            
+            <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4">
+                <div class="flex gap-2 md:gap-3 w-full sm:w-auto">
+                    <button type="button" id="btn-prev" class="flex-1 sm:flex-none px-4 md:px-6 py-3 md:py-4 bg-white border-2 border-gray-200 text-gray-600 font-black rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-gray-300 disabled:opacity-30 disabled:hover:bg-white transition flex items-center justify-center gap-2 text-sm md:text-base">← <span class="hidden sm:inline">Anterior</span></button>
+                    <button type="button" id="btn-next" class="flex-1 sm:flex-none px-6 md:px-8 py-3 md:py-4 bg-gray-900 text-white font-black rounded-xl md:rounded-2xl hover:bg-black shadow-lg shadow-gray-300 transition flex items-center justify-center gap-2 text-sm md:text-base">Avançar →</button>
+                </div>
+                <button type="button" id="btn-finalizar" class="hidden w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-green-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-green-700 shadow-lg shadow-green-200 transition transform hover:-translate-y-1 animate-pulse text-sm md:text-base">ENTREGAR PROVA ✅</button>
+            </div>
+            
+            <div class="flex justify-center items-center gap-2 mt-4 md:mt-6">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <p class="text-[8px] md:text-[10px] text-gray-400 uppercase font-bold tracking-widest">Sincronização em Tempo Real Ativa</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE ENVIO -->
+    <div id="confirm-submit-modal" class="fixed inset-0 bg-black/60 z-[120] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in border border-white/50">
+            <div class="text-5xl md:text-6xl mb-4 md:mb-6 bg-green-50 w-20 md:w-24 h-20 md:h-24 mx-auto rounded-full flex items-center justify-center text-green-600">🚀</div>
+            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-2">Pronto para Enviar?</h2>
+            <p class="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 font-medium leading-relaxed text-justify">Reveja as suas respostas no seu caderno. Após confirmar a entrega, o acesso para modificações será permanentemente bloqueado.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-confirm-yes" class="w-full bg-green-600 text-white font-black py-3 md:py-4 rounded-xl shadow-[0_10px_20px_rgba(22,_163,_74,_0.2)] hover:bg-green-700 transition transform hover:-translate-y-1 text-sm md:text-base">Confirmar e Entregar</button>
+                <button id="btn-confirm-no" class="w-full bg-gray-100 text-gray-600 font-black py-3 md:py-4 rounded-xl hover:bg-gray-200 transition text-sm md:text-base">Voltar para Revisar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- SISTEMA DE ALERTA CUSTOMIZADO ---
+        window.mostrarAlerta = function(titulo, mensagem, icone = '🔔') {
+            document.getElementById('alert-title').textContent = titulo;
+            document.getElementById('alert-message').textContent = mensagem;
+            document.getElementById('alert-icon').textContent = icone;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+        window.fecharAlerta = function() {
+            document.getElementById('custom-alert').style.display = 'none';
+        }
+
+        // --- CONFIGURAÇÕES FIREBASE ---
+        let firebaseConfig;
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            firebaseConfig = JSON.parse(__firebase_config);
+        } else {
+            firebaseConfig = {
+                apiKey: "AIzaSyAAVaCeBIWVN9oYHS3Dbg_eZDw5YA2lb84",
+                authDomain: "avaliacao-logica-46f5e.firebaseapp.com",
+                projectId: "avaliacao-logica-46f5e",
+                storageBucket: "avaliacao-logica-46f5e.firebasestorage.app",
+                messagingSenderId: "864696613529",
+                appId: "1:864696613529:web:031df7f1e9254c40945608"
+            };
+        }
+        
+        const appIdStr = typeof __app_id !== 'undefined' ? __app_id : 'avaliacao-logica-46f5e';
+        // Nova URL Webhook (Cooperativismo)
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbzk-a0yG6an5wbo7l3pEo3ra2XmLK_-0W8UFV6usfBoBQaz66qCZO_TLGh2IImNtWZp/exec";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- ALUNOS COOPERATIVISMO ---
+        const bancoDeAlunos = [
+            { id: "aluno_01", nome: "ANNA V. T. D. S.", senha: "20122009" },
+            { id: "aluno_02", nome: "CRISTIANA S. G.", senha: "17112008" },
+            { id: "aluno_03", nome: "EDNEY D. A. S.", senha: "05092008" },
+            { id: "aluno_04", nome: "ELIANA P. D. L. C.", senha: "30122009" },
+            { id: "aluno_05", nome: "EROS P. E.", senha: "12052009" },
+            { id: "aluno_06", nome: "EVANDRO D. S. P.", senha: "04082009" },
+            { id: "aluno_07", nome: "FABIANI M. P.", senha: "10022009" },
+            { id: "aluno_08", nome: "GIULLIA T. B. D. L.", senha: "29102008" },
+            { id: "aluno_09", nome: "ISABELLY A. A. P.", senha: "06062008" },
+            { id: "aluno_10", nome: "JULIA D. D. A. P.", senha: "30032009" },
+            { id: "aluno_11", nome: "KAIQUE M. D. S.", senha: "09052008" },
+            { id: "aluno_12", nome: "KASSYANNE M. T.", senha: "06052009" },
+            { id: "aluno_13", nome: "KAUAN R. C.", senha: "26102009" },
+            { id: "aluno_14", nome: "KETELIN E. D. S.", senha: "09102009" },
+            { id: "aluno_15", nome: "KRYSTYAN A. M.", senha: "01092009" },
+            { id: "aluno_16", nome: "LAUANI S. F.", senha: "07052009" },
+            { id: "aluno_17", nome: "MAIANNY D. M.", senha: "30082009" },
+            { id: "aluno_18", nome: "MARCOS P. C. D. S.", senha: "25072008" },
+            { id: "aluno_19", nome: "MARIA E. F. S.", senha: "05072009" },
+            { id: "aluno_20", nome: "MATEUS D. S. M.", senha: "17012010" },
+            { id: "aluno_21", nome: "MATEUS F. D. S. P.", senha: "01062008" },
+            { id: "aluno_22", nome: "MIGUEL F. G. D. O.", senha: "27052009" },
+            { id: "aluno_23", nome: "MIGUEL M. D. A.", senha: "06122010" },
+            { id: "aluno_24", nome: "MIGUEL P. F. R.", senha: "17042009" },
+            { id: "aluno_25", nome: "MURILO S. D. A. C.", senha: "26052009" },
+            { id: "aluno_26", nome: "PYETRO G. G.", senha: "30082009" },
+            { id: "aluno_27", nome: "RAFAEL D. S. F.", senha: "12042009" },
+            { id: "aluno_28", nome: "RONALD M. B. M. D. S.", senha: "28062009" },
+            { id: "aluno_29", nome: "SHERON E. V. C.", senha: "01012010" },
+            { id: "aluno_30", nome: "THARCIELLY F. N.", senha: "12012010" },
+            { id: "aluno_31", nome: "VITOR D. V. M.", senha: "02032009" },
+            { id: "aluno_32", nome: "YASMIN D. B. E. B. G.", senha: "11052009" },
+            { id: "aluno_test", nome: "ALUNO TESTE", senha: "123" }
+        ];
+
+        // --- BANCO DE QUESTÕES (COOPERATIVISMO - 14 Questões) ---
+        const bancoDeQuestoes = [
+            {
+                id: "q1", tipo: "multipla", correta: "c",
+                pergunta: "CENÁRIO 1: Um grupo de empresários decide fundar um negócio de transporte de passageiros (tipo Uber). João sugere abrir uma Empresa Tradicional para atrair investidores milionários. Maria sugere abrir uma Cooperativa de motoristas. Analisando a essência corporativa, por que a ideia de Maria entra em atrito com o objetivo principal dos grandes investidores de João?",
+                opcoes: [
+                    "A) Porque cooperativas são legalmente proibidas de possuir tecnologia de ponta ou aplicativos modernos.",
+                    "B) Porque numa cooperativa todo o dinheiro arrecadado precisa ser doado para a caridade ao final de cada mês.",
+                    "C) Porque o foco da cooperativa é a prestação de serviços de qualidade e melhores condições aos motoristas associados, e não a maximização agressiva de lucro para quem apenas investiu dinheiro.",
+                    "D) Porque empresas tradicionais não pagam impostos, tornando a sugestão da cooperativa inviável financeiramente.",
+                    "E) Não há atrito. O objetivo final e estrutural de uma empresa tradicional e de uma cooperativa são exatamente idênticos no mercado."
+                ]
+            },
+            {
+                id: "q2", tipo: "multipla", correta: "b",
+                pergunta: "CENÁRIO 2: Numa assembleia anual da 'AgroSucesso', o agricultor Sr. José, que comprou 1.000 cotas-partes do negócio, levanta-se e exige que seu voto tenha um peso mil vezes maior que o de Dona Ana, que possui apenas 1 cota-parte. O mediador da reunião nega a exigência, explicando a regra cooperativista. Qual é essa regra universal de poder e decisão?",
+                opcoes: [
+                    "A) A regra do voto hereditário: o voto mais forte pertence sempre ao cooperado mais velho da reunião.",
+                    "B) A regra do Voto Democrático: '1 pessoa = 1 voto'. Não importa se o Sr. José investiu milhões a mais, o poder de decisão foca na pessoa, não no volume de capital.",
+                    "C) A regra do Voto por Produtividade: Dona Ana só terá o mesmo peso de voto se plantar exatamente a mesma quantidade de grãos que o Sr. José.",
+                    "D) A regra da Assembleia Mista: onde as decisões só valem se o Conselho Fiscal autorizar a contagem das cotas.",
+                    "E) O mediador errou. Numa cooperativa moderna, a regra oficial é '1 cota = 1 voto' para atrair grandes investidores rurais."
+                ]
+            },
+            {
+                id: "q3", tipo: "multipla", correta: "d",
+                pergunta: "CENÁRIO 3: Hoje, trabalhadores de aplicativos enfrentam jornadas exaustivas e baixa remuneração, buscando na união (e no cooperativismo de plataforma) uma saída. Se voltarmos no tempo, qual foi o ambiente opressivo original que impulsionou o nascimento histórico da primeira cooperativa moderna formalizada no mundo?",
+                opcoes: [
+                    "A) A crise das bolsas de valores no início dos anos 2000, onde corretores perderam tudo.",
+                    "B) O período de pós-Segunda Guerra Mundial, focado na reconstrução imobiliária da Europa.",
+                    "C) A Era Digital, impulsionada pela necessidade de compartilhar conexões de internet discada.",
+                    "D) A Revolução Industrial no século XIX, marcada pela exploração severa de operários em fábricas, jornadas desumanas e alimentos adulterados vendidos a preços abusivos.",
+                    "E) A época das Grandes Navegações, onde marinheiros queriam dividir os lucros das especiarias."
+                ]
+            },
+            {
+                id: "q4", tipo: "multipla", correta: "a",
+                pergunta: "CENÁRIO 4: Lendo o livro de história da sua escola, você encontra a seguinte anotação: 'Ano: 1844. Local: Inglaterra. 28 tecelões desempregados ou em greve juntaram suas economias e mudaram o mundo dos negócios'. Que grande marco prático e tangível esses 28 Pioneiros de Rochdale construíram com esse dinheiro suado?",
+                opcoes: [
+                    "A) Eles fundaram o primeiro armazém cooperativo da história moderna, comprando itens básicos (como farinha, manteiga e açúcar) no atacado para vender aos membros a um preço justo e sem adulteração.",
+                    "B) Eles construíram o primeiro sindicato de trabalhadores ferroviários para paralisar a economia local.",
+                    "C) Eles abriram um banco privado tradicional e enriqueceram cobrando juros altos dos barões do algodão.",
+                    "D) Eles escreveram uma carta ao Rei da Inglaterra pedindo para que o governo tabelasse os preços de toda a comida do país.",
+                    "E) Eles criaram a primeira ONG (Organização Não Governamental) para distribuir sopa e roupas de graça."
+                ]
+            },
+            {
+                id: "q5", tipo: "multipla", correta: "c",
+                pergunta: "CENÁRIO 5: Uma agência de publicidade sugeriu modernizar o símbolo mundial do cooperativismo para uma nova campanha de TV. A ideia deles foi: remover o círculo amarelo e deixar apenas uma única árvore vermelha. Analisando o caderno de simbologia, o que se perde de mais profundo nessa 'modernização'?",
+                opcoes: [
+                    "A) Perde-se a ideia de que a cooperativa é focada no agronegócio, visto que a árvore solitária não remete à colheita de soja.",
+                    "B) O vermelho simboliza lucro, o que já está correto, mas a remoção do círculo retira o foco nas moedas de ouro.",
+                    "C) Perde-se o significado dos Dois Pinheiros (que representam a união e o apoio mútuo) e do Círculo (que representa a eternidade do movimento, sem fim). A união é destruída ao se deixar apenas uma árvore.",
+                    "D) Não se perde nada. Os símbolos cooperativistas foram abolidos mundialmente nos anos 90, sendo irrelevantes hoje.",
+                    "E) O erro está apenas na cor. A árvore deveria ser azul para representar as cooperativas de pesca, mas a quantidade de árvores nunca importou."
+                ]
+            },
+            {
+                id: "q6", tipo: "multipla", correta: "b",
+                pergunta: "CENÁRIO 6: Dona Marta se associou ao 'Sicoob', pegou um cartão de crédito, financiou seu carro, mas costuma dizer aos vizinhos: 'Sou apenas mais uma cliente do banco, não me envolvo nas reuniões, só quero o serviço'. Por que a afirmação de Marta fere o conceito vital do 'Papel Duplo do Cooperado'?",
+                opcoes: [
+                    "A) Porque ela não pode pegar cartão e financiar um carro ao mesmo tempo, quebrando a dupla função financeira.",
+                    "B) Porque no cooperativismo, ela não é apenas uma 'cliente ou utente'. Ela é, simultaneamente, 'Dona/Gestora' do negócio, tendo a responsabilidade de participar, votar e opinar nas reuniões para o sucesso da instituição.",
+                    "C) Porque o papel duplo exige que ela traga obrigatoriamente uma segunda pessoa de sua família para se associar junto com ela.",
+                    "D) Porque ela deveria ser funcionária contratada com carteira assinada para justificar o papel duplo.",
+                    "E) A afirmação está correta. O estatuto diz que os membros não devem se envolver na gestão para evitar brigas políticas."
+                ]
+            },
+            {
+                id: "q7", tipo: "multipla", correta: "e",
+                pergunta: "CENÁRIO 7: O presidente atual da cooperativa 'CoopLeite' acordou com uma ideia ambiciosa: ele quer vender todos os caminhões e comprar aviões para transporte, mesmo que isso custe 10 milhões. Apesar de ser o presidente, ele não pode assinar a compra sozinho e escondido. Quem detém o poder SOBERANO E MÁXIMO para autorizar ou barrar essa loucura?",
+                opcoes: [
+                    "A) O Prefeito da cidade onde a matriz da cooperativa foi construída.",
+                    "B) Apenas o Conselho Fiscal, através de uma votação de auditoria contábil.",
+                    "C) Os acionistas de Wall Street que detêm 51% do capital do leite.",
+                    "D) O banco central, que autoriza empréstimos milionários para o setor rural.",
+                    "E) A Assembleia Geral. É o órgão de decisão máxima, onde todos os cooperados se reúnem e decidem (no voto) o destino do negócio."
+                ]
+            },
+            {
+                id: "q8", tipo: "multipla", correta: "a",
+                pergunta: "CENÁRIO 8: Há rumores de que o diretor financeiro da cooperativa de transporte 'ViaCoop' está utilizando o dinheiro da manutenção dos ônibus para fazer viagens pessoais para a Europa. Qual é o Órgão Social específico, formado por associados eleitos, que tem a missão de auditar contas e fiscalizar esse tipo de atitude irregular?",
+                opcoes: [
+                    "A) O Conselho Fiscal. Sua função exclusiva é agir como 'cão de guarda' da transparência, conferindo recibos e denunciando falhas à Assembleia.",
+                    "B) O Conselho de Administração, que cria as propagandas turísticas do diretor.",
+                    "C) A Assembleia Geral Ordinária, que aprova as férias dos executivos.",
+                    "D) O Comitê de Eventos Especiais, responsável por viagens internacionais.",
+                    "E) A Delegacia de Polícia Civil, pois cooperativas não possuem órgãos internos de monitoramento de contas."
+                ]
+            },
+            {
+                id: "q9", tipo: "multipla", correta: "c",
+                pergunta: "CENÁRIO 9: O ano de 2025 foi excelente para a Cooperativa de Médicos. O balanço final mostrou que entrou muito mais dinheiro do que foi gasto com equipamentos e impostos. Um médico recém-formado levanta a mão e grita: 'Atenção, vamos dividir logo todo esse nosso LUCRO!'. O contador pede a palavra e o corrige amigavelmente. Qual a correção técnica sobre essa sobra de dinheiro?",
+                opcoes: [
+                    "A) 'Aqui o lucro é chamado de Superávit Governamental, pois o dinheiro não nos pertence, e sim ao Governo Federal.'",
+                    "B) 'Você está certo doutor, é lucro puro, porém só será dividido entre quem está no Conselho Fiscal.'",
+                    "C) 'Em cooperativas, não buscamos o lucro. O que sobrou na conta é chamado tecnicamente de SOBRAS (resultado positivo), e o objetivo de sua devolução é o custo justo, não o enriquecimento especulativo.'",
+                    "D) 'Esse valor é chamado de Prejuízo Retido, pois todo dinheiro a mais deve ser queimado para evitar a inflação local.'",
+                    "E) 'Nós não temos lucro nem sobras, todo o excedente financeiro deve ser doado para asilo ou orfanato por lei.'"
+                ]
+            },
+            {
+                id: "q10", tipo: "multipla", correta: "b",
+                pergunta: "CENÁRIO 10: Na hora de distribuir essas 'Sobras' mencionadas na questão anterior, a Assembleia percebe que o contador 'separou' e guardou uma porcentagem obrigatória desse dinheiro num cofre digital antes de devolver o resto aos associados. Por que ele fez isso legalmente?",
+                opcoes: [
+                    "A) Ele está pagando a comissão do presidente, como se fosse um bônus de Wall Street.",
+                    "B) Trata-se da criação de Fundos de Reserva (como FATES ou Reserva Legal). Eles são a 'poupança' da cooperativa, garantindo estabilidade financeira para enfrentar crises no futuro.",
+                    "C) É um imposto de renda retido na fonte que vai direto para a prefeitura local.",
+                    "D) Ele separou para abrir uma empresa privada tradicional escondida dos membros.",
+                    "E) Cooperativas são proibidas de guardar dinheiro. O contador cometeu um crime financeiro ao não distribuir 100% no mesmo dia."
+                ]
+            },
+            {
+                id: "q11", tipo: "multipla", correta: "d",
+                pergunta: "CENÁRIO 11: Dois amigos, Carlos e Felipe. Carlos investiu R$ 100.000 em ações de um Banco Privado S/A. Felipe investiu R$ 100.000 como associado em uma Cooperativa de Crédito. Um novo membro pobre, João, entrou com R$ 100 em cada instituição. Na hora de votar sobre o fechamento de uma agência, como ficará o cenário de votação para João contra os milionários?",
+                opcoes: [
+                    "A) João não vota em nenhum dos dois, pois R$ 100 não dá direito a voz em lugar nenhum do Brasil.",
+                    "B) No Banco S/A ele tem voto igual ao de Carlos. Na Cooperativa, Felipe ganha de João na força do dinheiro.",
+                    "C) João votará e sua decisão valerá por duas na Cooperativa, pois há cota para baixa renda.",
+                    "D) No Banco Privado S/A, o voto de Carlos (cem mil reais) esmaga o de João. Já na Cooperativa de Crédito, a regra '1 pessoa = 1 voto' garante que a voz de João tenha exatamente a mesma força e poder que a de Felipe.",
+                    "E) A lei impede que pessoas com menos de dez mil reais votem em cooperativas para garantir a segurança financeira."
+                ]
+            },
+            {
+                id: "q12", tipo: "multipla", correta: "a",
+                pergunta: "CENÁRIO 12: Fim de ano na 'CaféCoop'. Chegou a hora de distribuir as Sobras (o saldo positivo). O membro A entregou 1.000 sacas de café. O membro B entregou 10 sacas. A regra cooperativista é clara sobre 'Justiça e Proporcionalidade'. Sendo assim, como será feita a divisão desse dinheiro devolvido?",
+                opcoes: [
+                    "A) A devolução é proporcional ao USO da cooperativa. O membro A utilizou/operou muito mais (1000 sacas), logo, receberá um valor de sobras imensamente maior que o membro B.",
+                    "B) A divisão é perfeitamente igualitária (rachada ao meio). A cooperativa é comunista, então 50% vai pro A e 50% pro B.",
+                    "C) A devolução é baseada no Voto. Como os dois tem 1 voto cada, o dinheiro é dividido igualmente não importando a produtividade.",
+                    "D) O membro B receberá mais dinheiro para compensar o fato de ser um pequeno produtor e estimular seu crescimento.",
+                    "E) O dinheiro só volta para quem faz parte da presidência (Conselho de Administração)."
+                ]
+            },
+            {
+                id: "q13", tipo: "associacao",
+                pergunta: "ASSOCIAÇÃO DE CONCEITOS E MARCOS",
+                instrucao: "Conecte os conceitos, termos e marcos históricos à sua definição correta dentro da estrutura de gestão e fundação do movimento.",
+                termos: [
+                    { value: "ag", label: "Assembleia Geral (Poder Supremo)" },
+                    { value: "pioneiros", label: "28 Pioneiros de Rochdale" },
+                    { value: "sobras", label: "Sobras Financeiras" },
+                    { value: "simbolo", label: "Símbolo: Dois Pinheiros e Círculo" },
+                    { value: "duplo", label: "Papel Duplo do Associado" }
+                ],
+                lacunas: [
+                    { id: "lac0", texto: "Grupo histórico de tecelões que, cansados da exploração, fundaram o modelo cooperativo viável em 1844, com um pequeno armazém de produtos puros." },
+                    { id: "lac1", texto: "Resultado positivo gerado nas operações. Não visa o enriquecimento de um dono, mas retorna aos participantes proporcionalmente ao que operaram." },
+                    { id: "lac2", texto: "Representação mundial que indica união, força resiliente perante as dificuldades e a continuidade sem fim do movimento." },
+                    { id: "lac3", texto: "Princípio onde o membro não é apenas um cliente balcão, mas atua simultaneamente como dono, votando e se responsabilizando pelas diretrizes." },
+                    { id: "lac4", texto: "A instância máxima de autoridade. Onde a regra '1 pessoa = 1 voto' acontece na prática para aprovar contas ou demitir diretores." }
+                ],
+                corretas: { "lac0": "pioneiros", "lac1": "sobras", "lac2": "simbolo", "lac3": "duplo", "lac4": "ag" }
+            },
+            {
+                id: "q14", tipo: "discursiva",
+                pergunta: "MISSÃO DISCURSIVA: Resumo de Conceitos",
+                instrucao: "Imagine que você precisa explicar para um parente o que torna uma Cooperativa tão diferente e especial em relação a uma empresa privada tradicional. Com base no que estudou, escreva um texto resumindo com suas palavras três pontos principais:\n\n1) O objetivo central (por que ela existe se não é para dar lucro máximo para grandes investidores?);\n2) O poder de decisão (como funciona o peso do voto se alguém investir muito mais dinheiro que os outros?);\n3) O papel duplo (o que significa ser 'dono' e 'usuário' ao mesmo tempo?).",
+                dica: "DICA DE OURO: Seja direto e use suas próprias palavras. Lembre-se da regra de ouro das votações (1=1) e de como o associado utiliza os serviços que ele mesmo ajuda a administrar."
+            }
+        ];
+
+        // --- VARIÁVEIS GLOBAIS DE ESTADO ---
+        let alunoLogado = null;
+        let authUserId = null;
+        let isExamActive = false;
+        let globalStatus = "fechado";
+        let ordemQuestoes = [];
+        let slideAtualIndex = 0;
+        let clockInterval = null;
+        let alunoCorrecaoAtual = null;
+
+        const ui = {
+            login: document.getElementById('login-screen'),
+            modalProf: document.getElementById('modal-prof-login'),
+            prof: document.getElementById('professor-screen'),
+            review: document.getElementById('review-screen'),
+            start: document.getElementById('start-screen'),
+            results: document.getElementById('student-results-screen'),
+            warning: document.getElementById('warning-screen'),
+            finish: document.getElementById('finish-screen'),
+            quiz: document.getElementById('quiz-content'),
+            selAluno: document.getElementById('aluno-select'),
+            inputSenha: document.getElementById('aluno-senha'),
+            btnLogin: document.getElementById('btn-login'),
+            loginErr: document.getElementById('login-error'),
+            form: document.getElementById('avaliacao-form'),
+            progressBar: document.getElementById('progress-bar')
+        };
+
+        // Popular Dropdown ordenado
+        bancoDeAlunos.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.id;
+            opt.textContent = a.nome;
+            ui.selAluno.appendChild(opt);
+        });
+
+        // --- FIREBASE AUTH ---
+        async function doAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    return await signInWithCustomToken(auth, __initial_auth_token);
+                }
+            } catch(e) { console.warn("Custom token falhou. Usando anônimo.", e); }
+            return await signInAnonymously(auth);
+        }
+
+        // --- LOGIN DO ALUNO ---
+        ui.btnLogin.onclick = async () => {
+            const id = ui.selAluno.value;
+            const pass = ui.inputSenha.value.trim();
+            
+            if (!id || !pass) {
+                ui.loginErr.textContent = "⚠️ Por favor, selecione seu nome e digite a senha.";
+                ui.loginErr.classList.remove('hidden');
+                return;
+            }
+
+            const aluno = bancoDeAlunos.find(a => a.id === id);
+            if (aluno.senha !== pass) {
+                ui.loginErr.textContent = "❌ Senha incorreta. Verifique sua data de nascimento.";
+                ui.loginErr.classList.remove('hidden');
+                return;
+            }
+
+            ui.loginErr.classList.add('hidden');
+            ui.btnLogin.innerHTML = `A conectar <span class="animate-spin ml-2">⏳</span>`;
+            
+            try {
+                const cred = await doAuth();
+                authUserId = cred.user.uid;
+                alunoLogado = aluno;
+                
+                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
+                globalStatus = snap.exists() ? snap.data().estado : "fechado";
+
+                ui.login.style.display = 'none';
+                rotearUsuario();
+            } catch (e) { 
+                mostrarAlerta("Erro de Ligação", "Não foi possível contactar o servidor. Tente novamente.", "🔌");
+                ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+            }
+        };
+
+        // --- ROTEAMENTO E STATUS ---
+        async function rotearUsuario() {
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id));
+            const data = snap.exists() ? snap.data() : null;
+
+            if (data && data.finalizado) {
+                if (globalStatus === "resultados") {
+                    ui.results.style.display = 'flex';
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0)));
+                    document.getElementById('res-nota-total').textContent = total.toFixed(1);
+                    document.getElementById('res-aluno-nome').textContent = alunoLogado.nome;
+                    document.getElementById('btn-ver-prova-corrigida').onclick = () => renderizarProvaRevisao(data, false);
+                } else {
+                    mostrarAlerta("Avaliação Concluída", "Já entregou esta avaliação. As suas respostas estão guardadas em segurança na base de dados da escola. Aguarde que o professor corrija a discursiva e liberte o acesso aos resultados oficiais.", "✅");
+                    ui.login.style.display = 'flex';
+                    ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+                }
+                return;
+            }
+
+            if (globalStatus === "fechado") { 
+                mostrarAlerta("Acesso Restrito", "A avaliação encontra-se FECHADA de forma sistêmica no momento. Aguarde a libertação de acesso global pelo professor.", "🔒");
+                ui.login.style.display = 'flex';
+                ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+                return; 
+            }
+
+            document.getElementById('header-aluno-nome').textContent = alunoLogado.nome;
+            prepararQuestoes(data);
+            ui.start.style.display = 'flex';
+        }
+
+        // --- PREPARAÇÃO DAS QUESTÕES ---
+        function prepararQuestoes(data) {
+            if (data && data.ordem) {
+                ordemQuestoes = data.ordem; 
+            } else {
+                let m = bancoDeQuestoes.filter(q => q.tipo === "multipla").map(q => q.id).sort(() => Math.random() - 0.5);
+                let rest = bancoDeQuestoes.filter(q => q.tipo !== "multipla").map(q => q.id);
+                ordemQuestoes = [...m, ...rest];
+                salvarProgresso(false); 
+            }
+            desenharQuestoes();
+            
+            if(data && data.respostas) {
+                Object.keys(data.respostas).forEach(key => {
+                    const el = ui.form.elements[key];
+                    if(el) el.value = data.respostas[key];
+                });
+            }
+        }
+
+        // --- RENDERIZAR TELA DA PROVA ---
+        function desenharQuestoes() {
+            let html = "";
+            ordemQuestoes.forEach((id, idx) => {
+                const q = bancoDeQuestoes.find(b => b.id === id);
+                const hidden = idx === 0 ? "" : "hidden";
+                
+                let pontuacao = "";
+                if (idx < 12) pontuacao = "0,75 Pt";
+                else if (idx === 12) pontuacao = "2,0 Pts";
+                else if (idx === 13) pontuacao = "3,0 Pts";
+
+                const badgePontos = `<span class="inline-block bg-green-100 text-green-800 text-[10px] md:text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-green-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                
+                html += `<div id="slide-${idx}" class="slide-question ${hidden} slide-fade min-h-[50vh] md:min-h-[60vh]">`;
+                
+                if(q.tipo === "multipla") {
+                    html += `<p class="font-black text-xl md:text-2xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<div class="space-y-3 md:space-y-4">`;
+                    q.opcoes.forEach((op, i) => {
+                        const v = String.fromCharCode(97 + i);
+                        html += `
+                            <label class="relative block cursor-pointer group">
+                                <input type="radio" name="${q.id}" value="${v}" class="peer sr-only radio-custom">
+                                <div class="p-3 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl bg-white transition-all group-hover:border-green-300 flex items-center gap-3 md:gap-4">
+                                    <div class="radio-indicator w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-300 flex items-center justify-center transition-colors relative flex-shrink-0">
+                                        <div class="w-2.5 h-2.5 md:w-3 md:h-3 bg-white rounded-full opacity-0 transform scale-0 transition-all duration-200 absolute"></div>
+                                    </div>
+                                    <span class="text-sm md:text-base text-gray-700 font-bold group-hover:text-green-700 peer-checked:text-green-800 text-justify leading-relaxed">${op}</span>
+                                </div>
+                            </label>
+                        `;
+                    });
+                    html += `</div>`;
+                } else if(q.tipo === "associacao") {
+                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="text-xs md:text-sm text-gray-500 mb-4 md:mb-6 font-bold italic text-justify leading-relaxed">${q.instrucao}</p>`;
+                    html += `<div class="grid gap-4 md:gap-6">`;
+                    q.lacunas.forEach((l, i) => {
+                        html += `
+                            <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border-2 border-gray-100 shadow-sm transition hover:shadow-md hover:border-green-100">
+                                <p class="mb-3 md:mb-4 text-sm md:text-base text-gray-800 font-bold text-justify leading-relaxed">${l.texto}</p>
+                                <select name="${q.id}_lacuna${i}" class="select-associacao shadow-sm text-sm md:text-base">
+                                    <option value="">-- Clique aqui e selecione o conceito --</option>
+                                    ${q.termos.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+                                </select>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                } else if(q.tipo === "discursiva") {
+                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed font-medium text-justify">${q.instrucao}</p>`;
+                    html += `<div class="bg-green-900 p-4 md:p-6 rounded-xl md:rounded-2xl text-green-100 font-mono text-xs md:text-sm mb-4 md:mb-6 shadow-inner border-l-8 border-green-400 text-justify leading-relaxed">💡 ${q.dica}</div>`;
+                    html += `<textarea name="${q.id}" rows="6" class="w-full p-4 md:p-6 border-2 border-gray-200 rounded-xl md:rounded-3xl font-mono text-xs md:text-sm focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none transition shadow-sm resize-none" placeholder="Construa sua explicação e raciocínio aqui..."></textarea>`;
+                }
+                html += `</div>`;
+            });
+            document.getElementById('container-questoes').innerHTML = html;
+            atualizarNavegacao();
+        }
+
+        // --- NAVEGAÇÃO ---
+        function mudarSlide(dir) {
+            document.getElementById(`slide-${slideAtualIndex}`).classList.add('hidden');
+            slideAtualIndex += dir;
+            document.getElementById(`slide-${slideAtualIndex}`).classList.remove('hidden');
+            atualizarNavegacao();
+            salvarProgresso(false); 
+        }
+
+        function atualizarNavegacao() {
+            document.getElementById('btn-prev').disabled = slideAtualIndex === 0;
+            const isLast = slideAtualIndex === ordemQuestoes.length - 1;
+            document.getElementById('btn-next').classList.toggle('hidden', isLast);
+            document.getElementById('btn-finalizar').classList.toggle('hidden', !isLast);
+            ui.progressBar.style.width = `${((slideAtualIndex + 1) / ordemQuestoes.length) * 100}%`;
+        }
+
+        document.getElementById('btn-prev').onclick = () => mudarSlide(-1);
+        document.getElementById('btn-next').onclick = () => mudarSlide(1);
+
+        // --- SALVAMENTO ---
+        async function salvarProgresso(final = false, pAuto = 0, pAsc = 0) {
+            if(!alunoLogado) return;
+            const respostas = Object.fromEntries(new FormData(ui.form).entries());
+            const docData = {
+                alunoId: alunoLogado.id, 
+                alunoNome: alunoLogado.nome,
+                ordem: ordemQuestoes, 
+                respostas: respostas, 
+                finalizado: final,
+                timestamp: new Date().toISOString()
+            };
+            if(final) {
+                docData.notaAutomatica = pAuto;
+                docData.notaAssociacao = pAsc;
+            }
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id), docData, { merge: true });
+        }
+
+        // --- FINALIZAÇÃO (ENVIO) ---
+        document.getElementById('btn-finalizar').onclick = () => document.getElementById('confirm-submit-modal').style.display = 'flex';
+        document.getElementById('btn-confirm-no').onclick = () => document.getElementById('confirm-submit-modal').style.display = 'none';
+        
+        document.getElementById('btn-confirm-yes').onclick = async () => {
+            isExamActive = false; 
+            
+            const btnYes = document.getElementById('btn-confirm-yes');
+            btnYes.innerHTML = `A processar Transmissão... <span class="animate-spin ml-2">⏳</span>`;
+            btnYes.disabled = true;
+
+            const fd = new FormData(ui.form);
+            let nAuto = 0; let nAsc = 0;
+            let relatorio = "";
+            
+            // --- CÁLCULO DAS NOTAS ---
+            bancoDeQuestoes.forEach((q, index) => {
+                if(q.tipo === "multipla") { 
+                    const respAluno = fd.get(q.id);
+                    const acertou = respAluno === q.correta;
+                    
+                    if(acertou) nAuto += 0.75; // 12 questões x 0.75 pts = 9.0 pts
+                    
+                    const icone = acertou ? "✅ ACERTOU" : "❌ ERROU";
+                    const textoMarcado = respAluno ? respAluno.toUpperCase() : "EM BRANCO";
+                    relatorio += `Q${index+1} - ${icone}\nMarcou: ${textoMarcado} | Correta: ${q.correta.toUpperCase()}\n\n`;
+                    
+                } else if(q.tipo === "associacao") {
+                    relatorio += `\n--- ASSOCIAÇÃO ---\n`;
+                    q.lacunas.forEach((l, i) => { 
+                        const respAluno = fd.get(`${q.id}_lacuna${i}`);
+                        const correta = q.corretas[`lac${i}`];
+                        const hit = respAluno === correta;
+                        
+                        if(hit && q.id === "q13") nAsc += 0.40; // 5 lacunas x 0.40 = 2.0 pts
+                        
+                        const icone = hit ? "✅" : "❌";
+                        const nomeTermo = q.termos.find(t=>t.value===respAluno)?.label || "Vazio";
+                        const nomeCorreta = q.termos.find(t=>t.value===correta)?.label;
+                        relatorio += `Lacuna ${i+1}: ${icone} Marcou: [${nomeTermo}] (Certa: [${nomeCorreta}])\n`;
+                    });
+                    relatorio += `\n`;
+                }
+            });
+
+            const sendPromise = salvarProgresso(true, nAuto, nAsc);
+            await Promise.race([
+                sendPromise,
+                new Promise(resolve => setTimeout(resolve, 3500))
+            ]);
+
+            // Webhook Backup
+            const payload = {
+                data_hora: new Date().toLocaleString('pt-BR'),
+                nome: alunoLogado.nome,
+                nota_total: (nAuto + nAsc).toFixed(2),
+                relatorio_respostas: relatorio,
+                resposta_discursiva: fd.get("q14") || "Em branco ou não respondeu." 
+            };
+
+            fetch(googleSheetsUrl, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => console.log("Registo de backup ignorado."));
+
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            ui.quiz.style.display = 'none';
+            ui.finish.style.display = 'flex';
+            if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+        };
+
+        // --- SEGURANÇA E ANTI-COLA ---
+        document.getElementById('btn-iniciar').onclick = () => {
+            document.documentElement.requestFullscreen().catch(()=>{});
+            ui.start.style.display = 'none';
+            ui.quiz.classList.remove('hidden');
+            isExamActive = true;
+            
+            clockInterval = setInterval(() => {
+                document.getElementById('clock-display').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
+        };
+
+        document.getElementById('btn-retornar').onclick = () => document.documentElement.requestFullscreen().catch(()=>{});
+
+        ['fullscreenchange', 'webkitfullscreenchange'].forEach(e => {
+            document.addEventListener(e, () => {
+                const isFull = document.fullscreenElement || document.webkitIsFullScreen;
+                if(!isFull && isExamActive) {
+                    ui.warning.style.display = 'flex';
+                    ui.quiz.classList.add('blurred-screen');
+                } else {
+                    ui.warning.style.display = 'none';
+                    ui.quiz.classList.remove('blurred-screen');
+                }
+            });
+        });
+
+        window.onblur = () => { 
+            if(isExamActive) {
+                ui.warning.style.display = 'flex'; 
+                ui.quiz.classList.add('blurred-screen');
+                if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+            }
+        };
+
+        document.onkeydown = (e) => {
+            const forbidden = [
+                e.key === 'F12',
+                (e.ctrlKey && e.shiftKey && e.key === 'I'),
+                (e.ctrlKey && e.shiftKey && e.key === 'J'),
+                (e.ctrlKey && e.key === 'u'),
+                (e.ctrlKey && e.key === 'c'),
+                (e.ctrlKey && e.key === 'v'),
+                (e.ctrlKey && e.key === 'p')
+            ];
+            if(forbidden.some(x => x)) {
+                e.preventDefault();
+                return false;
+            }
+        };
+        document.oncontextmenu = (e) => { e.preventDefault(); return false; };
+
+        // --- PAINEL DOCENTE ---
+        document.getElementById('btn-login-prof-trigger').onclick = () => ui.modalProf.style.display = 'flex';
+        document.getElementById('btn-prof-cancel').onclick = () => ui.modalProf.style.display = 'none';
+        
+        document.getElementById('btn-prof-entrar').onclick = async () => {
+            const errorMsg = document.getElementById('prof-login-error');
+            if(document.getElementById('prof-senha-input').value !== "R@prova1412!!") {
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            errorMsg.classList.add('hidden');
+            ui.modalProf.style.display = 'none';
+            ui.login.style.display = 'none';
+            await doAuth(); 
+            
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
+            if(snap.exists()) globalStatus = snap.data().estado;
+            
+            ui.prof.style.display = 'flex';
+            carregarRelatorioProf();
+            atualizarVisorStatus();
+        };
+
+        async function mudarStatusGlobal(st) {
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'), { estado: st });
+            globalStatus = st;
+            atualizarVisorStatus();
+        }
+
+        function atualizarVisorStatus() {
+            const disp = document.getElementById('prof-status-display');
+            disp.textContent = globalStatus;
+            
+            if (globalStatus === 'aberto') { disp.className = 'text-xl md:text-2xl font-black uppercase tracking-tighter text-green-600'; }
+            else if (globalStatus === 'fechado') { disp.className = 'text-xl md:text-2xl font-black uppercase tracking-tighter text-red-600'; }
+            else { disp.className = 'text-xl md:text-2xl font-black uppercase tracking-tighter text-blue-600'; }
+        }
+
+        document.getElementById('btn-prof-abrir').onclick = () => mudarStatusGlobal("aberto");
+        document.getElementById('btn-prof-fechar').onclick = () => mudarStatusGlobal("fechado");
+        document.getElementById('btn-prof-resultados').onclick = () => mudarStatusGlobal("resultados");
+        document.getElementById('btn-prof-atualizar').onclick = carregarRelatorioProf;
+        document.getElementById('btn-prof-sair').onclick = () => window.location.reload();
+
+        async function carregarRelatorioProf() {
+            const container = document.getElementById('lista-alunos-container');
+            container.innerHTML = `<div class="flex justify-center p-8"><span class="animate-spin text-4xl">⚙️</span></div>`;
+            
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames'));
+            let html = "";
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.finalizado) {
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0))).toFixed(1);
+                    const corrigida = data.notaDiscursiva !== undefined;
+                    
+                    html += `
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition gap-3 md:gap-4">
+                            <div>
+                                <p class="font-black text-gray-800 text-base md:text-lg mb-1">${data.alunoNome}</p>
+                                <div class="flex items-center gap-2 md:gap-3">
+                                    <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded bg-gray-100 border ${corrigida?'text-green-600 border-green-200':'text-yellow-600 border-yellow-200'}">
+                                        ${corrigida?'✓ Corrigida':'⏳ Aguardar Correção'}
+                                    </span>
+                                    <span class="text-xs md:text-sm font-bold text-gray-600">Nota: <span class="text-green-700">${total}</span> / 14.0</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 md:gap-3">
+                                <button onclick="window.abrirCorrecao('${data.alunoId}')" class="flex-1 md:flex-none bg-green-50 text-green-700 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-black hover:bg-green-600 hover:text-white transition shadow-sm border border-green-200 hover:border-transparent">Revisar / Corrigir</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            container.innerHTML = html || `
+                <div class="bg-white p-6 md:p-10 rounded-xl md:rounded-2xl border border-gray-200 text-center text-sm md:text-base text-gray-500 font-bold shadow-sm">
+                    📭 Nenhuma prova foi entregue até ao momento.
+                </div>`;
+        }
+
+        window.abrirCorrecao = async (id) => {
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', id));
+            if(snap.exists()) {
+                alunoCorrecaoAtual = id;
+                ui.prof.style.display = 'none';
+                renderizarProvaRevisao(snap.data(), true);
+            }
+        };
+
+        function renderizarProvaRevisao(data, isTeacher) {
+            ui.review.style.display = 'flex';
+            document.getElementById('review-nome-aluno').textContent = data.alunoNome;
+            
+            const nAuto = (data.notaAutomatica||0) + (data.notaAssociacao||0);
+            const displayNota = document.getElementById('review-nota-total');
+            
+            const updateNotaDisplay = () => {
+                const nD = parseFloat(document.getElementById('input-nota-disc')?.value || data.notaDiscursiva || 0);
+                displayNota.textContent = (nAuto + nD).toFixed(1);
+            };
+
+            let html = "";
+            data.ordem.forEach((id, idx) => {
+                const q = bancoDeQuestoes.find(b => b.id === id);
+                if(!q) return;
+                const respAluno = data.respostas[id];
+                
+                let pontuacao = "";
+                if (idx < 12) pontuacao = "0,75 Pt";
+                else if (idx === 12) pontuacao = "2,0 Pts";
+                else if (idx === 13) pontuacao = "3,0 Pts";
+
+                const badgePontos = `<span class="inline-block bg-green-100 text-green-800 text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-green-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                
+                html += `<div class="p-5 md:p-8 bg-gray-50 rounded-2xl md:rounded-3xl border border-gray-200 shadow-sm">`;
+                html += `<p class="font-black text-lg md:text-xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-green-600 mr-2 text-xl md:text-2xl">•</span> ${q.pergunta} ${badgePontos}</p>`;
+                
+                if(q.tipo === "multipla") {
+                    q.opcoes.forEach((op, i) => {
+                        const valOpcao = String.fromCharCode(97 + i);
+                        const isSelecionada = valOpcao === respAluno;
+                        const isOpcaoCerta = valOpcao === q.correta;
+                        
+                        let css = "p-4 md:p-5 rounded-xl md:rounded-2xl mb-2 md:mb-3 text-xs md:text-sm border-2 transition flex items-start gap-2 md:gap-3 ";
+                        if(isOpcaoCerta) {
+                            css += "bg-green-50 border-green-500 font-bold text-green-900 ";
+                        } else if(isSelecionada) {
+                            css += "bg-red-50 border-red-500 text-red-900 ";
+                        } else {
+                            css += "border-gray-200 bg-white text-gray-500 ";
+                        }
+                        
+                        let icone = "⚪";
+                        if(isOpcaoCerta) icone = "✅";
+                        else if(isSelecionada) icone = "❌";
+
+                        html += `<div class="${css}"><span class="flex-shrink-0 text-sm md:text-base">${icone}</span> <span class="text-justify leading-relaxed">${op}</span></div>`;
+                    });
+                } 
+                else if(q.tipo === "associacao") {
+                    q.lacunas.forEach((l, i) => {
+                        const valMarcado = data.respostas[`${id}_lacuna${i}`];
+                        const valCerto = q.corretas[`lac${i}`];
+                        const isOk = valMarcado === valCerto;
+                        
+                        html += `
+                            <div class="mb-3 md:mb-4 p-4 md:p-5 rounded-xl md:rounded-2xl border-l-4 md:border-l-8 ${isOk?'border-green-500 bg-green-50':'border-red-500 bg-red-50'}">
+                                <p class="text-xs md:text-sm font-black text-gray-700 mb-2 text-justify">${l.texto}</p>
+                                <p class="text-sm md:text-base text-gray-800">Aluno marcou: <span class="font-black bg-white px-2 py-1 rounded border">${q.termos.find(t=>t.value===valMarcado)?.label || 'Deixou em branco'}</span> ${isOk?'✅':'❌'}</p>
+                                ${!isOk ? `<p class="text-[10px] md:text-xs text-green-700 mt-2 font-black uppercase tracking-widest">O Correto seria: ${q.termos.find(t=>t.value===valCerto)?.label}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                } 
+                else {
+                    html += `<div class="p-5 md:p-8 bg-white border-2 border-gray-200 rounded-2xl md:rounded-3xl font-mono text-xs md:text-sm shadow-inner whitespace-pre-wrap leading-relaxed text-gray-700 text-justify">${respAluno || '--- Nenhuma resposta escrita ---'}</div>`;
+                }
+                html += `</div>`;
+            });
+            document.getElementById('review-content').innerHTML = html;
+
+            if(isTeacher) {
+                document.getElementById('area-correcao-prof').classList.remove('hidden');
+                document.getElementById('area-feedback-aluno').classList.add('hidden');
+                
+                document.getElementById('input-nota-disc').value = data.notaDiscursiva !== undefined ? data.notaDiscursiva : 0;
+                document.getElementById('input-feedback-prof').value = data.feedbackProfessor || "";
+                
+                document.getElementById('input-nota-disc').oninput = updateNotaDisplay;
+                updateNotaDisplay();
+
+                document.getElementById('btn-excluir-revisao').onclick = async () => {
+                    const isConfirmed = confirm(`PERIGO EXTREMO: Deseja apagar a prova de ${data.alunoNome} inteira do servidor e permitir que este refaça?`);
+                    if(!isConfirmed) return;
+                    
+                    document.getElementById('btn-excluir-revisao').innerHTML = "A apagar o Registo... ⏳";
+                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual));
+                    mostrarAlerta("Prova Removida", "A entrega deste aluno foi destruída. O acesso já está libertado novamente para ele.", "🗑️");
+                    
+                    ui.review.style.display = 'none';
+                    ui.prof.style.display = 'flex';
+                    carregarRelatorioProf();
+                };
+
+                document.getElementById('btn-salvar-correcao').onclick = async () => {
+                    const val = parseFloat(document.getElementById('input-nota-disc').value);
+                    if(isNaN(val) || val < 0 || val > 3) return mostrarAlerta("Erro de Digitação", "A nota discursiva deve ser entre 0 e 3.0", "⚠️");
+                    
+                    const feed = document.getElementById('input-feedback-prof').value;
+                    const final = nAuto + val;
+                    
+                    document.getElementById('btn-salvar-correcao').innerHTML = "A guardar Consolidação... ⏳";
+                    
+                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual), {
+                        notaDiscursiva: val,
+                        feedbackProfessor: feed,
+                        notaFinal: final
+                    });
+                    
+                    document.getElementById('btn-salvar-correcao').innerHTML = "💾 Guardar Nota e Feedback";
+                    mostrarAlerta("Correção Guardada!", "A nota do aluno foi consolidada para " + final.toFixed(1), "✅");
+                    
+                    ui.review.style.display = 'none';
+                    ui.prof.style.display = 'flex';
+                    carregarRelatorioProf(); 
+                };
+            } else {
+                document.getElementById('area-correcao-prof').classList.add('hidden');
+                document.getElementById('area-feedback-aluno').classList.remove('hidden');
+                document.getElementById('view-nota-disc').textContent = (data.notaDiscursiva||0).toFixed(1);
+                document.getElementById('view-feedback-texto').textContent = data.feedbackProfessor || "Nenhum comentário adicional gerado pela docência.";
+                displayNota.textContent = (nAuto + (data.notaDiscursiva||0)).toFixed(1);
+            }
+        }
+
+        document.getElementById('btn-fechar-review').onclick = () => {
+            ui.review.style.display = 'none';
+            if(alunoLogado && globalStatus === 'resultados') ui.results.style.display = 'flex';
+            else ui.prof.style.display = 'flex';
+        };
+
+    </script>
+</body>
+</html>
