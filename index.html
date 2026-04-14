@@ -183,7 +183,7 @@
             <div class="flex justify-between items-end mb-4 md:mb-6">
                 <div>
                     <h2 class="text-lg md:text-xl font-black text-gray-800">Entregas dos Alunos</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Monitore, corrija e faça a gestão das avaliações recebidas.</p>
+                    <p class="text-xs md:text-sm text-gray-500">Monitore, corrija e faça a gestão das avaliações recebidas (Base Islada: Cooperativismo).</p>
                 </div>
                 <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-green-50 text-green-700 px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-bold hover:bg-green-100 transition flex items-center gap-2 border border-green-100">
                     Sincronizar <span>🔄</span>
@@ -405,7 +405,6 @@
         }
         
         const appIdStr = typeof __app_id !== 'undefined' ? __app_id : 'avaliacao-logica-46f5e';
-        // Nova URL Webhook (Cooperativismo)
         const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbzk-a0yG6an5wbo7l3pEo3ra2XmLK_-0W8UFV6usfBoBQaz66qCZO_TLGh2IImNtWZp/exec";
 
         const app = initializeApp(firebaseConfig);
@@ -683,7 +682,8 @@
                 authUserId = cred.user.uid;
                 alunoLogado = aluno;
                 
-                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
+                // NOTA: USANDO COLEÇÃO ISOLADA 'config_coop'
+                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'));
                 globalStatus = snap.exists() ? snap.data().estado : "fechado";
 
                 ui.login.style.display = 'none';
@@ -696,7 +696,8 @@
 
         // --- ROTEAMENTO E STATUS ---
         async function rotearUsuario() {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoLogado.id));
             const data = snap.exists() ? snap.data() : null;
 
             if (data && data.finalizado) {
@@ -844,7 +845,8 @@
                 docData.notaAutomatica = pAuto;
                 docData.notaAssociacao = pAsc;
             }
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id), docData, { merge: true });
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoLogado.id), docData, { merge: true });
         }
 
         // --- FINALIZAÇÃO (ENVIO) ---
@@ -986,7 +988,8 @@
             ui.login.style.display = 'none';
             await doAuth(); 
             
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'config_coop'
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'));
             if(snap.exists()) globalStatus = snap.data().estado;
             
             ui.prof.style.display = 'flex';
@@ -995,7 +998,8 @@
         };
 
         async function mudarStatusGlobal(st) {
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'), { estado: st });
+            // NOTA: USANDO COLEÇÃO ISOLADA 'config_coop'
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'), { estado: st });
             globalStatus = st;
             atualizarVisorStatus();
         }
@@ -1019,7 +1023,8 @@
             const container = document.getElementById('lista-alunos-container');
             container.innerHTML = `<div class="flex justify-center p-8"><span class="animate-spin text-4xl">⚙️</span></div>`;
             
-            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames'));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop'));
             let html = "";
             snap.forEach(d => {
                 const data = d.data();
@@ -1052,7 +1057,8 @@
         }
 
         window.abrirCorrecao = async (id) => {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', id));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', id));
             if(snap.exists()) {
                 alunoCorrecaoAtual = id;
                 ui.prof.style.display = 'none';
@@ -1147,7 +1153,8 @@
                     if(!isConfirmed) return;
                     
                     document.getElementById('btn-excluir-revisao').innerHTML = "A apagar o Registo... ⏳";
-                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual));
+                    // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoCorrecaoAtual));
                     mostrarAlerta("Prova Removida", "A entrega deste aluno foi destruída. O acesso já está libertado novamente para ele.", "🗑️");
                     
                     ui.review.style.display = 'none';
@@ -1164,7 +1171,8 @@
                     
                     document.getElementById('btn-salvar-correcao').innerHTML = "A guardar Consolidação... ⏳";
                     
-                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual), {
+                    // NOTA: USANDO COLEÇÃO ISOLADA 'exames_coop'
+                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoCorrecaoAtual), {
                         notaDiscursiva: val,
                         feedbackProfessor: feed,
                         notaFinal: final
