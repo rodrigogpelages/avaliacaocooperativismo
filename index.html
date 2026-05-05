@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliação Oficial - Cooperativismo</title>
+    <title>Recuperação Oficial - Cooperativismo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
@@ -15,11 +15,10 @@
             -moz-user-select: none;
             -ms-user-select: none;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); /* Fundo amarelado para diferenciar da prova normal */
             background-attachment: fixed;
         }
         
-        /* Efeitos visuais modernos */
         .glass-panel {
             background: rgba(255, 255, 255, 0.90);
             backdrop-filter: blur(16px);
@@ -34,7 +33,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Animações Suaves */
         .slide-fade { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(15px) scale(0.99); }
@@ -47,38 +45,14 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Estilização de Selects e Inputs */
-        .select-associacao {
-            border: 2px solid #e5e7eb;
-            border-radius: 0.75rem;
-            padding: 0.5rem 1rem;
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #16a34a;
-            width: 100%;
-            transition: all 0.2s;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2316a34a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.2em;
-        }
-        .select-associacao:focus {
-            outline: none;
-            border-color: #22c55e;
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
-            background-color: #fff;
-        }
-
-        /* Check customizado Tailwind Peer */
         .radio-custom:checked + div {
-            border-color: #22c55e;
-            background-color: #f0fdf4;
-            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1);
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1);
         }
         .radio-custom:checked + div .radio-indicator {
-            background-color: #22c55e;
-            border-color: #22c55e;
+            background-color: #f59e0b;
+            border-color: #f59e0b;
         }
         .radio-custom:checked + div .radio-indicator::after {
             opacity: 1;
@@ -88,26 +62,26 @@
 </head>
 <body class="text-gray-800 min-h-screen flex flex-col">
 
-    <!-- MODAL CUSTOMIZADO (GENÉRICO PARA ALERTAS) -->
+    <!-- MODAL CUSTOMIZADO -->
     <div id="custom-alert" class="fixed inset-0 bg-black/50 z-[200] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in">
             <div id="alert-icon" class="text-5xl md:text-6xl mb-4">🔔</div>
             <h2 id="alert-title" class="text-xl md:text-2xl font-black text-gray-800 mb-2">Atenção</h2>
             <p id="alert-message" class="text-sm md:text-base text-gray-600 mb-6 font-medium leading-relaxed"></p>
             <div id="alert-actions" class="flex gap-3 justify-center w-full">
-                <button id="btn-alert-ok" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Entendi</button>
+                <button id="btn-alert-ok" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Entendi</button>
             </div>
         </div>
     </div>
 
-    <!-- OVERLAY BATCH IA (CORREÇÃO EM LOTE) -->
+    <!-- OVERLAY BATCH IA -->
     <div id="batch-overlay" class="fixed inset-0 bg-gray-900/90 z-[300] hidden flex-col items-center justify-center p-4 backdrop-blur-md">
         <div class="text-center pop-in max-w-lg w-full bg-white p-8 rounded-3xl shadow-2xl">
             <div class="text-6xl mb-6 animate-bounce">🤖</div>
             <h2 class="text-2xl font-black text-gray-800 mb-2">IA Trabalhando...</h2>
-            <p id="batch-msg" class="text-lg text-gray-600 font-medium mb-6">Iniciando a análise das provas...</p>
+            <p id="batch-msg" class="text-lg text-gray-600 font-medium mb-6">Iniciando a análise das provas de recuperação...</p>
             <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-                <div id="batch-progress" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div id="batch-progress" class="bg-gradient-to-r from-amber-500 to-orange-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
             <p id="batch-count" class="text-sm text-gray-500 font-bold">0 / 0 concluídas</p>
         </div>
@@ -115,11 +89,11 @@
 
     <!-- TELA 1: LOGIN ALUNO -->
     <div id="login-screen" class="fixed inset-0 flex flex-col items-center justify-center p-4 z-[60]">
-        <button id="btn-login-prof-trigger" class="absolute top-4 right-4 text-xs font-bold text-gray-400 hover:text-green-600 transition cursor-pointer px-4 py-2 rounded-full bg-white/50 backdrop-blur-md shadow-sm z-50 flex items-center gap-2">
+        <button id="btn-login-prof-trigger" class="absolute top-4 right-4 text-xs font-bold text-gray-400 hover:text-amber-600 transition cursor-pointer px-4 py-2 rounded-full bg-white/50 backdrop-blur-md shadow-sm z-50 flex items-center gap-2">
             <span>🔒</span> Acesso Docente
         </button>
 
-        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(22,_163,_74,_0.07)] w-full max-w-md border-t-8 border-t-green-600">
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(245,_158,_11,_0.07)] w-full max-w-md border-t-8 border-t-amber-500">
             <div class="text-center mb-6 md:mb-8">
                 <div class="flex justify-center items-center gap-4 mb-4 bg-white/50 p-3 md:p-4 rounded-2xl shadow-sm">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6-eQz5cIxSNOsD93ZVZOuG9m33koJW2CsrQ&s" alt="Logo Escola" class="h-10 md:h-12 drop-shadow-md">
@@ -127,14 +101,14 @@
                     <img src="https://www.es.gov.br/Media/PortalES/_Profiles/c4d8c6e6/d8d1f292/escola%20do%20futuro-01.png?v=638222624000245250" alt="Escola do Futuro" class="h-6 md:h-8 drop-shadow-md">
                 </div>
                 <h2 class="font-black text-gray-800 text-base md:text-lg">CEEFMTI "SENADOR DIRCEU CARDOSO"</h2>
-                <div class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full">Cooperativismo - 2ª Série</div>
+                <div class="inline-block mt-2 px-3 py-1 bg-amber-100 text-amber-800 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full">Recuperação Cooperativismo</div>
             </div>
 
             <div class="space-y-4 md:space-y-5">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Identificação do Aluno</label>
                     <div class="relative">
-                        <select id="aluno-select" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition appearance-none font-medium text-gray-700 cursor-pointer text-sm">
+                        <select id="aluno-select" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition appearance-none font-medium text-gray-700 cursor-pointer text-sm">
                             <option value="">-- Escolha o seu nome na lista --</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -144,19 +118,19 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Credencial de Acesso</label>
-                    <input type="password" id="aluno-senha" placeholder="Data de nascimento (Ex: 10052009)" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition font-mono text-base md:text-lg tracking-widest" maxlength="8">
+                    <input type="password" id="aluno-senha" placeholder="Data de nascimento (Ex: 10052009)" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition font-mono text-base md:text-lg tracking-widest" maxlength="8">
                 </div>
                 
                 <p id="login-error" class="text-red-500 text-xs md:text-sm hidden text-center font-bold bg-red-50 p-2 rounded-lg border border-red-100"></p>
                 
-                <button id="btn-login" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black py-3 md:py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 active:translate-y-0 flex justify-center items-center gap-2">
-                    Aceder ao Ambiente <span>🚀</span>
+                <button id="btn-login" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 active:translate-y-0 flex justify-center items-center gap-2">
+                    Aceder à Recuperação <span>🚀</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- TELA: LOGIN PROFESSOR (MODAL) -->
+    <!-- TELA: LOGIN PROFESSOR -->
     <div id="modal-prof-login" class="fixed inset-0 bg-gray-900/80 z-[70] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-white/20 pop-in">
             <div class="flex items-center gap-3 mb-4 md:mb-6">
@@ -164,8 +138,8 @@
                 <h2 class="text-xl md:text-2xl font-black text-gray-800">Acesso Restrito</h2>
             </div>
             <label class="block text-sm font-bold text-gray-700 mb-1">Chave de Segurança</label>
-            <input type="password" id="prof-senha-input" placeholder="••••••••••••" class="w-full border-2 border-gray-200 p-3 md:p-4 rounded-xl mb-2 outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 font-mono">
-            <p id="prof-login-error" class="text-red-500 text-xs font-bold mb-4 hidden text-center bg-red-50 py-2 rounded-lg">❌ Credencial incorreta. Acesso negado.</p>
+            <input type="password" id="prof-senha-input" placeholder="••••••••••••" class="w-full border-2 border-gray-200 p-3 md:p-4 rounded-xl mb-2 outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 font-mono">
+            <p id="prof-login-error" class="text-red-500 text-xs font-bold mb-4 hidden text-center bg-red-50 py-2 rounded-lg">❌ Credencial incorreta.</p>
             <div class="flex gap-3">
                 <button id="btn-prof-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-gray-600 transition">Voltar</button>
                 <button id="btn-prof-entrar" class="flex-1 bg-gray-800 hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition">Autenticar</button>
@@ -175,10 +149,10 @@
 
     <!-- TELA: PAINEL DO PROFESSOR -->
     <div id="professor-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center p-4 overflow-y-auto">
-        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-6xl border-t-8 border-green-600 my-4">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-6xl border-t-8 border-amber-500 my-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-100 pb-4 md:pb-6">
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-black text-gray-800 mb-1 flex items-center gap-2">Painel de Gestão Docente</h1>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-800 mb-1 flex items-center gap-2">Painel Docente (Recuperação)</h1>
                     <button id="btn-prof-sair" class="text-sm text-gray-500 font-bold hover:text-red-600 transition flex items-center gap-1">← Encerrar Sessão Segura</button>
                 </div>
                 <div class="mt-4 md:mt-0 bg-gray-50 px-4 md:px-6 py-2 md:py-3 rounded-2xl border border-gray-200 text-right">
@@ -196,14 +170,14 @@
             
             <div class="flex justify-between items-end mb-4 border-t border-gray-100 pt-6">
                 <div>
-                    <h2 class="text-lg md:text-xl font-black text-gray-800">Entregas dos Alunos</h2>
-                    <p class="text-xs md:text-sm text-gray-500">Monitore e faça a gestão das avaliações (Base: Cooperativismo).</p>
+                    <h2 class="text-lg md:text-xl font-black text-gray-800">Entregas de Recuperação</h2>
+                    <p class="text-xs md:text-sm text-gray-500">Base Isolada de Recuperação.</p>
                 </div>
                 <div class="flex gap-2">
                     <button id="btn-prof-lote-ia" class="text-xs md:text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-xl font-black hover:opacity-90 transition flex items-center gap-2 shadow-lg">
                         ✨ Corrigir Lote IA
                     </button>
-                    <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-green-50 text-green-700 px-4 py-2 rounded-xl font-bold hover:bg-green-100 transition flex items-center gap-2 border border-green-100">
+                    <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-amber-50 text-amber-700 px-4 py-2 rounded-xl font-bold hover:bg-amber-100 transition flex items-center gap-2 border border-amber-100">
                         Sincronizar <span>🔄</span>
                     </button>
                 </div>
@@ -216,14 +190,14 @@
     <div id="review-screen" class="fixed inset-0 bg-gray-50 z-[80] hidden flex-col items-center p-2 md:p-4 overflow-y-auto">
         <div class="w-full max-w-4xl flex justify-between items-center mb-4 sticky top-0 bg-gray-50/90 backdrop-blur-md py-3 z-20 border-b border-gray-200">
             <button id="btn-fechar-review" class="bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-100 px-4 md:px-6 py-2 rounded-xl font-black transition flex items-center gap-2 text-sm md:text-base">← Voltar</button>
-            <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 md:px-8 py-2 rounded-full font-black text-base md:text-xl shadow-lg shadow-green-200 flex items-center gap-2">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 md:px-8 py-2 rounded-full font-black text-base md:text-xl shadow-lg shadow-amber-200 flex items-center gap-2">
                 Nota Total: <span id="review-nota-total" class="bg-white/20 px-2 py-1 rounded-lg">0.0</span> / 14.0
             </div>
         </div>
         
         <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl w-full max-w-4xl border border-gray-100">
             <div class="mb-8 md:mb-10 text-center">
-                <p class="text-[10px] md:text-xs text-green-600 font-black uppercase tracking-widest mb-2 bg-green-50 inline-block px-3 py-1 rounded-full">Modo de Correção / Revisão</p>
+                <p class="text-[10px] md:text-xs text-amber-600 font-black uppercase tracking-widest mb-2 bg-amber-50 inline-block px-3 py-1 rounded-full">Modo de Correção / Revisão</p>
                 <h1 class="text-2xl md:text-4xl font-black text-gray-800" id="review-nome-aluno">Nome do Aluno</h1>
             </div>
 
@@ -242,8 +216,8 @@
                 </div>
                 <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     <div class="shrink-0 bg-white p-4 rounded-2xl border border-yellow-200 shadow-sm text-center w-full md:w-auto">
-                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Nota (Máx 3.0)</label>
-                        <input type="number" id="input-nota-disc" step="0.1" min="0" max="3" class="text-4xl md:text-5xl font-black text-center w-28 md:w-32 border-none focus:outline-none bg-transparent text-green-700">
+                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Nota (Máx 6.0)</label>
+                        <input type="number" id="input-nota-disc" step="0.1" min="0" max="6" class="text-4xl md:text-5xl font-black text-center w-28 md:w-32 border-none focus:outline-none bg-transparent text-amber-600">
                     </div>
                     <div class="flex-1 w-full">
                         <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Comentários e Orientações Pedagógicas</label>
@@ -257,16 +231,16 @@
             </div>
             
             <!-- Feedback Visual para o Aluno -->
-            <div id="area-feedback-aluno" class="hidden mt-10 md:mt-16 bg-green-50 p-6 md:p-8 rounded-3xl border-2 border-green-100">
+            <div id="area-feedback-aluno" class="hidden mt-10 md:mt-16 bg-amber-50 p-6 md:p-8 rounded-3xl border-2 border-amber-100">
                 <div class="flex items-center gap-2 md:gap-3 mb-4">
                     <span class="text-xl md:text-2xl">👨‍🏫</span>
-                    <h3 class="text-lg md:text-xl font-black text-green-900">Feedback do Professor</h3>
+                    <h3 class="text-lg md:text-xl font-black text-amber-900">Feedback do Professor</h3>
                 </div>
-                <div class="flex items-center gap-3 mb-4 md:mb-6 bg-white w-max px-3 md:px-4 py-2 rounded-xl border border-green-100 shadow-sm">
+                <div class="flex items-center gap-3 mb-4 md:mb-6 bg-white w-max px-3 md:px-4 py-2 rounded-xl border border-amber-100 shadow-sm">
                     <span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider">Pontuação na Discursiva:</span>
-                    <span id="view-nota-disc" class="text-xl md:text-2xl text-green-700 font-black">0.0</span>
+                    <span id="view-nota-disc" class="text-xl md:text-2xl text-amber-600 font-black">0.0</span>
                 </div>
-                <div id="view-feedback-texto" class="p-4 md:p-6 bg-white rounded-2xl italic text-gray-700 border border-green-100 shadow-sm text-sm md:text-lg leading-relaxed text-justify whitespace-pre-wrap"></div>
+                <div id="view-feedback-texto" class="p-4 md:p-6 bg-white rounded-2xl italic text-gray-700 border border-amber-100 shadow-sm text-sm md:text-lg leading-relaxed text-justify whitespace-pre-wrap"></div>
             </div>
         </div>
     </div>
@@ -274,34 +248,34 @@
     <!-- TELA 2: INSTRUÇÕES (ALUNO) -->
     <div id="start-screen" class="fixed inset-0 bg-white z-50 hidden flex-col items-center justify-center p-4 text-center overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
         <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
             
             <div class="relative z-10">
-                <h1 id="welcome-title" class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-700">Prepare-se!</h1>
+                <h1 id="welcome-title" class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Recuperação!</h1>
                 
                 <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-8 border-yellow-400 p-4 md:p-6 rounded-2xl text-left shadow-sm mb-6 md:mb-8">
-                    <p class="text-yellow-900 font-black italic text-lg md:text-xl mb-2 text-justify leading-relaxed">"Ter o caderno aberto é uma vantagem, mas saber o que procurar é a verdadeira inteligência."</p>
-                    <p class="text-xs md:text-sm text-yellow-800 font-medium text-justify leading-relaxed">Esta avaliação não testa sua memória robótica, mas sim sua capacidade de <strong>interpretar cenários práticos</strong> e aplicar os princípios do Cooperativismo.</p>
+                    <p class="text-yellow-900 font-black italic text-lg md:text-xl mb-2 text-justify leading-relaxed">"Leia o Estudo de Caso com extrema atenção."</p>
+                    <p class="text-xs md:text-sm text-yellow-800 font-medium text-justify leading-relaxed">Esta prova possui apenas 5 questões, mas exigirá que você analise o texto e cruze com a teoria. Tirar fotos não vai ajudar, pois as respostas dependem da leitura do cenário exclusivo de Muqui.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-10 text-left">
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                        <div class="text-xl bg-green-50 p-2 rounded-xl">💾</div>
+                        <div class="text-xl bg-amber-50 p-2 rounded-xl">💾</div>
                         <div>
                             <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Salvamento Automático</p>
-                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">As suas respostas são sincronizadas com o servidor a cada troca de questão.</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">Suas respostas são sincronizadas a cada troca de questão.</p>
                         </div>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
                         <div class="text-xl bg-red-50 p-2 rounded-xl">🚨</div>
                         <div>
                             <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Ambiente Controlado</p>
-                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">A prova ocupará o ecrã inteiro. Mudar de aba ou minimizar bloqueará o sistema.</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">Sair do ambiente bloqueará a avaliação imediatamente.</p>
                         </div>
                     </div>
                 </div>
-                <button id="btn-iniciar" class="w-full bg-gray-900 hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(0,_0,_0,_0.2)] text-lg md:text-xl transform hover:-translate-y-1 transition active:translate-y-0">Estou Pronto! Iniciar Prova 🚀</button>
+                <button id="btn-iniciar" class="w-full bg-gray-900 hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(0,_0,_0,_0.2)] text-lg md:text-xl transform hover:-translate-y-1 transition active:translate-y-0">Estou Pronto! Iniciar 🚀</button>
             </div>
         </div>
     </div>
@@ -318,12 +292,12 @@
 
     <!-- TELA 4: SUCESSO / FINALIZAÇÃO -->
     <div id="finish-screen" class="fixed inset-0 bg-gray-50 z-[90] hidden flex-col items-center justify-center p-4 text-center">
-        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-green-500 pop-in">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-amber-500 pop-in">
             <div class="text-6xl md:text-7xl mb-4 md:mb-6">✅</div>
-            <h2 class="text-2xl md:text-3xl font-black text-green-600 mb-3 md:mb-4 tracking-tight">Missão Cumprida!</h2>
+            <h2 class="text-2xl md:text-3xl font-black text-amber-600 mb-3 md:mb-4 tracking-tight">Prova Entregue!</h2>
             <p class="text-gray-600 mb-6 md:mb-8 italic text-sm md:text-lg leading-relaxed text-justify">"A cooperação é a convicção plena de que ninguém pode chegar à meta se não chegarem todos."</p>
-            <div class="bg-green-50 p-3 md:p-4 rounded-xl border border-green-100 mb-4 md:mb-6">
-                <p class="text-xs md:text-sm text-green-800 font-bold">Respostas transmitidas com segurança para a base de dados.</p>
+            <div class="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 mb-4 md:mb-6">
+                <p class="text-xs md:text-sm text-amber-800 font-bold">Respostas transmitidas com segurança para a base de dados.</p>
             </div>
             <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest">Já pode fechar esta janela.</p>
         </div>
@@ -333,16 +307,16 @@
     <div id="student-results-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center justify-center p-4 text-center">
         <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl border border-white max-w-md w-full pop-in">
             <div class="text-5xl mb-4">🏆</div>
-            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">Boletim Oficial</h2>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">Boletim de Recuperação</h2>
             <p class="text-sm md:text-base text-gray-500 font-bold mb-6 md:mb-8" id="res-aluno-nome"></p>
             
-            <div class="bg-gradient-to-br from-green-600 to-emerald-700 p-6 md:p-8 rounded-3xl text-white shadow-[0_10px_30px_rgba(22,_163,_74,_0.3)] mb-6 md:mb-8 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-6 md:p-8 rounded-3xl text-white shadow-[0_10px_30px_rgba(245,_158,_11,_0.3)] mb-6 md:mb-8 relative overflow-hidden">
                 <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">📝</div>
-                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 text-green-200 relative z-10">Pontuação Consolidada</p>
-                <p class="text-6xl md:text-7xl font-black relative z-10"><span id="res-nota-total">0</span><span class="text-xl md:text-2xl text-green-300">/14.0</span></p>
+                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 text-amber-200 relative z-10">Pontuação Final</p>
+                <p class="text-6xl md:text-7xl font-black relative z-10"><span id="res-nota-total">0</span><span class="text-xl md:text-2xl text-amber-200">/14.0</span></p>
             </div>
             
-            <button id="btn-ver-prova-corrigida" class="w-full bg-white border-2 border-gray-200 text-gray-800 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-green-500 transition shadow-sm text-sm md:text-base hidden">Visualizar Correção Detalhada</button>
+            <button id="btn-ver-prova-corrigida" class="w-full bg-white border-2 border-gray-200 text-gray-800 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-amber-500 transition shadow-sm text-sm md:text-base hidden">Visualizar Correção Detalhada</button>
         </div>
     </div>
 
@@ -350,17 +324,26 @@
     <div id="quiz-content" class="max-w-4xl mx-auto p-4 md:p-6 bg-white shadow-2xl my-4 md:my-6 rounded-2xl md:rounded-3xl w-full hidden border border-gray-100 flex-1 flex-col relative z-10">
         <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 pb-2 mb-4 pt-2 z-20 flex justify-between items-end">
             <div>
-                <h2 class="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-700">Avaliação Cooperativismo</h2>
+                <h2 class="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Recuperação Coop</h2>
                 <p class="text-[10px] md:text-sm text-gray-400 font-bold uppercase tracking-widest mt-1"><span id="header-aluno-nome" class="text-gray-800">---</span></p>
             </div>
             <div class="flex flex-col items-end">
                 <span class="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hora Atual</span>
-                <div id="clock-display" class="font-mono text-xl md:text-2xl font-black text-green-700 bg-green-50 px-3 md:px-4 py-1 rounded-xl border border-green-100 shadow-sm">00:00</div>
+                <div id="clock-display" class="font-mono text-xl md:text-2xl font-black text-amber-600 bg-amber-50 px-3 md:px-4 py-1 rounded-xl border border-amber-100 shadow-sm">00:00</div>
             </div>
         </div>
 
         <div class="w-full bg-gray-100 rounded-full h-1.5 md:h-2 mb-4 md:mb-6">
-            <div id="progress-bar" class="bg-gradient-to-r from-green-500 to-emerald-500 h-1.5 md:h-2 rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+            <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-1.5 md:h-2 rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+        </div>
+
+        <!-- ESTUDO DE CASO INJETADO NO TOPO -->
+        <div id="estudo-caso-container" class="bg-amber-50 border-l-4 border-amber-500 p-4 md:p-6 rounded-r-xl mb-6 md:mb-8 shadow-sm text-amber-900 text-justify text-sm md:text-base leading-relaxed space-y-3">
+            <h3 class="font-black mb-2 uppercase tracking-wide text-xs md:text-sm text-amber-700">📖 Texto Base: A Revolta dos Produtores de Muqui</h3>
+            <p>Em <strong>Muqui</strong>, famosa por seu Sítio Histórico, pequenos cafeicultores e artesãos estavam exaustos e beirando a falência. O motivo? Havia apenas um grande empresário na cidade que comprava seus produtos por preços miseráveis e os revendia para a capital com 500% de lucro. Inspirados pela história dos 28 tecelões de Rochdale, 30 moradores decidiram mudar essa realidade e fundaram a <strong>"CoopMuqui"</strong>, uma cooperativa para processar e vender seu café e sua arte de forma justa.</p>
+            <p>Tudo ia muito bem, até que o Senhor Barreto, um homem riquíssimo da região, viu o sucesso do negócio. Ele ofereceu injetar R$ 500.000,00 na cooperativa, mas fez uma exigência rigorosa: <em>"Eu coloco esse meio milhão de reais, mas quero ter o controle de 50% dos votos em todas as decisões, já que o meu dinheiro é muito maior que o de todos vocês juntos."</em></p>
+            <p>Ao mesmo tempo, um problema interno surgiu: alguns jovens associados começaram a usar a cooperativa apenas para comprar insumos baratos. Eles pegavam o produto, iam embora para casa e nunca pisavam nas Assembleias Gerais, reclamando depois nos corredores que <em>"os chefes não sabem administrar"</em>.</p>
+            <p>No fim daquele ano, a CoopMuqui trabalhou bem e gerou R$ 100.000,00 de saldo positivo. Durante a reunião, um grupo exaltado exigiu que esse valor fosse integral e imediatamente dividido entre eles no dia seguinte, alegando ser <em>"lucro puro que deve ir direto e totalmente para os nossos bolsos"</em>.</p>
         </div>
 
         <form id="avaliacao-form" class="flex-1 flex flex-col">
@@ -371,13 +354,13 @@
                     <button type="button" id="btn-prev" class="flex-1 sm:flex-none px-4 md:px-6 py-3 md:py-4 bg-white border-2 border-gray-200 text-gray-600 font-black rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-gray-300 disabled:opacity-30 disabled:hover:bg-white transition flex items-center justify-center gap-2 text-sm md:text-base">← <span class="hidden sm:inline">Anterior</span></button>
                     <button type="button" id="btn-next" class="flex-1 sm:flex-none px-6 md:px-8 py-3 md:py-4 bg-gray-900 text-white font-black rounded-xl md:rounded-2xl hover:bg-black shadow-lg shadow-gray-300 transition flex items-center justify-center gap-2 text-sm md:text-base">Avançar →</button>
                 </div>
-                <button type="button" id="btn-finalizar" class="hidden w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-green-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-green-700 shadow-lg shadow-green-200 transition transform hover:-translate-y-1 animate-pulse text-sm md:text-base">ENTREGAR PROVA ✅</button>
+                <button type="button" id="btn-finalizar" class="hidden w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-amber-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-amber-700 shadow-lg shadow-amber-200 transition transform hover:-translate-y-1 animate-pulse text-sm md:text-base">ENTREGAR PROVA ✅</button>
             </div>
             
             <div class="flex justify-center items-center gap-2 mt-4 md:mt-6">
                 <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                 </span>
                 <p class="text-[8px] md:text-[10px] text-gray-400 uppercase font-bold tracking-widest">Sincronização em Tempo Real Ativa</p>
             </div>
@@ -387,11 +370,11 @@
     <!-- MODAL DE CONFIRMAÇÃO DE ENVIO -->
     <div id="confirm-submit-modal" class="fixed inset-0 bg-black/60 z-[120] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in border border-white/50">
-            <div class="text-5xl md:text-6xl mb-4 md:mb-6 bg-green-50 w-20 md:w-24 h-20 md:h-24 mx-auto rounded-full flex items-center justify-center text-green-600">🚀</div>
+            <div class="text-5xl md:text-6xl mb-4 md:mb-6 bg-amber-50 w-20 md:w-24 h-20 md:h-24 mx-auto rounded-full flex items-center justify-center text-amber-600">🚀</div>
             <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-2">Pronto para Enviar?</h2>
-            <p class="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 font-medium leading-relaxed text-justify">Reveja as suas respostas no seu caderno. Após confirmar a entrega, o acesso para modificações será permanentemente bloqueado.</p>
+            <p class="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 font-medium leading-relaxed text-justify">Reveja as suas respostas. Após confirmar a entrega, o acesso para modificações será permanentemente bloqueado.</p>
             <div class="flex flex-col gap-3">
-                <button id="btn-confirm-yes" class="w-full bg-green-600 text-white font-black py-3 md:py-4 rounded-xl shadow-[0_10px_20px_rgba(22,_163,_74,_0.2)] hover:bg-green-700 transition transform hover:-translate-y-1 text-sm md:text-base">Confirmar e Entregar</button>
+                <button id="btn-confirm-yes" class="w-full bg-amber-600 text-white font-black py-3 md:py-4 rounded-xl shadow-[0_10px_20px_rgba(245,_158,_11,_0.2)] hover:bg-amber-700 transition transform hover:-translate-y-1 text-sm md:text-base">Confirmar e Entregar</button>
                 <button id="btn-confirm-no" class="w-full bg-gray-100 text-gray-600 font-black py-3 md:py-4 rounded-xl hover:bg-gray-200 transition text-sm md:text-base">Voltar para Revisar</button>
             </div>
         </div>
@@ -425,9 +408,9 @@
 
         safeBind('btn-alert-ok', 'click', window.fecharAlerta);
 
-        // --- GOOGLE GEMINI API (Gestão de Chave, Modelo e Retries) ---
+        // --- GOOGLE GEMINI API ---
         function getGeminiApiKey() {
-            if (typeof __app_id !== 'undefined' && __app_id) return ""; // Usa proxy interno no canvas
+            if (typeof __app_id !== 'undefined' && __app_id) return ""; 
             let key = sessionStorage.getItem('gemini_api_key');
             if (!key) {
                 key = prompt("🔒 INSIRA A CHAVE DA API GOOGLE GEMINI:\n(Necessária para correção via IA)");
@@ -444,7 +427,7 @@
                 
                 const validModels = data.models.filter(m => 
                     m.supportedGenerationMethods.includes("generateContent") &&
-                    !m.name.includes("3.1-pro") // Proibido no prompt
+                    !m.name.includes("3.1-pro")
                 );
                 
                 const flashModel = validModels.find(m => m.name.includes("flash"));
@@ -512,7 +495,7 @@
             }
 
             const qDiscursiva = bancoDeQuestoes.find(q => q.tipo === "discursiva");
-            const prompt = `Analise a resposta do aluno ${nomeAluno} para a seguinte questão de Cooperativismo:\n\nPERGUNTA: "${qDiscursiva.pergunta}"\nINSTRUÇÃO ORIGINAL: "${qDiscursiva.instrucao}"\n\nRESPOSTA DO ALUNO: "${respostaDiscursiva}"\n\nA nota máxima possível para esta questão é 3.0. Dê uma nota justa de 0.0 a 3.0 e gere o feedback estritamente no formato solicitado.`;
+            const prompt = `Analise a resposta do aluno ${nomeAluno} para a seguinte questão de Recuperação de Cooperativismo baseada em um estudo de caso:\n\nPERGUNTA: "${qDiscursiva.pergunta}"\nINSTRUÇÃO ORIGINAL: "${qDiscursiva.instrucao}"\n\nRESPOSTA DO ALUNO: "${respostaDiscursiva}"\n\nA nota máxima possível para esta questão é 6.0. Dê uma nota justa de 0.0 a 6.0 (em incrementos de 0.1) e gere o feedback estritamente no formato solicitado. Avalie criticamente se o aluno aplicou a teoria ao cenário de 'Poder de Decisão' e 'Destino do Dinheiro'.`;
 
             return await fetchGeminiWithRetry(prompt, nomeAluno, apiKey);
         }
@@ -539,7 +522,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- ALUNOS COOPERATIVISMO (INTACTO) ---
+        // --- ALUNOS COOPERATIVISMO ---
         const bancoDeAlunos = [
             { id: "aluno_01", nome: "ANNA V. T. D. S.", senha: "20122009" },
             { id: "aluno_02", nome: "CRISTIANA S. G.", senha: "17112008" },
@@ -576,165 +559,57 @@
             { id: "aluno_test", nome: "ALUNO TESTE", senha: "123" }
         ];
 
-        // --- BANCO DE QUESTÕES (COOPERATIVISMO - INTACTO) ---
+        // --- BANCO DE QUESTÕES (RECUPERAÇÃO - 5 QUESTÕES COM TEXTO BASE) ---
         const bancoDeQuestoes = [
             {
-                id: "q1", tipo: "multipla", correta: "c",
-                pergunta: "CENÁRIO 1: Um grupo de empresários decide fundar um negócio de transporte de passageiros (tipo Uber). João sugere abrir uma Empresa Tradicional para atrair investidores milionários. Maria sugere abrir uma Cooperativa de motoristas. Analisando a essência corporativa, por que a ideia de Maria entra em atrito com o objetivo principal dos grandes investidores de João?",
+                id: "q1", tipo: "multipla", correta: "b", pontos: 1.0,
+                pergunta: "De acordo com o texto da CoopMuqui, os produtores locais viviam uma situação de exploração financeira intensa nas mãos de um único empresário. Qual foi o principal motivo estrutural que uniu tanto os moradores de Muqui quanto os 28 Pioneiros de Rochdale em 1844?",
                 opcoes: [
-                    "A) Porque cooperativas são legalmente proibidas de possuir tecnologia de ponta ou aplicativos modernos.",
-                    "B) Porque numa cooperativa todo o dinheiro arrecadado precisa ser doado para a caridade ao final de cada mês.",
-                    "C) Porque o foco da cooperativa é a prestação de serviços de qualidade e melhores condições aos motoristas associados, e não a maximização agressiva de lucro para quem apenas investiu dinheiro.",
-                    "D) Porque empresas tradicionais não pagam impostos, tornando a sugestão da cooperativa inviável financeiramente.",
-                    "E) Não há atrito. O objetivo final e estrutural de uma empresa tradicional e de uma cooperativa são exatamente idênticos no mercado."
+                    "A) A vontade de criar uma grande empresa multinacional para enriquecer apenas os líderes fundadores do movimento.",
+                    "B) A necessidade de fugir de atravessadores abusivos, unindo forças econômicas para garantir preços e condições justas de sobrevivência.",
+                    "C) A ordem estrita do governo local, que obrigava todas as cidades com sítios históricos a criarem sindicatos para controle de preços.",
+                    "D) O desejo de monopolizar o mercado e cobrar preços 500% mais caros dos turistas que visitavam a cidade.",
+                    "E) A necessidade de acumular lucros milionários o mais rápido possível para comprar o maquinário das empresas do Sr. Barreto."
                 ]
             },
             {
-                id: "q2", tipo: "multipla", correta: "b",
-                pergunta: "CENÁRIO 2: Numa assembleia anual da 'AgroSucesso', o agricultor Sr. José, que comprou 1.000 cotas-partes do negócio, levanta-se e exige que seu voto tenha um peso mil vezes maior que o de Dona Ana, que possui apenas 1 cota-parte. O mediador da reunião nega a exigência, explicando a regra cooperativista. Qual é essa regra universal de poder e decisão?",
+                id: "q2", tipo: "multipla", correta: "e", pontos: 1.5,
+                pergunta: "O texto relata que alguns jovens associados compram os insumos agrícolas baratos, vão embora e nunca participam das Assembleias Gerais, mas reclamam constantemente da gestão. Qual conceito fundamental do cooperativismo eles estão violando ao agir desta forma?",
                 opcoes: [
-                    "A) A regra do voto hereditário: o voto mais forte pertence sempre ao cooperado mais velho da reunião.",
-                    "B) A regra do Voto Democrático: '1 pessoa = 1 voto'. Não importa se o Sr. José investiu milhões a mais, o poder de decisão foca na pessoa, não no volume de capital.",
-                    "C) A regra do Voto por Produtividade: Dona Ana só terá o mesmo peso de voto se plantar exatamente a mesma quantidade de grãos que o Sr. José.",
-                    "D) A regra da Assembleia Mista: onde as decisões só valem se o Conselho Fiscal autorizar a contagem das cotas.",
-                    "E) O mediador errou. Numa cooperativa moderna, a regra oficial é '1 cota = 1 voto' para atrair grandes investidores rurais."
+                    "A) A regra do Capital Fixo, pois eles não deveriam comprar adubo sem antes pagar a taxa do atravessador mercantil.",
+                    "B) O Voto por Ações, já que, para terem o direito de reclamar, deveriam obrigatoriamente comprar mais cotas da cooperativa.",
+                    "C) A Livre Concorrência, visto que, como membros, deveriam comprar metade do adubo nas empresas privadas da cidade.",
+                    "D) A regra do Conselho Fiscal Oculto, que exige que as reclamações sejam feitas de forma anônima e não abertamente.",
+                    "E) O Papel Duplo do Associado, pois eles estão a agir apenas como 'clientes' (usuários) e a ignorar totalmente a sua responsabilidade como 'donos' (gestores) do negócio."
                 ]
             },
             {
-                id: "q3", tipo: "multipla", correta: "d",
-                pergunta: "CENÁRIO 3: Hoje, trabalhadores de aplicativos enfrentam jornadas exaustivas e baixa remuneração, buscando na união (e no cooperativismo de plataforma) uma saída. Se voltarmos no tempo, qual foi o ambiente opressivo original que impulsionou o nascimento histórico da primeira cooperativa moderna formalizada no mundo?",
+                id: "q3", tipo: "multipla", correta: "b", pontos: 1.5,
+                pergunta: "O Sr. Barreto exigiu ter 50% dos votos de toda a cooperativa como condição para investir R$ 500 mil. Caso a CoopMuqui siga rigorosamente os princípios do cooperativismo estudados em sala, qual deve ser a resposta técnica e jurídica do Presidente à oferta dele?",
                 opcoes: [
-                    "A) A crise das bolsas de valores no início dos anos 2000, onde corretores perderam tudo.",
-                    "B) O período de pós-Segunda Guerra Mundial, focado na reconstrução imobiliária da Europa.",
-                    "C) A Era Digital, impulsionada pela necessidade de compartilhar conexões de internet discada.",
-                    "D) A Revolução Industrial no século XIX, marcada pela exploração severa de operários em fábricas, jornadas desumanas e alimentos adulterados vendidos a preços abusivos.",
-                    "E) A época das Grandes Navegações, onde marinheiros queriam dividir os lucros das especiarias."
+                    "A) Deve aceitar imediatamente, pois nas cooperativas, quem injeta mais capital financeiro ganha, por direito legal e estatutário, o poder de veto.",
+                    "B) Deve negar a exigência, explicando que na cooperativa vigora a regra democrática de '1 pessoa = 1 voto'. Não importa o valor investido, a voz dele valerá o mesmo que a do produtor mais pobre.",
+                    "C) Deve fazer uma contraproposta, oferecendo 49% dos votos, pois nenhum cooperado pode ter mais da metade absoluta do controle de forma isolada.",
+                    "D) Deve aceitar, mas apenas com a autorização prévia da Assembleia, pois as regras de voto mudam anualmente conforme as ações na Bolsa de Valores.",
+                    "E) Deve negar a entrada de dinheiro, justificando que a lei proíbe terminantemente que empresários se associem a qualquer cooperativa do país."
                 ]
             },
             {
-                id: "q4", tipo: "multipla", correta: "a",
-                pergunta: "CENÁRIO 4: Lendo o livro de história da sua escola, você encontra a seguinte anotação: 'Ano: 1844. Local: Inglaterra. 28 tecelões desempregados ou em greve juntaram suas economias e mudaram o mundo dos negócios'. Que grande marco prático e tangível esses 28 Pioneiros de Rochdale construíram com esse dinheiro suado?",
+                id: "q4", tipo: "multipla", correta: "e", pontos: 4.0,
+                pergunta: "No último parágrafo, um grupo exaltado exigiu dividir os R$ 100.000,00 gerados imediatamente, sem reter nada na cooperativa, alegando ser 'lucro puro que deve ir direto para o bolso'. Analise as afirmações abaixo sobre os erros dessa exigência:\n\nI. Eles cometem um erro de conceito: cooperativas não geram 'lucro' para enriquecimento especulativo; o saldo positivo de R$ 100 mil é chamado tecnicamente de 'Sobras'.\nII. Eles cometem um erro de gestão e legalidade: a cooperativa não pode dividir 100% de imediato. É obrigatório reter uma parte em 'Fundos de Reserva' (como o FATES) para garantir a estabilidade futura.\nIII. Eles estão totalmente corretos: cooperativas funcionam como empresas S/A tradicionais, e o lucro anual deve ser distribuído como dividendos conforme as ações de cada um.\n\nQuais afirmações apontam CORRETAMENTE os erros do grupo?",
                 opcoes: [
-                    "A) Eles fundaram o primeiro armazém cooperativo da história moderna, comprando itens básicos (como farinha, manteiga e açúcar) no atacado para vender aos membros a um preço justo e sem adulteração.",
-                    "B) Eles construíram o primeiro sindicato de trabalhadores ferroviários para paralisar a economia local.",
-                    "C) Eles abriram um banco privado tradicional e enriqueceram cobrando juros altos dos barões do algodão.",
-                    "D) Eles escreveram uma carta ao Rei da Inglaterra pedindo para que o governo tabelasse os preços de toda a comida do país.",
-                    "E) Eles criaram a primeira ONG (Organização Não Governamental) para distribuir sopa e roupas de graça."
+                    "A) Apenas I e III.",
+                    "B) Apenas II e III.",
+                    "C) Apenas I.",
+                    "D) I, II e III.",
+                    "E) Apenas I e II."
                 ]
             },
             {
-                id: "q5", tipo: "multipla", correta: "c",
-                pergunta: "CENÁRIO 5: Uma agência de publicidade sugeriu modernizar o símbolo mundial do cooperativismo para uma nova campanha de TV. A ideia deles foi: remover o círculo amarelo e deixar apenas uma única árvore vermelha. Analisando o caderno de simbologia, o que se perde de mais profundo nessa 'modernização'?",
-                opcoes: [
-                    "A) Perde-se a ideia de que a cooperativa é focada no agronegócio, visto que a árvore solitária não remete à colheita de soja.",
-                    "B) O vermelho simboliza lucro, o que já está correto, mas a remoção do círculo retira o foco nas moedas de ouro.",
-                    "C) Perde-se o significado dos Dois Pinheiros (que representam a união e o apoio mútuo) e do Círculo (que representa a eternidade do movimento, sem fim). A união é destruída ao se deixar apenas uma árvore.",
-                    "D) Não se perde nada. Os símbolos cooperativistas foram abolidos mundialmente nos anos 90, sendo irrelevantes hoje.",
-                    "E) O erro está apenas na cor. A árvore deveria ser azul para representar as cooperativas de pesca, mas a quantidade de árvores nunca importou."
-                ]
-            },
-            {
-                id: "q6", tipo: "multipla", correta: "b",
-                pergunta: "CENÁRIO 6: Dona Marta se associou ao 'Sicoob', pegou um cartão de crédito, financiou seu carro, mas costuma dizer aos vizinhos: 'Sou apenas mais uma cliente do banco, não me envolvo nas reuniões, só quero o serviço'. Por que a afirmação de Marta fere o conceito vital do 'Papel Duplo do Cooperado'?",
-                opcoes: [
-                    "A) Porque ela não pode pegar cartão e financiar um carro ao mesmo tempo, quebrando a dupla função financeira.",
-                    "B) Porque no cooperativismo, ela não é apenas uma 'cliente ou utente'. Ela é, simultaneamente, 'Dona/Gestora' do negócio, tendo a responsabilidade de participar, votar e opinar nas reuniões para o sucesso da instituição.",
-                    "C) Porque o papel duplo exige que ela traga obrigatoriamente uma segunda pessoa de sua família para se associar junto com ela.",
-                    "D) Porque ela deveria ser funcionária contratada com carteira assinada para justificar o papel duplo.",
-                    "E) A afirmação está correta. O estatuto diz que os membros não devem se envolver na gestão para evitar brigas políticas."
-                ]
-            },
-            {
-                id: "q7", tipo: "multipla", correta: "e",
-                pergunta: "CENÁRIO 7: O presidente atual da cooperativa 'CoopLeite' acordou com uma ideia ambiciosa: ele quer vender todos os caminhões e comprar aviões para transporte, mesmo que isso custe 10 milhões. Apesar de ser o presidente, ele não pode assinar a compra sozinho e escondido. Quem detém o poder SOBERANO E MÁXIMO para autorizar ou barrar essa loucura?",
-                opcoes: [
-                    "A) O Prefeito da cidade onde a matriz da cooperativa foi construída.",
-                    "B) Apenas o Conselho Fiscal, através de uma votação de auditoria contábil.",
-                    "C) Os acionistas de Wall Street que detêm 51% do capital do leite.",
-                    "D) O banco central, que autoriza empréstimos milionários para o setor rural.",
-                    "E) A Assembleia Geral. É o órgão de decisão máxima, onde todos os cooperados se reúnem e decidem (no voto) o destino do negócio."
-                ]
-            },
-            {
-                id: "q8", tipo: "multipla", correta: "a",
-                pergunta: "CENÁRIO 8: Há rumores de que o diretor financeiro da cooperativa de transporte 'ViaCoop' está utilizando o dinheiro da manutenção dos ônibus para fazer viagens pessoais para a Europa. Qual é o Órgão Social específico, formado por associados eleitos, que tem a missão de auditar contas e fiscalizar esse tipo de atitude irregular?",
-                opcoes: [
-                    "A) O Conselho Fiscal. Sua função exclusiva é agir como 'cão de guarda' da transparência, conferindo recibos e denunciando falhas à Assembleia.",
-                    "B) O Conselho de Administração, que cria as propagandas turísticas do diretor.",
-                    "C) A Assembleia Geral Ordinária, que aprova as férias dos executivos.",
-                    "D) O Comitê de Eventos Especiais, responsável por viagens internacionais.",
-                    "E) A Delegacia de Polícia Civil, pois cooperativas não possuem órgãos internos de monitoramento de contas."
-                ]
-            },
-            {
-                id: "q9", tipo: "multipla", correta: "c",
-                pergunta: "CENÁRIO 9: O ano de 2025 foi excelente para a Cooperativa de Médicos. O balanço final mostrou que entrou muito mais dinheiro do que foi gasto com equipamentos e impostos. Um médico recém-formado levanta a mão e grita: 'Atenção, vamos dividir logo todo esse nosso LUCRO!'. O contador pede a palavra e o corrige amigavelmente. Qual a correção técnica sobre essa sobra de dinheiro?",
-                opcoes: [
-                    "A) 'Aqui o lucro é chamado de Superávit Governamental, pois o dinheiro não nos pertence, e sim ao Governo Federal.'",
-                    "B) 'Você está certo doutor, é lucro puro, porém só será dividido entre quem está no Conselho Fiscal.'",
-                    "C) 'Em cooperativas, não buscamos o lucro. O que sobrou na conta é chamado tecnicamente de SOBRAS (resultado positivo), e o objetivo de sua devolução é o custo justo, não o enriquecimento especulativo.'",
-                    "D) 'Esse valor é chamado de Prejuízo Retido, pois todo dinheiro a mais deve ser queimado para evitar a inflação local.'",
-                    "E) 'Nós não temos lucro nem sobras, todo o excedente financeiro deve ser doado para asilo ou orfanato por lei.'"
-                ]
-            },
-            {
-                id: "q10", tipo: "multipla", correta: "b",
-                pergunta: "CENÁRIO 10: Na hora de distribuir essas 'Sobras' mencionadas na questão anterior, a Assembleia percebe que o contador 'separou' e guardou uma porcentagem obrigatória desse dinheiro num cofre digital antes de devolver o resto aos associados. Por que ele fez isso legalmente?",
-                opcoes: [
-                    "A) Ele está pagando a comissão do presidente, como se fosse um bônus de Wall Street.",
-                    "B) Trata-se da criação de Fundos de Reserva (como FATES ou Reserva Legal). Eles são a 'poupança' da cooperativa, garantindo estabilidade financeira para enfrentar crises no futuro.",
-                    "C) É um imposto de renda retido na fonte que vai direto para a prefeitura local.",
-                    "D) Ele separou para abrir uma empresa privada tradicional escondida dos membros.",
-                    "E) Cooperativas são proibidas de guardar dinheiro. O contador cometeu um crime financeiro ao não distribuir 100% no mesmo dia."
-                ]
-            },
-            {
-                id: "q11", tipo: "multipla", correta: "d",
-                pergunta: "CENÁRIO 11: Dois amigos, Carlos e Felipe. Carlos investiu R$ 100.000 em ações de um Banco Privado S/A. Felipe investiu R$ 100.000 como associado em uma Cooperativa de Crédito. Um novo membro pobre, João, entrou com R$ 100 em cada instituição. Na hora de votar sobre o fechamento de uma agência, como ficará o cenário de votação para João contra os milionários?",
-                opcoes: [
-                    "A) João não vota em nenhum dos dois, pois R$ 100 não dá direito a voz em lugar nenhum do Brasil.",
-                    "B) No Banco S/A ele tem voto igual ao de Carlos. Na Cooperativa, Felipe ganha de João na força do dinheiro.",
-                    "C) João votará e sua decisão valerá por duas na Cooperativa, pois há cota para baixa renda.",
-                    "D) No Banco Privado S/A, o voto de Carlos (cem mil reais) esmaga o de João. Já na Cooperativa de Crédito, a regra '1 pessoa = 1 voto' garante que a voz de João tenha exatamente a mesma força e poder que a de Felipe.",
-                    "E) A lei impede que pessoas com menos de dez mil reais votem em cooperativas para garantir a segurança financeira."
-                ]
-            },
-            {
-                id: "q12", tipo: "multipla", correta: "a",
-                pergunta: "CENÁRIO 12: Fim de ano na 'CaféCoop'. Chegou a hora de distribuir as Sobras (o saldo positivo). O membro A entregou 1.000 sacas de café. O membro B entregou 10 sacas. A regra cooperativista é clara sobre 'Justiça e Proporcionalidade'. Sendo assim, como será feita a divisão desse dinheiro devolvido?",
-                opcoes: [
-                    "A) A devolução é proporcional ao USO da cooperativa. O membro A utilizou/operou muito mais (1000 sacas), logo, receberá um valor de sobras imensamente maior que o membro B.",
-                    "B) A divisão é perfeitamente igualitária (rachada ao meio). A cooperativa é comunista, então 50% vai pro A e 50% pro B.",
-                    "C) A devolução é baseada no Voto. Como os dois tem 1 voto cada, o dinheiro é dividido igualmente não importando a produtividade.",
-                    "D) O membro B receberá mais dinheiro para compensar o fato de ser um pequeno produtor e estimular seu crescimento.",
-                    "E) O dinheiro só volta para quem faz parte da presidência (Conselho de Administração)."
-                ]
-            },
-            {
-                id: "q13", tipo: "associacao",
-                pergunta: "ASSOCIAÇÃO DE CONCEITOS E MARCOS",
-                instrucao: "Conecte os conceitos, termos e marcos históricos à sua definição correta dentro da estrutura de gestão e fundação do movimento.",
-                termos: [
-                    { value: "ag", label: "Assembleia Geral (Poder Supremo)" },
-                    { value: "pioneiros", label: "28 Pioneiros de Rochdale" },
-                    { value: "sobras", label: "Sobras Financeiras" },
-                    { value: "simbolo", label: "Símbolo: Dois Pinheiros e Círculo" },
-                    { value: "duplo", label: "Papel Duplo do Associado" }
-                ],
-                lacunas: [
-                    { id: "lac0", texto: "Grupo histórico de tecelões que, cansados da exploração, fundaram o modelo cooperativo viável em 1844, com um pequeno armazém de produtos puros." },
-                    { id: "lac1", texto: "Resultado positivo gerado nas operações. Não visa o enriquecimento de um dono, mas retorna aos participantes proporcionalmente ao que operaram." },
-                    { id: "lac2", texto: "Representação mundial que indica união, força resiliente perante as dificuldades e a continuidade sem fim do movimento." },
-                    { id: "lac3", texto: "Princípio onde o membro não é apenas um cliente balcão, mas atua simultaneamente como dono, votando e se responsabilizando pelas diretrizes." },
-                    { id: "lac4", texto: "A instância máxima de autoridade. Onde a regra '1 pessoa = 1 voto' acontece na prática para aprovar contas ou demitir diretores." }
-                ],
-                corretas: { "lac0": "pioneiros", "lac1": "sobras", "lac2": "simbolo", "lac3": "duplo", "lac4": "ag" }
-            },
-            {
-                id: "q14", tipo: "discursiva",
-                pergunta: "MISSÃO DISCURSIVA: Resumo de Conceitos",
-                instrucao: "Imagine que você precisa explicar para um parente o que torna uma Cooperativa tão diferente e especial em relação a uma empresa privada tradicional. Com base no que estudou, escreva um texto resumindo com suas palavras três pontos principais:\n\n1) O objetivo central (por que ela existe se não é para dar lucro máximo para grandes investidores?);\n2) O poder de decisão (como funciona o peso do voto se alguém investir muito mais dinheiro que os outros?);\n3) O papel duplo (o que significa ser 'dono' e 'usuário' ao mesmo tempo?).",
-                dica: "DICA DE OURO: Seja direto e use suas próprias palavras. Lembre-se da regra de ouro das votações (1=1) e de como o associado utiliza os serviços que ele mesmo ajuda a administrar."
+                id: "q5", tipo: "discursiva", pontos: 6.0,
+                pergunta: "MISSÃO DISCURSIVA: Análise Crítica de Cenário",
+                instrucao: "Imagine um cenário alternativo onde a CoopMuqui desiste de ser cooperativa, aceita a proposta milionária do Sr. Barreto e se transforma numa Empresa Privada Tradicional (S/A), tendo ele como dono majoritário.\n\nEscreva um texto analisando como a dinâmica da instituição mudaria drasticamente em dois pontos centrais:\n\n1) PODER DE DECISÃO: Como as decisões passariam a ser tomadas e de quem seria a voz mais forte?\n2) DESTINO DO DINHEIRO: O que aconteceria com o saldo positivo gerado no final do ano (Lucro vs Sobras)? O dinheiro continuaria a ser distribuído de forma justa?",
+                dica: "DICA DE OURO: Lembre-se de como o voto funciona numa empresa tradicional (Capital vs Pessoas) e para onde vai o 'lucro' numa empresa quando alguém é dono de 50% ou mais das ações."
             }
         ];
 
@@ -766,7 +641,6 @@
             progressBar: document.getElementById('progress-bar')
         };
 
-        // Popular Dropdown ordenado
         bancoDeAlunos.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(a => {
             const opt = document.createElement('option');
             opt.value = a.id;
@@ -774,7 +648,6 @@
             ui.selAluno.appendChild(opt);
         });
 
-        // --- FIREBASE AUTH ---
         async function doAuth() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -784,7 +657,6 @@
             return await signInAnonymously(auth);
         }
 
-        // --- LOGIN DO ALUNO ---
         safeBind('btn-login', 'click', async () => {
             const id = ui.selAluno.value;
             const pass = ui.inputSenha.value.trim();
@@ -810,48 +682,49 @@
                 authUserId = cred.user.uid;
                 alunoLogado = aluno;
                 
-                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'));
+                // NOTA: USANDO COLEÇÃO ISOLADA 'config_recuperacao_coop'
+                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_coop', 'status'));
                 globalStatus = snap.exists() ? snap.data().estado : "fechado";
 
                 ui.login.style.display = 'none';
                 rotearUsuario();
             } catch (e) { 
                 mostrarAlerta("Erro de Ligação", "Não foi possível contactar o servidor. Tente novamente.", "🔌");
-                ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+                ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
             }
         });
 
-        // --- ROTEAMENTO E STATUS ---
         async function rotearUsuario() {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoLogado.id));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_recuperacao_coop'
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', alunoLogado.id));
             const data = snap.exists() ? snap.data() : null;
 
             if (data && data.finalizado) {
                 if (globalStatus === "resultados" || globalStatus === "notas") {
                     ui.results.style.display = 'flex';
-                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0)));
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaDiscursiva||0)));
                     document.getElementById('res-nota-total').textContent = total.toFixed(1);
                     document.getElementById('res-aluno-nome').textContent = alunoLogado.nome;
                     
                     const btnVer = document.getElementById('btn-ver-prova-corrigida');
                     if (globalStatus === "notas") {
-                        btnVer.classList.add('hidden'); // Oculta visualização detalhada
+                        btnVer.classList.add('hidden');
                     } else {
-                        btnVer.classList.remove('hidden'); // Libera visualização detalhada
+                        btnVer.classList.remove('hidden');
                         btnVer.onclick = () => renderizarProvaRevisao(data, false);
                     }
                 } else {
-                    mostrarAlerta("Avaliação Concluída", "Já entregou esta avaliação. As suas respostas estão guardadas em segurança. Aguarde que o professor liberte o acesso aos resultados.", "✅");
+                    mostrarAlerta("Avaliação Concluída", "Já entregou esta recuperação. As suas respostas estão guardadas em segurança. Aguarde que o professor liberte o acesso aos resultados.", "✅");
                     ui.login.style.display = 'flex';
-                    ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+                    ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
                 }
                 return;
             }
 
             if (globalStatus === "fechado" || globalStatus === "resultados" || globalStatus === "notas") { 
-                mostrarAlerta("Acesso Restrito", "A avaliação encontra-se bloqueada para novas submissões no momento.", "🔒");
+                mostrarAlerta("Acesso Restrito", "A recuperação encontra-se bloqueada para novas submissões no momento.", "🔒");
                 ui.login.style.display = 'flex';
-                ui.btnLogin.innerHTML = `Aceder ao Ambiente <span>🚀</span>`; 
+                ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
                 return; 
             }
 
@@ -860,11 +733,11 @@
             ui.start.style.display = 'flex';
         }
 
-        // --- PREPARAÇÃO DAS QUESTÕES ---
         function prepararQuestoes(data) {
             if (data && data.ordem) {
                 ordemQuestoes = data.ordem; 
             } else {
+                // Recuperação: Embaralha Múltipla escolha (1 a 4). Discursiva no final (id q5).
                 let m = bancoDeQuestoes.filter(q => q.tipo === "multipla").map(q => q.id).sort(() => Math.random() - 0.5);
                 let rest = bancoDeQuestoes.filter(q => q.tipo !== "multipla").map(q => q.id);
                 ordemQuestoes = [...m, ...rest];
@@ -880,61 +753,40 @@
             }
         }
 
-        // --- RENDERIZAR TELA DA PROVA ---
         function desenharQuestoes() {
             let html = "";
             ordemQuestoes.forEach((id, idx) => {
                 const q = bancoDeQuestoes.find(b => b.id === id);
                 const hidden = idx === 0 ? "" : "hidden";
                 
-                let pontuacao = "";
-                if (idx < 12) pontuacao = "0,75 Pt";
-                else if (idx === 12) pontuacao = "2,0 Pts";
-                else if (idx === 13) pontuacao = "3,0 Pts";
-
-                const badgePontos = `<span class="inline-block bg-green-100 text-green-800 text-[10px] md:text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-green-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                let ptLabel = q.pontos === 1.0 ? "1,0 Pt" : `${q.pontos.toFixed(1).replace('.', ',')} Pts`;
+                const badgePontos = `<span class="inline-block bg-amber-100 text-amber-800 text-[10px] md:text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-amber-200 mt-1 md:mt-0">Valendo ${ptLabel}</span>`;
                 
                 html += `<div id="slide-${idx}" class="slide-question ${hidden} slide-fade min-h-[50vh] md:min-h-[60vh]">`;
                 
                 if(q.tipo === "multipla") {
-                    html += `<p class="font-black text-xl md:text-2xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="font-black text-xl md:text-2xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify whitespace-pre-wrap"><span class="text-amber-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
                     html += `<div class="space-y-3 md:space-y-4">`;
                     q.opcoes.forEach((op, i) => {
                         const v = String.fromCharCode(97 + i);
                         html += `
                             <label class="relative block cursor-pointer group">
                                 <input type="radio" name="${q.id}" value="${v}" class="peer sr-only radio-custom">
-                                <div class="p-3 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl bg-white transition-all group-hover:border-green-300 flex items-center gap-3 md:gap-4">
+                                <div class="p-3 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl bg-white transition-all group-hover:border-amber-400 flex items-center gap-3 md:gap-4">
                                     <div class="radio-indicator w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-300 flex items-center justify-center transition-colors relative flex-shrink-0">
                                         <div class="w-2.5 h-2.5 md:w-3 md:h-3 bg-white rounded-full opacity-0 transform scale-0 transition-all duration-200 absolute"></div>
                                     </div>
-                                    <span class="text-sm md:text-base text-gray-700 font-bold group-hover:text-green-700 peer-checked:text-green-800 text-justify leading-relaxed">${op}</span>
+                                    <span class="text-sm md:text-base text-gray-700 font-bold group-hover:text-amber-700 peer-checked:text-amber-800 text-justify leading-relaxed">${op}</span>
                                 </div>
                             </label>
                         `;
                     });
                     html += `</div>`;
-                } else if(q.tipo === "associacao") {
-                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
-                    html += `<p class="text-xs md:text-sm text-gray-500 mb-4 md:mb-6 font-bold italic text-justify leading-relaxed">${q.instrucao}</p>`;
-                    html += `<div class="grid gap-4 md:gap-6">`;
-                    q.lacunas.forEach((l, i) => {
-                        html += `
-                            <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border-2 border-gray-100 shadow-sm transition hover:shadow-md hover:border-green-100">
-                                <p class="mb-3 md:mb-4 text-sm md:text-base text-gray-800 font-bold text-justify leading-relaxed">${l.texto}</p>
-                                <select name="${q.id}_lacuna${i}" class="select-associacao shadow-sm text-sm md:text-base">
-                                    <option value="">-- Clique aqui e selecione o conceito --</option>
-                                    ${q.termos.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
-                                </select>
-                            </div>
-                        `;
-                    });
-                    html += `</div>`;
                 } else if(q.tipo === "discursiva") {
-                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-green-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
-                    html += `<p class="text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed font-medium text-justify">${q.instrucao}</p>`;
-                    html += `<div class="bg-green-900 p-4 md:p-6 rounded-xl md:rounded-2xl text-green-100 font-mono text-xs md:text-sm mb-4 md:mb-6 shadow-inner border-l-8 border-green-400 text-justify leading-relaxed">💡 ${q.dica}</div>`;
-                    html += `<textarea name="${q.id}" rows="6" class="w-full p-4 md:p-6 border-2 border-gray-200 rounded-xl md:rounded-3xl font-mono text-xs md:text-sm focus:border-green-500 focus:ring-4 focus:ring-green-100 outline-none transition shadow-sm resize-none" placeholder="Construa sua explicação e raciocínio aqui..."></textarea>`;
+                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-amber-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed font-medium text-justify whitespace-pre-wrap">${q.instrucao}</p>`;
+                    html += `<div class="bg-amber-900 p-4 md:p-6 rounded-xl md:rounded-2xl text-amber-100 font-mono text-xs md:text-sm mb-4 md:mb-6 shadow-inner border-l-8 border-amber-400 text-justify leading-relaxed">💡 ${q.dica}</div>`;
+                    html += `<textarea name="${q.id}" rows="8" class="w-full p-4 md:p-6 border-2 border-gray-200 rounded-xl md:rounded-3xl font-mono text-xs md:text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition shadow-sm resize-y" placeholder="Construa sua explicação crítica e raciocínio aqui..."></textarea>`;
                 }
                 html += `</div>`;
             });
@@ -942,7 +794,6 @@
             atualizarNavegacao();
         }
 
-        // --- NAVEGAÇÃO ---
         function mudarSlide(dir) {
             document.getElementById(`slide-${slideAtualIndex}`).classList.add('hidden');
             slideAtualIndex += dir;
@@ -962,8 +813,7 @@
         safeBind('btn-prev', 'click', () => mudarSlide(-1));
         safeBind('btn-next', 'click', () => mudarSlide(1));
 
-        // --- SALVAMENTO ---
-        async function salvarProgresso(final = false, pAuto = 0, pAsc = 0) {
+        async function salvarProgresso(final = false, pAuto = 0) {
             if(!alunoLogado) return;
             const respostas = Object.fromEntries(new FormData(ui.form).entries());
             const docData = {
@@ -976,12 +826,10 @@
             };
             if(final) {
                 docData.notaAutomatica = pAuto;
-                docData.notaAssociacao = pAsc;
             }
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoLogado.id), docData, { merge: true });
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', alunoLogado.id), docData, { merge: true });
         }
 
-        // --- FINALIZAÇÃO (ENVIO) ---
         safeBind('btn-finalizar', 'click', () => document.getElementById('confirm-submit-modal').style.display = 'flex');
         safeBind('btn-confirm-no', 'click', () => document.getElementById('confirm-submit-modal').style.display = 'none');
         
@@ -993,52 +841,35 @@
             btnYes.disabled = true;
 
             const fd = new FormData(ui.form);
-            let nAuto = 0; let nAsc = 0;
+            let nAuto = 0;
             let relatorio = "";
             
-            // --- CÁLCULO DAS NOTAS ---
+            // --- CÁLCULO DAS NOTAS PELA ESTRUTURA Q.PONTOS ---
             bancoDeQuestoes.forEach((q, index) => {
                 if(q.tipo === "multipla") { 
                     const respAluno = fd.get(q.id);
                     const acertou = respAluno === q.correta;
                     
-                    if(acertou) nAuto += 0.75; 
+                    if(acertou) nAuto += q.pontos; 
                     
                     const icone = acertou ? "✅ ACERTOU" : "❌ ERROU";
                     const textoMarcado = respAluno ? respAluno.toUpperCase() : "EM BRANCO";
                     relatorio += `Q${index+1} - ${icone}\nMarcou: ${textoMarcado} | Correta: ${q.correta.toUpperCase()}\n\n`;
-                    
-                } else if(q.tipo === "associacao") {
-                    relatorio += `\n--- ASSOCIAÇÃO ---\n`;
-                    q.lacunas.forEach((l, i) => { 
-                        const respAluno = fd.get(`${q.id}_lacuna${i}`);
-                        const correta = q.corretas[`lac${i}`];
-                        const hit = respAluno === correta;
-                        
-                        if(hit && q.id === "q13") nAsc += 0.40; 
-                        
-                        const icone = hit ? "✅" : "❌";
-                        const nomeTermo = q.termos.find(t=>t.value===respAluno)?.label || "Vazio";
-                        const nomeCorreta = q.termos.find(t=>t.value===correta)?.label;
-                        relatorio += `Lacuna ${i+1}: ${icone} Marcou: [${nomeTermo}] (Certa: [${nomeCorreta}])\n`;
-                    });
-                    relatorio += `\n`;
                 }
             });
 
-            const sendPromise = salvarProgresso(true, nAuto, nAsc);
+            const sendPromise = salvarProgresso(true, nAuto);
             await Promise.race([
                 sendPromise,
                 new Promise(resolve => setTimeout(resolve, 3500))
             ]);
 
-            // Webhook Backup
             const payload = {
                 data_hora: new Date().toLocaleString('pt-BR'),
-                nome: alunoLogado.nome,
-                nota_total: (nAuto + nAsc).toFixed(2),
+                nome: alunoLogado.nome + " [RECUP]",
+                nota_total: nAuto.toFixed(2),
                 relatorio_respostas: relatorio,
-                resposta_discursiva: fd.get("q14") || "Em branco ou não respondeu." 
+                resposta_discursiva: fd.get("q5") || "Em branco ou não respondeu." 
             };
 
             fetch(googleSheetsUrl, {
@@ -1053,7 +884,6 @@
             if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
         });
 
-        // --- SEGURANÇA E ANTI-COLA ---
         safeBind('btn-iniciar', 'click', () => {
             document.documentElement.requestFullscreen().catch(()=>{});
             ui.start.style.display = 'none';
@@ -1120,7 +950,7 @@
             ui.login.style.display = 'none';
             await doAuth(); 
             
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'));
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_coop', 'status'));
             if(snap.exists()) globalStatus = snap.data().estado;
             
             ui.prof.style.display = 'flex';
@@ -1129,7 +959,7 @@
         });
 
         async function mudarStatusGlobal(st) {
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_coop', 'status'), { estado: st });
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_coop', 'status'), { estado: st });
             globalStatus = st;
             atualizarVisorStatus();
         }
@@ -1155,12 +985,12 @@
             const container = document.getElementById('lista-alunos-container');
             container.innerHTML = `<div class="flex justify-center p-8"><span class="animate-spin text-4xl">⚙️</span></div>`;
             
-            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop'));
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop'));
             let html = "";
             snap.forEach(d => {
                 const data = d.data();
                 if(data.finalizado) {
-                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0))).toFixed(1);
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaDiscursiva||0))).toFixed(1);
                     const corrigida = data.notaDiscursiva !== undefined;
                     
                     html += `
@@ -1171,11 +1001,11 @@
                                     <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded bg-gray-100 border ${corrigida?'text-green-600 border-green-200':'text-yellow-600 border-yellow-200'}">
                                         ${corrigida?'✓ Corrigida':'⏳ Aguardar Correção'}
                                     </span>
-                                    <span class="text-xs md:text-sm font-bold text-gray-600">Nota: <span class="text-green-700">${total}</span> / 14.0</span>
+                                    <span class="text-xs md:text-sm font-bold text-gray-600">Nota: <span class="text-amber-700">${total}</span> / 14.0</span>
                                 </div>
                             </div>
                             <div class="flex gap-2 md:gap-3">
-                                <button onclick="window.abrirCorrecao('${data.alunoId}')" class="flex-1 md:flex-none bg-green-50 text-green-700 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-black hover:bg-green-600 hover:text-white transition shadow-sm border border-green-200 hover:border-transparent">Revisar / Corrigir</button>
+                                <button onclick="window.abrirCorrecao('${data.alunoId}')" class="flex-1 md:flex-none bg-amber-50 text-amber-700 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-black hover:bg-amber-600 hover:text-white transition shadow-sm border border-amber-200 hover:border-transparent">Revisar / Corrigir</button>
                             </div>
                         </div>
                     `;
@@ -1183,12 +1013,12 @@
             });
             container.innerHTML = html || `
                 <div class="bg-white p-6 md:p-10 rounded-xl md:rounded-2xl border border-gray-200 text-center text-sm md:text-base text-gray-500 font-bold shadow-sm">
-                    📭 Nenhuma prova foi entregue até ao momento.
+                    📭 Nenhuma prova de recuperação entregue.
                 </div>`;
         }
 
         window.abrirCorrecao = async (id) => {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', id));
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', id));
             if(snap.exists()) {
                 alunoCorrecaoAtual = id;
                 ui.prof.style.display = 'none';
@@ -1196,26 +1026,24 @@
             }
         };
 
-        // --- LÓGICA DE CORREÇÃO EM LOTE IA (COM RATE LIMIT) ---
+        // LÓGICA BATCH IA
         safeBind('btn-prof-lote-ia', 'click', async () => {
             const apiKey = getGeminiApiKey();
             if (!apiKey && typeof __app_id === 'undefined') return;
 
-            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop'));
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop'));
             let provasParaCorrigir = [];
             let docsData = [];
 
             snap.forEach(d => docsData.push({ id: d.id, ...d.data() }));
             
-            // Pergunta 1
             if (confirm("Deseja corrigir APENAS as provas pendentes (sem nota/feedback)?")) {
                 provasParaCorrigir = docsData.filter(d => d.finalizado && d.notaDiscursiva === undefined);
             } else {
-                // Pergunta 2
                 if (confirm("ATENÇÃO: Irá sobrescrever TODAS as correções. Deseja prosseguir e reavaliar toda a turma?")) {
                     provasParaCorrigir = docsData.filter(d => d.finalizado);
                 } else {
-                    return; // Cancelou tudo
+                    return; 
                 }
             }
 
@@ -1223,7 +1051,6 @@
                 return window.mostrarAlerta("Lote Vazio", "Não existem provas adequadas para correção neste lote.", "ℹ️");
             }
 
-            // Exibir Overlay
             const overlay = document.getElementById('batch-overlay');
             const msgEl = document.getElementById('batch-msg');
             const progressEl = document.getElementById('batch-progress');
@@ -1235,10 +1062,9 @@
             for (let i = 0; i < provasParaCorrigir.length; i++) {
                 const prova = provasParaCorrigir[i];
                 
-                // Proteção de Rate Limit: Pausar 60s a cada 10 provas
                 if (i > 0 && i % 10 === 0) {
                     for(let s = 60; s > 0; s--) {
-                        msgEl.innerHTML = `Proteção Google AI (Rate Limit).<br>Aguarde <span class="font-black text-blue-600">${s}s</span> para retomar...`;
+                        msgEl.innerHTML = `Proteção Google AI (Rate Limit).<br>Aguarde <span class="font-black text-amber-600">${s}s</span> para retomar...`;
                         await new Promise(resolve => setTimeout(resolve, 1000));
                     }
                 }
@@ -1246,14 +1072,14 @@
                 msgEl.textContent = `A analisar prova de: ${prova.alunoNome}...`;
                 
                 try {
-                    const respostaAluno = prova.respostas['q14'] || "Sem resposta.";
+                    const respostaAluno = prova.respostas['q5'] || "Sem resposta.";
                     const objIA = await avaliarRespostaComIA(respostaAluno, prova.alunoNome);
                     
                     if (objIA && objIA.nota !== undefined && objIA.feedback) {
-                        const nAuto = (prova.notaAutomatica || 0) + (prova.notaAssociacao || 0);
+                        const nAuto = (prova.notaAutomatica || 0);
                         const nFinal = nAuto + objIA.nota;
                         
-                        await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', prova.id), {
+                        await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', prova.id), {
                             notaDiscursiva: objIA.nota,
                             feedbackProfessor: objIA.feedback,
                             notaFinal: nFinal
@@ -1269,17 +1095,15 @@
             }
 
             overlay.style.display = 'none';
-            window.mostrarAlerta("Correção Concluída", "O lote de provas foi analisado e pontuado com sucesso pela Inteligência Artificial.", "✅");
+            window.mostrarAlerta("Correção Concluída", "O lote de provas de recuperação foi analisado com sucesso pela Inteligência Artificial.", "✅");
             carregarRelatorioProf();
         });
 
-
-        // --- RENDERIZAÇÃO DA CORREÇÃO ---
         function renderizarProvaRevisao(data, isTeacher) {
             ui.review.style.display = 'flex';
             document.getElementById('review-nome-aluno').textContent = data.alunoNome;
             
-            const nAuto = (data.notaAutomatica||0) + (data.notaAssociacao||0);
+            const nAuto = (data.notaAutomatica||0);
             const displayNota = document.getElementById('review-nota-total');
             
             const updateNotaDisplay = () => {
@@ -1293,15 +1117,11 @@
                 if(!q) return;
                 const respAluno = data.respostas[id];
                 
-                let pontuacao = "";
-                if (idx < 12) pontuacao = "0,75 Pt";
-                else if (idx === 12) pontuacao = "2,0 Pts";
-                else if (idx === 13) pontuacao = "3,0 Pts";
-
-                const badgePontos = `<span class="inline-block bg-green-100 text-green-800 text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-green-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                let ptLabel = q.pontos === 1.0 ? "1,0 Pt" : `${q.pontos.toFixed(1).replace('.', ',')} Pts`;
+                const badgePontos = `<span class="inline-block bg-amber-100 text-amber-800 text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-amber-200 mt-1 md:mt-0">Valendo ${ptLabel}</span>`;
                 
                 html += `<div class="p-5 md:p-8 bg-gray-50 rounded-2xl md:rounded-3xl border border-gray-200 shadow-sm">`;
-                html += `<p class="font-black text-lg md:text-xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-green-600 mr-2 text-xl md:text-2xl">•</span> ${q.pergunta} ${badgePontos}</p>`;
+                html += `<p class="font-black text-lg md:text-xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify whitespace-pre-wrap"><span class="text-amber-600 mr-2 text-xl md:text-2xl">•</span> ${q.pergunta} ${badgePontos}</p>`;
                 
                 if(q.tipo === "multipla") {
                     q.opcoes.forEach((op, i) => {
@@ -1325,21 +1145,6 @@
                         html += `<div class="${css}"><span class="flex-shrink-0 text-sm md:text-base">${icone}</span> <span class="text-justify leading-relaxed">${op}</span></div>`;
                     });
                 } 
-                else if(q.tipo === "associacao") {
-                    q.lacunas.forEach((l, i) => {
-                        const valMarcado = data.respostas[`${id}_lacuna${i}`];
-                        const valCerto = q.corretas[`lac${i}`];
-                        const isOk = valMarcado === valCerto;
-                        
-                        html += `
-                            <div class="mb-3 md:mb-4 p-4 md:p-5 rounded-xl md:rounded-2xl border-l-4 md:border-l-8 ${isOk?'border-green-500 bg-green-50':'border-red-500 bg-red-50'}">
-                                <p class="text-xs md:text-sm font-black text-gray-700 mb-2 text-justify">${l.texto}</p>
-                                <p class="text-sm md:text-base text-gray-800">Aluno marcou: <span class="font-black bg-white px-2 py-1 rounded border">${q.termos.find(t=>t.value===valMarcado)?.label || 'Deixou em branco'}</span> ${isOk?'✅':'❌'}</p>
-                                ${!isOk ? `<p class="text-[10px] md:text-xs text-green-700 mt-2 font-black uppercase tracking-widest">O Correto seria: ${q.termos.find(t=>t.value===valCerto)?.label}</p>` : ''}
-                            </div>
-                        `;
-                    });
-                } 
                 else {
                     html += `<div id="resposta-discursiva-aluno" class="p-5 md:p-8 bg-white border-2 border-gray-200 rounded-2xl md:rounded-3xl font-mono text-xs md:text-sm shadow-inner whitespace-pre-wrap leading-relaxed text-gray-700 text-justify">${respAluno || '--- Nenhuma resposta escrita ---'}</div>`;
                 }
@@ -1357,7 +1162,6 @@
                 document.getElementById('input-nota-disc').oninput = updateNotaDisplay;
                 updateNotaDisplay();
 
-                // Lógica Botão Sugerir Correção IA (Indvidual)
                 safeBind('btn-sugerir-ia', 'click', async () => {
                     const apiKey = getGeminiApiKey();
                     if (!apiKey && typeof __app_id === 'undefined') return;
@@ -1366,7 +1170,7 @@
                     btnIA.innerHTML = "A analisar... ⏳";
                     btnIA.disabled = true;
 
-                    const respostaAluno = data.respostas['q14'] || "Sem resposta.";
+                    const respostaAluno = data.respostas['q5'] || "Sem resposta.";
                     
                     try {
                         const objIA = await avaliarRespostaComIA(respostaAluno, data.alunoNome);
@@ -1391,7 +1195,7 @@
                     if(!isConfirmed) return;
                     
                     document.getElementById('btn-excluir-revisao').innerHTML = "A apagar o Registo... ⏳";
-                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoCorrecaoAtual));
+                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', alunoCorrecaoAtual));
                     window.mostrarAlerta("Prova Removida", "A entrega deste aluno foi destruída. O acesso já está libertado novamente para ele.", "🗑️");
                     
                     ui.review.style.display = 'none';
@@ -1401,14 +1205,14 @@
 
                 safeBind('btn-salvar-correcao', 'click', async () => {
                     const val = parseFloat(document.getElementById('input-nota-disc').value);
-                    if(isNaN(val) || val < 0 || val > 3) return window.mostrarAlerta("Erro de Digitação", "A nota discursiva deve ser entre 0 e 3.0", "⚠️");
+                    if(isNaN(val) || val < 0 || val > 6) return window.mostrarAlerta("Erro de Digitação", "A nota discursiva deve ser entre 0 e 6.0", "⚠️");
                     
                     const feed = document.getElementById('input-feedback-prof').value;
                     const final = nAuto + val;
                     
                     document.getElementById('btn-salvar-correcao').innerHTML = "A guardar Consolidação... ⏳";
                     
-                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_coop', alunoCorrecaoAtual), {
+                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_coop', alunoCorrecaoAtual), {
                         notaDiscursiva: val,
                         feedbackProfessor: feed,
                         notaFinal: final
