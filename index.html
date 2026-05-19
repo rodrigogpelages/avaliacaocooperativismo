@@ -3,393 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperação Trimestral - Lógica de Programação</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <title>Recuperação Trimestral - Cooperativismo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { primary: '#2563eb', secondary: '#1e40af' }
-                }
-            }
-        }
-    </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        
         body {
-            user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e5e7eb 100%);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
             background-attachment: fixed;
         }
-        .blurred-screen { filter: blur(24px) grayscale(50%); pointer-events: none; opacity: 0.4; transition: all 0.3s ease; }
-        .select-associacao {
-            border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem 1rem;
-            background-color: #f9fafb; font-weight: 600; color: #4f46e5; width: 100%; transition: all 0.2s;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234f46e5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em;
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .select-associacao:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); background-color: #fff; }
+
+        .blurred-screen {
+            filter: blur(24px) grayscale(50%);
+            pointer-events: none;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
         .slide-fade { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(15px) scale(0.99); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        
         .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        .radio-custom:checked + div { border-color: #3b82f6; background-color: #eff6ff; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1); }
-        .radio-custom:checked + div .radio-indicator { background-color: #3b82f6; border-color: #3b82f6; }
-        .radio-custom:checked + div .radio-indicator::after { opacity: 1; transform: scale(1); }
-        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        /* Custom Scrollbar */
-        #container-questoes::-webkit-scrollbar { width: 8px; }
-        #container-questoes::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        #container-questoes::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        #container-questoes::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .radio-custom:checked + div {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1);
+        }
+        .radio-custom:checked + div .radio-indicator {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+        }
+        .radio-custom:checked + div .radio-indicator::after {
+            opacity: 1;
+            transform: scale(1);
+        }
     </style>
 </head>
-<body class="text-gray-800 flex flex-col font-sans antialiased h-screen overflow-hidden">
+<body class="text-gray-800 min-h-screen flex flex-col">
 
-    <!-- MODAL CUSTOMIZADO (GENÉRICO PARA ALERTAS) -->
+    <!-- MODAL CUSTOMIZADO -->
     <div id="custom-alert" class="fixed inset-0 bg-black/50 z-[200] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center slide-fade">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in">
             <div id="alert-icon" class="text-5xl md:text-6xl mb-4">🔔</div>
             <h2 id="alert-title" class="text-xl md:text-2xl font-black text-gray-800 mb-2">Atenção</h2>
             <p id="alert-message" class="text-sm md:text-base text-gray-600 mb-6 font-medium leading-relaxed"></p>
             <div id="alert-actions" class="flex gap-3 justify-center w-full">
-                <button id="btn-fechar-alerta" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Entendi</button>
+                <button id="btn-alert-ok" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Entendi</button>
             </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY BATCH IA -->
+    <div id="batch-overlay" class="fixed inset-0 bg-gray-900/90 z-[300] hidden flex-col items-center justify-center p-4 backdrop-blur-md">
+        <div class="text-center pop-in max-w-lg w-full bg-white p-8 rounded-3xl shadow-2xl">
+            <div class="text-6xl mb-6 animate-bounce">🤖</div>
+            <h2 class="text-2xl font-black text-gray-800 mb-2">IA Trabalhando...</h2>
+            <p id="batch-msg" class="text-lg text-gray-600 font-medium mb-6">Iniciando a análise das provas trimestrais...</p>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                <div id="batch-progress" class="bg-gradient-to-r from-amber-500 to-orange-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p id="batch-count" class="text-sm text-gray-500 font-bold">0 / 0 concluídas</p>
         </div>
     </div>
 
     <!-- TELA 1: LOGIN ALUNO -->
-    <div id="login-screen" class="fixed inset-0 z-[60] flex flex-col items-center justify-center p-4 overflow-y-auto">
-        <button id="btn-login-prof-trigger" class="absolute top-6 right-6 text-xs font-bold text-gray-400 hover:text-primary transition px-3 py-1 rounded-full hover:bg-blue-50">🔒 Professor</button>
+    <div id="login-screen" class="fixed inset-0 flex flex-col items-center justify-center p-4 z-[60]">
+        <button id="btn-login-prof-trigger" class="absolute top-4 right-4 text-xs font-bold text-gray-400 hover:text-amber-600 transition cursor-pointer px-4 py-2 rounded-full bg-white/50 backdrop-blur-md shadow-sm z-50 flex items-center gap-2">
+            <span>🔒</span> Acesso Docente
+        </button>
 
-        <div class="glass-panel p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border-t-8 border-t-red-600 my-auto">
-            <div class="text-center mb-8 border-b border-gray-100 pb-8">
-                <div class="flex justify-center items-center gap-6 mb-5 bg-white/50 p-3 rounded-2xl shadow-sm">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6-eQz5cIxSNOsD93ZVZOuG9m33koJW2CsrQ&s" alt="Logo Escola" class="h-10 md:h-12 object-contain drop-shadow-sm">
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-[0_20px_50px_rgba(245,_158,_11,_0.07)] w-full max-w-md border-t-8 border-t-amber-500">
+            <div class="text-center mb-6 md:mb-8">
+                <div class="flex justify-center items-center gap-4 mb-4 bg-white/50 p-3 md:p-4 rounded-2xl shadow-sm">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6-eQz5cIxSNOsD93ZVZOuG9m33koJW2CsrQ&s" alt="Logo Escola" class="h-10 md:h-12 drop-shadow-md">
                     <div class="h-8 w-px bg-gray-300"></div>
-                    <img src="https://www.es.gov.br/Media/PortalES/_Profiles/c4d8c6e6/d8d1f292/escola%20do%20futuro-01.png?v=638222624000245250" alt="Escola do Futuro" class="h-6 md:h-8 object-contain drop-shadow-sm">
+                    <img src="https://www.es.gov.br/Media/PortalES/_Profiles/c4d8c6e6/d8d1f292/escola%20do%20futuro-01.png?v=638222624000245250" alt="Escola do Futuro" class="h-6 md:h-8 drop-shadow-md">
                 </div>
-                <h2 class="font-black text-gray-900 text-base md:text-lg tracking-tight">CEEFMTI "SENADOR DIRCEU CARDOSO"</h2>
-                <div class="mt-3 space-y-1">
-                    <p class="text-xs text-red-600 font-bold uppercase tracking-wider">Recuperação Trimestral - Lógica</p>
-                    <p class="text-xs text-gray-500 font-medium">Prof. Rodrigo G. Pelages</p>
-                    <p class="text-xs text-gray-500">Técnico em Informática para Internet • 1ª série</p>
-                </div>
+                <h2 class="font-black text-gray-800 text-base md:text-lg">CEEFMTI "SENADOR DIRCEU CARDOSO"</h2>
+                <div class="inline-block mt-2 px-3 py-1 bg-amber-100 text-amber-800 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-full">Recuperação Trimestral (30 pts)</div>
             </div>
 
-            <h1 class="text-2xl font-black mb-2 text-center text-gray-800">Acesso à Prova</h1>
-            <p class="text-sm text-gray-500 mb-8 text-center">Selecione seu nome e digite sua senha para iniciar.</p>
-            
-            <div class="space-y-5">
+            <div class="space-y-4 md:space-y-5">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Seu Nome</label>
-                    <select id="aluno-select" class="w-full border-2 border-gray-200 rounded-xl p-3 bg-white focus:border-primary focus:ring-4 focus:ring-blue-100 transition-all outline-none font-medium text-gray-700">
-                        <option value="">-- Escolha seu nome --</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">Sua Senha (Data de Nascimento)</label>
-                    <input type="password" id="aluno-senha" placeholder="Somente números (Ex: 15042009)" class="w-full border-2 border-gray-200 rounded-xl p-3 bg-white focus:border-primary focus:ring-4 focus:ring-blue-100 transition-all outline-none font-medium text-gray-700 tracking-widest font-mono" maxlength="8">
-                </div>
-                
-                <button id="btn-login" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl mt-4 text-lg flex justify-center items-center gap-2 transition shadow-lg">
-                    Entrar na Prova <span>🚀</span>
-                </button>
-                <p id="login-error" class="text-red-500 text-sm mt-3 hidden text-center font-bold bg-red-50 py-2 rounded-lg"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- TELA LOGIN PROFESSOR (MODAL) -->
-    <div id="modal-prof-login" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[70] hidden flex-col items-center justify-center p-4 transition-all">
-        <div class="glass-panel p-8 rounded-3xl shadow-2xl w-full max-w-sm pop-in">
-            <div class="flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-600 rounded-full mb-4 mx-auto text-2xl">🔒</div>
-            <h2 class="text-2xl font-black text-gray-800 mb-2 text-center">Modo Professor</h2>
-            <p class="text-gray-500 text-sm text-center mb-6">Acesso apenas para o professor.</p>
-            
-            <input type="password" id="prof-senha-input" placeholder="Digite a senha..." class="w-full border-2 border-gray-200 p-3 rounded-xl mb-2 outline-none focus:border-gray-800 focus:bg-white transition-all text-center tracking-widest font-mono">
-            <p id="prof-login-error" class="text-red-500 text-xs font-bold text-center mb-6 hidden">❌ Senha incorreta.</p>
-            
-            <div class="flex gap-3 mt-2">
-                <button id="btn-prof-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-gray-700 transition">Voltar</button>
-                <button id="btn-prof-entrar" class="flex-1 bg-gray-900 hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition">Acessar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- OVERLAY PARA CORREÇÃO EM LOTE DA IA -->
-    <div id="batch-ia-overlay" class="fixed inset-0 bg-gray-900/95 backdrop-blur-md z-[110] hidden flex-col items-center justify-center p-4 text-center">
-        <h2 class="text-3xl md:text-4xl font-black text-white mb-4">A IA está a corrigir as provas...</h2>
-        <p id="batch-ia-status" class="text-xl text-blue-300 font-medium mb-6">Por favor aguarde um momento.</p>
-        <div id="batch-ia-countdown" class="text-7xl font-mono text-yellow-400 font-black hidden mb-6 drop-shadow-lg">60</div>
-        <p id="batch-ia-warning" class="text-sm md:text-base text-gray-400 hidden max-w-md leading-relaxed">Pausa de segurança do Google. Não feche esta tela.</p>
-    </div>
-
-    <!-- TELA PAINEL DO PROFESSOR -->
-    <div id="professor-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center p-4 overflow-y-auto">
-        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl w-full max-w-5xl border-t-8 border-red-600 my-4 md:my-8 text-left">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-gray-100 gap-4">
-                <div>
-                    <h1 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Painel da Recuperação (30 Pts)</h1>
-                    <button id="btn-prof-sair" class="mt-3 text-sm bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-bold transition shadow-sm flex items-center gap-2">
-                        <span>&larr;</span> Sair do Painel
-                    </button>
-                </div>
-                <div class="text-left md:text-right bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Status Atual da Prova</p>
-                    <div class="flex items-center gap-2">
-                        <span id="prof-status-dot" class="w-3 h-3 rounded-full bg-gray-400 animate-pulse"></span>
-                        <p id="prof-status-display" class="text-xl font-black tracking-tight uppercase">CARREGANDO...</p>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Identificação do Aluno</label>
+                    <div class="relative">
+                        <select id="aluno-select" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition appearance-none font-medium text-gray-700 cursor-pointer text-sm">
+                            <option value="">-- Escolha o seu nome na lista --</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 mb-8 md:mb-12">
-                <button id="btn-prof-abrir" class="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 px-3 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-1 group">
-                    <span class="text-2xl group-hover:scale-110 transition">🟢</span>
-                    <span class="text-xs md:text-sm text-center">Abrir Prova</span>
-                </button>
-                <button id="btn-prof-fechar" class="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-black py-3 px-3 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-1 group">
-                    <span class="text-2xl group-hover:scale-110 transition">🔴</span>
-                    <span class="text-xs md:text-sm text-center">Fechar Prova</span>
-                </button>
-                <button id="btn-prof-notas" class="bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-black py-3 px-3 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-1 group">
-                    <span class="text-2xl group-hover:scale-110 transition">🟡</span>
-                    <span class="text-xs md:text-sm text-center">Somente Notas</span>
-                </button>
-                <button id="btn-prof-resultados" class="bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black py-3 px-3 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-1 group">
-                    <span class="text-2xl group-hover:scale-110 transition">📊</span>
-                    <span class="text-xs md:text-sm text-center">Gabarito+Notas</span>
-                </button>
-                <button id="btn-corrigir-lote-ia" class="bg-gradient-to-br from-purple-600 to-indigo-700 border-2 border-purple-800 hover:from-purple-700 hover:to-indigo-800 text-white font-black py-3 px-3 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex flex-col items-center justify-center gap-1 group col-span-2 md:col-span-1 lg:col-span-1">
-                    <span class="text-2xl group-hover:scale-110 transition">✨</span>
-                    <span class="text-xs md:text-sm text-center">Corrigir Lote IA</span>
-                </button>
-            </div>
-
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 class="text-2xl font-black text-gray-800 flex items-center gap-3">
-                    📋 Provas Entregues
-                </h2>
-                <div class="flex gap-2">
-                    <button id="btn-prof-corrigir-todos" class="text-xs md:text-sm bg-purple-50 text-purple-700 px-4 py-2 rounded-lg font-bold hover:bg-purple-100 transition shadow-sm flex items-center gap-2">
-                        Lote IA ✨
-                    </button>
-                    <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-gray-100 px-5 py-2 rounded-lg font-bold hover:bg-gray-200 transition shadow-sm flex items-center gap-2">
-                        🔄 Atualizar
-                    </button>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Credencial de Acesso</label>
+                    <input type="password" id="aluno-senha" placeholder="Data de nascimento (Ex: 10052009)" class="w-full border-2 border-gray-200 rounded-xl p-3 md:p-4 bg-white outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition font-mono text-base md:text-lg tracking-widest" maxlength="8">
                 </div>
-            </div>
-            
-            <div id="lista-alunos-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p class="text-gray-500 italic text-sm col-span-2 p-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300">Aguardando dados...</p>
+                
+                <p id="login-error" class="text-red-500 text-xs md:text-sm hidden text-center font-bold bg-red-50 p-2 rounded-lg border border-red-100"></p>
+                
+                <button id="btn-login" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 active:translate-y-0 flex justify-center items-center gap-2">
+                    Aceder à Recuperação <span>🚀</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TELA CORREÇÃO MANUAL / REVISÃO -->
-    <div id="review-screen" class="fixed inset-0 bg-gray-50 z-[80] hidden flex-col items-center p-4 overflow-y-auto">
-        <div class="w-full max-w-5xl flex justify-between items-center mb-6 mt-4 sticky top-0 bg-gray-50/90 backdrop-blur-md py-2 z-20">
-            <button id="btn-fechar-review" class="bg-white border border-gray-300 text-gray-800 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-gray-50 transition flex items-center gap-2">
-                <span>&larr;</span> Voltar
-            </button>
-            <div class="bg-white border-2 border-primary text-primary px-6 py-2 rounded-2xl font-black text-xl shadow-md flex items-center gap-3">
-                <span class="text-sm uppercase tracking-wider font-bold text-gray-500">Nota Total</span>
-                <span><span id="review-nota-total">0.0</span> / 30.0</span>
+    <!-- TELA: LOGIN PROFESSOR -->
+    <div id="modal-prof-login" class="fixed inset-0 bg-gray-900/80 z-[70] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-white/20 pop-in">
+            <div class="flex items-center gap-3 mb-4 md:mb-6">
+                <span class="text-2xl md:text-3xl">👨‍💻</span>
+                <h2 class="text-xl md:text-2xl font-black text-gray-800">Acesso Restrito</h2>
+            </div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Chave de Segurança</label>
+            <input type="password" id="prof-senha-input" placeholder="••••••••••••" class="w-full border-2 border-gray-200 p-3 md:p-4 rounded-xl mb-2 outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 font-mono">
+            <p id="prof-login-error" class="text-red-500 text-xs font-bold mb-4 hidden text-center bg-red-50 py-2 rounded-lg">❌ Credencial incorreta.</p>
+            <div class="flex gap-3">
+                <button id="btn-prof-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-xl font-bold text-gray-600 transition">Voltar</button>
+                <button id="btn-prof-entrar" class="flex-1 bg-gray-800 hover:bg-black text-white py-3 rounded-xl font-bold shadow-lg transition">Autenticar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA: PAINEL DO PROFESSOR -->
+    <div id="professor-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center p-4 overflow-y-auto">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-6xl border-t-8 border-amber-500 my-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-100 pb-4 md:pb-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-800 mb-1 flex items-center gap-2">Painel Docente (Rec. Trimestral)</h1>
+                    <button id="btn-prof-sair" class="text-sm text-gray-500 font-bold hover:text-red-600 transition flex items-center gap-1">← Encerrar Sessão Segura</button>
+                </div>
+                <div class="mt-4 md:mt-0 bg-gray-50 px-4 md:px-6 py-2 md:py-3 rounded-2xl border border-gray-200 text-right">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Status da Prova</p>
+                    <p id="prof-status-display" class="text-xl md:text-2xl font-black uppercase tracking-tighter">Carregando...</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                <button id="btn-prof-abrir" class="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 px-2 rounded-xl shadow-sm transition transform hover:-translate-y-1 text-sm md:text-base flex items-center justify-center gap-1">🟢 Abrir Prova</button>
+                <button id="btn-prof-fechar" class="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-black py-3 px-2 rounded-xl shadow-sm transition transform hover:-translate-y-1 text-sm md:text-base flex items-center justify-center gap-1">🔴 Fechar Prova</button>
+                <button id="btn-prof-notas" class="bg-gradient-to-br from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-black py-3 px-2 rounded-xl shadow-sm transition transform hover:-translate-y-1 text-sm md:text-base flex items-center justify-center gap-1">🟡 Somente Notas</button>
+                <button id="btn-prof-resultados" class="bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black py-3 px-2 rounded-xl shadow-sm transition transform hover:-translate-y-1 text-sm md:text-base flex items-center justify-center gap-1">📊 Gabarito+Notas</button>
+            </div>
+            
+            <div class="flex justify-between items-end mb-4 border-t border-gray-100 pt-6">
+                <div>
+                    <h2 class="text-lg md:text-xl font-black text-gray-800">Entregas de Recuperação</h2>
+                    <p class="text-xs md:text-sm text-gray-500">Base Isolada de Recuperação Trimestral (Max: 30pts).</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-prof-lote-ia" class="text-xs md:text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-xl font-black hover:opacity-90 transition flex items-center gap-2 shadow-lg">
+                        ✨ Corrigir Lote IA
+                    </button>
+                    <button id="btn-prof-atualizar" class="text-xs md:text-sm bg-amber-50 text-amber-700 px-4 py-2 rounded-xl font-bold hover:bg-amber-100 transition flex items-center gap-2 border border-amber-100">
+                        Sincronizar <span>🔄</span>
+                    </button>
+                </div>
+            </div>
+            <div id="lista-alunos-container" class="grid gap-3"></div>
+        </div>
+    </div>
+
+    <!-- TELA: CORREÇÃO MANUAL / REVISÃO -->
+    <div id="review-screen" class="fixed inset-0 bg-gray-50 z-[80] hidden flex-col items-center p-2 md:p-4 overflow-y-auto">
+        <div class="w-full max-w-4xl flex justify-between items-center mb-4 sticky top-0 bg-gray-50/90 backdrop-blur-md py-3 z-20 border-b border-gray-200">
+            <button id="btn-fechar-review" class="bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-100 px-4 md:px-6 py-2 rounded-xl font-black transition flex items-center gap-2 text-sm md:text-base">← Voltar</button>
+            <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 md:px-8 py-2 rounded-full font-black text-base md:text-xl shadow-lg shadow-amber-200 flex items-center gap-2">
+                Nota Total: <span id="review-nota-total" class="bg-white/20 px-2 py-1 rounded-lg">0.0</span> / 30.0
             </div>
         </div>
         
-        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl w-full max-w-5xl border border-gray-100 text-left mb-10">
-            <div class="border-b border-gray-100 pb-6 mb-8 text-center">
-                <p class="text-[10px] md:text-xs text-indigo-600 font-black uppercase tracking-widest mb-2 bg-indigo-50 inline-block px-3 py-1 rounded-full">Sua Correção</p>
-                <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-2 tracking-tight" id="review-nome-aluno">Nome do Aluno</h1>
+        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl w-full max-w-4xl border border-gray-100">
+            <div class="mb-8 md:mb-10 text-center">
+                <p class="text-[10px] md:text-xs text-amber-600 font-black uppercase tracking-widest mb-2 bg-amber-50 inline-block px-3 py-1 rounded-full">Modo de Correção / Revisão</p>
+                <h1 class="text-2xl md:text-4xl font-black text-gray-800" id="review-nome-aluno">Nome do Aluno</h1>
             </div>
-            
-            <div id="review-content" class="space-y-6"></div>
 
-            <div id="area-correcao-prof" class="hidden mt-10 bg-blue-50 p-6 md:p-8 rounded-2xl border border-blue-100 shadow-inner">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                    <h3 class="text-xl font-black text-blue-900 flex items-center gap-2">✍️ Dar Nota Manualmente</h3>
-                    <button id="btn-sugerir-ia" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-md">
-                        ✨ A IA sugere uma nota
-                    </button>
-                </div>
+            <div id="review-content" class="space-y-6 md:space-y-8"></div>
 
-                <div class="flex flex-wrap gap-4 items-center mb-6 bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
-                    <label class="font-bold text-gray-700 uppercase tracking-wide text-sm">Nota da Questão Escrita (Máx 6.0):</label>
-                    <input type="number" id="input-nota-disc" step="0.5" min="0" max="6" class="border-2 border-blue-200 p-3 rounded-lg w-28 text-center font-black text-2xl text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-blue-100 transition">
-                </div>
-                <label class="font-bold text-gray-700 block mb-2 uppercase tracking-wide text-sm">Mensagem para o Aluno (Opcional):</label>
-                <textarea id="input-feedback-prof" rows="4" class="w-full border-2 border-blue-100 p-4 rounded-xl mb-6 focus:outline-none focus:border-primary transition font-medium text-gray-700 shadow-sm whitespace-pre-wrap leading-relaxed" placeholder="Escreva observações aqui..."></textarea>
+            <!-- Painel de Correção Docente -->
+            <div id="area-correcao-prof" class="hidden mt-10 md:mt-16 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 md:p-8 rounded-3xl border-2 border-yellow-200 shadow-sm relative">
                 
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="btn-salvar-correcao" class="flex-1 btn-premium text-white font-bold py-4 px-8 rounded-xl text-lg">
-                        💾 Salvar Correção
-                    </button>
-                    <button id="btn-excluir-prova-review" class="sm:w-auto bg-white border-2 border-red-500 hover:bg-red-50 text-red-600 font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-                        🗑️ Apagar a Prova do Aluno
-                    </button>
+                <button id="btn-sugerir-ia" class="absolute top-6 right-6 bg-purple-600 hover:bg-purple-700 text-white text-xs font-black px-4 py-2 rounded-lg shadow-md transition flex items-center gap-1">
+                    ✨ Sugerir Correção com IA
+                </button>
+
+                <div class="flex items-center gap-3 mb-4 md:mb-6 mt-2">
+                    <span class="text-2xl md:text-3xl">✍️</span>
+                    <h3 class="text-xl md:text-2xl font-black text-yellow-900">Avaliação Manual (Discursiva)</h3>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                    <div class="shrink-0 bg-white p-4 rounded-2xl border border-yellow-200 shadow-sm text-center w-full md:w-auto">
+                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Nota (Máx 10.0)</label>
+                        <input type="number" id="input-nota-disc" step="0.1" min="0" max="10" class="text-4xl md:text-5xl font-black text-center w-28 md:w-32 border-none focus:outline-none bg-transparent text-amber-600">
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label class="block font-black text-yellow-800 mb-2 uppercase text-[10px] tracking-widest">Comentários e Orientações Pedagógicas</label>
+                        <textarea id="input-feedback-prof" rows="8" class="w-full border-2 border-yellow-200 bg-white p-3 md:p-4 rounded-2xl outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition resize-y text-justify text-sm md:text-base whitespace-pre-wrap" placeholder="Escreva aqui o feedback..."></textarea>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6 md:mt-8">
+                    <button id="btn-salvar-correcao" class="flex-1 bg-gray-900 hover:bg-black text-white font-black py-3 md:py-4 px-6 md:px-12 rounded-2xl text-base md:text-lg shadow-lg transition transform hover:-translate-y-1">💾 Guardar Nota e Feedback</button>
+                    <button id="btn-excluir-revisao" class="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white font-black py-3 md:py-4 px-4 md:px-8 rounded-2xl text-sm md:text-lg shadow-sm border border-red-200 hover:border-transparent transition transform hover:-translate-y-1">🗑️ Eliminar Prova do Aluno</button>
                 </div>
             </div>
             
-            <div id="area-feedback-aluno" class="hidden mt-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 md:p-8 rounded-2xl border border-blue-100">
-                <h3 class="text-xl font-black text-blue-900 mb-4 flex items-center gap-2">💬 Mensagem do Professor</h3>
-                <div class="bg-white p-4 rounded-xl shadow-sm mb-4 inline-block">
-                    <p class="font-bold text-gray-500 uppercase tracking-wider text-xs">Sua nota na pergunta escrita</p>
-                    <p class="text-2xl font-black text-primary"><span id="view-nota-disc"></span> <span class="text-sm text-gray-400">/ 6.0</span></p>
+            <!-- Feedback Visual para o Aluno -->
+            <div id="area-feedback-aluno" class="hidden mt-10 md:mt-16 bg-amber-50 p-6 md:p-8 rounded-3xl border-2 border-amber-100">
+                <div class="flex items-center gap-2 md:gap-3 mb-4">
+                    <span class="text-xl md:text-2xl">👨‍🏫</span>
+                    <h3 class="text-lg md:text-xl font-black text-amber-900">Feedback do Professor</h3>
                 </div>
-                <div id="view-feedback-texto" class="p-5 bg-white border border-blue-100 rounded-xl font-medium text-gray-700 shadow-sm whitespace-pre-wrap leading-relaxed"></div>
+                <div class="flex items-center gap-3 mb-4 md:mb-6 bg-white w-max px-3 md:px-4 py-2 rounded-xl border border-amber-100 shadow-sm">
+                    <span class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider">Pontuação na Discursiva:</span>
+                    <span id="view-nota-disc" class="text-xl md:text-2xl text-amber-600 font-black">0.0</span>
+                </div>
+                <div id="view-feedback-texto" class="p-4 md:p-6 bg-white rounded-2xl italic text-gray-700 border border-amber-100 shadow-sm text-sm md:text-lg leading-relaxed text-justify whitespace-pre-wrap"></div>
             </div>
         </div>
     </div>
 
-    <!-- TELA INSTRUÇÕES (ALUNO) -->
+    <!-- TELA 2: INSTRUÇÕES (ALUNO) -->
     <div id="start-screen" class="fixed inset-0 bg-white z-50 hidden flex-col items-center justify-center p-4 text-center overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 relative overflow-hidden my-auto">
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-red-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div class="glass-panel p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
             
             <div class="relative z-10">
-                <h1 id="welcome-title" class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-red-700 to-yellow-700">Recuperação Trimestral</h1>
+                <h1 id="welcome-title" class="text-3xl md:text-4xl font-black mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Recuperação Trimestral</h1>
                 
-                <div class="bg-gradient-to-r from-red-50 to-orange-50 border-l-8 border-red-500 p-4 md:p-6 rounded-2xl text-left shadow-sm mb-6 md:mb-8">
-                    <p class="text-red-900 font-black italic text-lg md:text-xl mb-2 text-justify leading-relaxed">"Saber pesquisar a resposta certa é importante, mas entender a lógica é o que te torna um programador de verdade."</p>
-                    <p class="text-xs md:text-sm text-red-800 font-medium text-justify leading-relaxed">Leia cada situação com muita atenção. As perguntas são focadas no nosso município de Muqui e testam o que você realmente aprendeu sobre como o computador "pensa".</p>
+                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-8 border-yellow-400 p-4 md:p-6 rounded-2xl text-left shadow-sm mb-6 md:mb-8">
+                    <p class="text-yellow-900 font-black italic text-lg md:text-xl mb-2 text-justify leading-relaxed">"Leia o Estudo de Caso com extrema atenção."</p>
+                    <p class="text-xs md:text-sm text-yellow-800 font-medium text-justify leading-relaxed">Esta prova possui 10 questões valendo 30 pontos totais. Ela exigirá que você analise o texto e cruze com a teoria. Tirar fotos não vai ajudar, pois as respostas dependem da leitura do cenário exclusivo de Muqui.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-10 text-left">
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                        <div class="text-xl bg-blue-50 p-2 rounded-xl">💾</div>
+                        <div class="text-xl bg-amber-50 p-2 rounded-xl">💾</div>
                         <div>
-                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Salva Sozinho</p>
-                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">O sistema guarda as suas respostas automaticamente cada vez que você muda de questão.</p>
+                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Salvamento Automático</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">Suas respostas são sincronizadas a cada troca de questão.</p>
                         </div>
                     </div>
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
                         <div class="text-xl bg-red-50 p-2 rounded-xl">🚨</div>
                         <div>
-                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Não Saia da Tela</p>
-                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">A prova fica em tela cheia. Se você tentar abrir outra aba ou programa, a prova é bloqueada na hora.</p>
+                            <p class="font-black text-gray-800 mb-1 text-sm md:text-base">Ambiente Controlado</p>
+                            <p class="text-[11px] md:text-xs text-gray-500 font-medium leading-relaxed text-justify">Sair do ambiente bloqueará a avaliação imediatamente.</p>
                         </div>
                     </div>
                 </div>
-                <button id="btn-iniciar" class="w-full bg-red-700 hover:bg-red-800 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(220,_38,_38,_0.2)] text-lg md:text-xl transform hover:-translate-y-1 transition active:translate-y-0">Estou Pronto! Começar a Prova 🚀</button>
+                <button id="btn-iniciar" class="w-full bg-gray-900 hover:bg-black text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(0,_0,_0,_0.2)] text-lg md:text-xl transform hover:-translate-y-1 transition active:translate-y-0">Estou Pronto! Iniciar 🚀</button>
             </div>
         </div>
+    </div>
+
+    <!-- TELA 3: ALERTA ANTI-COLA (BLOQUEIO) -->
+    <div id="warning-screen" class="fixed inset-0 bg-red-600 text-white z-[100] hidden flex-col items-center justify-center p-4 md:p-6 text-center">
+        <div class="bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-3xl border border-white/20 max-w-2xl w-full pop-in">
+            <div class="text-6xl md:text-8xl mb-4 md:mb-6 animate-bounce">⚠️</div>
+            <h2 class="text-2xl md:text-4xl font-black mb-3 md:mb-4 tracking-tight">AVALIAÇÃO INTERROMPIDA</h2>
+            <p class="text-sm md:text-lg mb-6 md:mb-10 font-medium text-red-100 text-justify leading-relaxed">Detetamos que saiu do ambiente de prova ou tentou utilizar atalhos bloqueados. O foco total é obrigatório para a integridade do processo.</p>
+            <button id="btn-retornar" class="bg-white text-red-700 font-black py-3 md:py-4 px-8 md:px-12 rounded-xl md:rounded-2xl text-base md:text-xl shadow-2xl hover:bg-gray-100 transition transform hover:scale-105">Retornar Imediatamente ao Foco</button>
+        </div>
+    </div>
+
+    <!-- TELA 4: SUCESSO / FINALIZAÇÃO -->
+    <div id="finish-screen" class="fixed inset-0 bg-gray-50 z-[90] hidden flex-col items-center justify-center p-4 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-amber-500 pop-in">
+            <div class="text-6xl md:text-7xl mb-4 md:mb-6">✅</div>
+            <h2 class="text-2xl md:text-3xl font-black text-amber-600 mb-3 md:mb-4 tracking-tight">Prova Entregue!</h2>
+            <p class="text-gray-600 mb-6 md:mb-8 italic text-sm md:text-lg leading-relaxed text-justify">"A cooperação é a convicção plena de que ninguém pode chegar à meta se não chegarem todos."</p>
+            <div class="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 mb-4 md:mb-6">
+                <p class="text-xs md:text-sm text-amber-800 font-bold">Respostas transmitidas com segurança para a base de dados.</p>
+            </div>
+            <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest">Já pode fechar esta janela.</p>
+        </div>
+    </div>
+
+    <!-- TELA: RESULTADOS ALUNO -->
+    <div id="student-results-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center justify-center p-4 text-center">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl border border-white max-w-md w-full pop-in">
+            <div class="text-5xl mb-4">🏆</div>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">Boletim Trimestral</h2>
+            <p class="text-sm md:text-base text-gray-500 font-bold mb-6 md:mb-8" id="res-aluno-nome"></p>
+            
+            <div class="bg-gradient-to-br from-amber-500 to-orange-600 p-6 md:p-8 rounded-3xl text-white shadow-[0_10px_30px_rgba(245,_158,_11,_0.3)] mb-6 md:mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">📝</div>
+                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 text-amber-200 relative z-10">Pontuação Final</p>
+                <p class="text-6xl md:text-7xl font-black relative z-10"><span id="res-nota-total">0</span><span class="text-xl md:text-2xl text-amber-200">/30.0</span></p>
+            </div>
+            
+            <button id="btn-ver-prova-corrigida" class="w-full bg-white border-2 border-gray-200 text-gray-800 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-amber-500 transition shadow-sm text-sm md:text-base hidden">Visualizar Correção Detalhada</button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (SLIDES DA PROVA) -->
+    <div id="quiz-content" class="max-w-4xl mx-auto p-4 md:p-6 bg-white shadow-2xl my-4 md:my-6 rounded-2xl md:rounded-3xl w-full hidden border border-gray-100 flex-1 flex-col relative z-10">
+        <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 pb-2 mb-4 pt-2 z-20 flex justify-between items-end">
+            <div>
+                <h2 class="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Rec. Trimestral</h2>
+                <p class="text-[10px] md:text-sm text-gray-400 font-bold uppercase tracking-widest mt-1"><span id="header-aluno-nome" class="text-gray-800">---</span></p>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Hora Atual</span>
+                <div id="clock-display" class="font-mono text-xl md:text-2xl font-black text-amber-600 bg-amber-50 px-3 md:px-4 py-1 rounded-xl border border-amber-100 shadow-sm">00:00</div>
+            </div>
+        </div>
+
+        <div class="w-full bg-gray-100 rounded-full h-1.5 md:h-2 mb-4 md:mb-6">
+            <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-1.5 md:h-2 rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+        </div>
+
+        <!-- ESTUDO DE CASO INJETADO NO TOPO -->
+        <div id="estudo-caso-container" class="bg-amber-50 border-l-4 border-amber-500 p-4 md:p-6 rounded-r-xl mb-6 md:mb-8 shadow-sm text-amber-900 text-justify text-sm md:text-base leading-relaxed space-y-3">
+            <h3 class="font-black mb-2 uppercase tracking-wide text-xs md:text-sm text-amber-700">📖 Texto Base: A Revolta dos Produtores de Muqui</h3>
+            <p>Em <strong>Muqui</strong>, famosa por seu Sítio Histórico, pequenos cafeicultores e artesãos estavam exaustos e beirando a falência. O motivo? Havia apenas um grande empresário na cidade que comprava seus produtos por preços miseráveis e os revendia para a capital com 500% de lucro. Inspirados pela história dos 28 tecelões ingleses, 30 moradores decidiram mudar essa realidade e fundaram a <strong>"CoopMuqui"</strong>, uma cooperativa para processar e vender seu café e sua arte de forma justa. Como símbolo de união e força duradoura, desenharam dois pinheiros dentro de um círculo na porta do armazém.</p>
+            <p>Tudo ia muito bem, até que o Senhor Barreto, um homem riquíssimo da região, viu o sucesso do negócio. Ele ofereceu injetar R$ 500.000,00 na cooperativa, mas fez uma exigência rigorosa: <em>"Eu coloco esse meio milhão de reais, mas quero ter o controle de 50% dos votos em todas as decisões, já que o meu dinheiro é muito maior que o de todos vocês juntos."</em></p>
+            <p>Ao mesmo tempo, um problema interno surgiu: alguns jovens associados começaram a usar a cooperativa apenas para comprar insumos baratos. Eles pegavam o produto, iam embora para casa e nunca pisavam nas Assembleias Gerais, reclamando depois nos corredores que <em>"os chefes não sabem administrar"</em>.</p>
+            <p>No fim daquele ano, a CoopMuqui trabalhou bem e gerou R$ 100.000,00 de saldo positivo (que o Conselho Fiscal conferiu centavo por centavo). Durante a reunião, um grupo exaltado exigiu que esse valor fosse integral e imediatamente dividido entre eles no dia seguinte, alegando ser <em>"lucro puro que deve ir direto e totalmente para os nossos bolsos"</em>.</p>
+        </div>
+
+        <form id="avaliacao-form" class="flex-1 flex flex-col">
+            <div id="container-questoes" class="flex-1"></div>
+            
+            <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4">
+                <div class="flex gap-2 md:gap-3 w-full sm:w-auto">
+                    <button type="button" id="btn-prev" class="flex-1 sm:flex-none px-4 md:px-6 py-3 md:py-4 bg-white border-2 border-gray-200 text-gray-600 font-black rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-gray-300 disabled:opacity-30 disabled:hover:bg-white transition flex items-center justify-center gap-2 text-sm md:text-base">← <span class="hidden sm:inline">Anterior</span></button>
+                    <button type="button" id="btn-next" class="flex-1 sm:flex-none px-6 md:px-8 py-3 md:py-4 bg-gray-900 text-white font-black rounded-xl md:rounded-2xl hover:bg-black shadow-lg shadow-gray-300 transition flex items-center justify-center gap-2 text-sm md:text-base">Avançar →</button>
+                </div>
+                <button type="button" id="btn-finalizar" class="hidden w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-amber-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-amber-700 shadow-lg shadow-amber-200 transition transform hover:-translate-y-1 animate-pulse text-sm md:text-base">ENTREGAR PROVA ✅</button>
+            </div>
+            
+            <div class="flex justify-center items-center gap-2 mt-4 md:mt-6">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <p class="text-[8px] md:text-[10px] text-gray-400 uppercase font-bold tracking-widest">Sincronização em Tempo Real Ativa</p>
+            </div>
+        </form>
     </div>
 
     <!-- MODAL DE CONFIRMAÇÃO DE ENVIO -->
     <div id="confirm-submit-modal" class="fixed inset-0 bg-black/60 z-[120] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center pop-in border border-white/50">
-            <div class="text-5xl md:text-6xl mb-4 md:mb-6 bg-red-50 w-20 md:w-24 h-20 md:h-24 mx-auto rounded-full flex items-center justify-center text-red-600">🚀</div>
-            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-2">Quer mesmo entregar?</h2>
-            <p class="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 font-medium leading-relaxed text-justify">Dê uma olhada se não esqueceu nada. Depois que clicar em entregar, você não poderá mudar as respostas.</p>
+            <div class="text-5xl md:text-6xl mb-4 md:mb-6 bg-amber-50 w-20 md:w-24 h-20 md:h-24 mx-auto rounded-full flex items-center justify-center text-amber-600">🚀</div>
+            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-2">Pronto para Enviar?</h2>
+            <p class="text-xs md:text-sm text-gray-500 mb-6 md:mb-8 font-medium leading-relaxed text-justify">Reveja as suas respostas. Após confirmar a entrega, o acesso para modificações será permanentemente bloqueado.</p>
             <div class="flex flex-col gap-3">
-                <button id="btn-confirm-yes" class="w-full bg-green-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg hover:bg-green-700 transition transform hover:-translate-y-1 text-sm md:text-base">Sim, Entregar Prova</button>
-                <button id="btn-confirm-no" class="w-full bg-gray-100 text-gray-600 font-black py-3 md:py-4 rounded-xl hover:bg-gray-200 transition text-sm md:text-base">Voltar para dar mais uma olhada</button>
+                <button id="btn-confirm-yes" class="w-full bg-amber-600 text-white font-black py-3 md:py-4 rounded-xl shadow-[0_10px_20px_rgba(245,_158,_11,_0.2)] hover:bg-amber-700 transition transform hover:-translate-y-1 text-sm md:text-base">Confirmar e Entregar</button>
+                <button id="btn-confirm-no" class="w-full bg-gray-100 text-gray-600 font-black py-3 md:py-4 rounded-xl hover:bg-gray-200 transition text-sm md:text-base">Voltar para Revisar</button>
             </div>
-        </div>
-    </div>
-
-    <!-- TELA RESULTADOS ALUNO -->
-    <div id="student-results-screen" class="fixed inset-0 bg-gray-100 z-[65] hidden flex-col items-center justify-center p-4 text-center">
-        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl border border-white max-w-md w-full pop-in">
-            <div class="text-5xl mb-4">🏆</div>
-            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-2">Seu Boletim</h2>
-            <p class="text-sm md:text-base text-gray-500 font-bold mb-6 md:mb-8" id="res-aluno-nome"></p>
-            
-            <div class="bg-gradient-to-br from-red-600 to-orange-700 p-6 md:p-8 rounded-3xl text-white shadow-[0_10px_30px_rgba(220,_38,_38,_0.3)] mb-6 md:mb-8 relative overflow-hidden">
-                <div class="absolute top-0 right-0 -mt-4 -mr-4 text-8xl opacity-10">📝</div>
-                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 text-red-200 relative z-10">Sua Nota Total</p>
-                <p class="text-6xl md:text-7xl font-black relative z-10"><span id="res-nota-total">0</span><span class="text-xl md:text-2xl text-red-200">/30.0</span></p>
-            </div>
-            
-            <button id="btn-ver-prova-corrigida" class="w-full bg-white border-2 border-gray-200 text-gray-800 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-red-500 transition shadow-sm text-sm md:text-base">Ver o que eu acertei e errei</button>
-        </div>
-    </div>
-
-    <!-- ALERTA ANTI-COLA -->
-    <div id="warning-screen" class="fixed inset-0 bg-red-600 text-white z-[100] hidden flex-col items-center justify-center p-4 md:p-6 text-center">
-        <div class="bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-3xl border border-white/20 max-w-2xl w-full pop-in">
-            <div class="text-6xl md:text-8xl mb-4 md:mb-6 animate-bounce">⚠️</div>
-            <h2 class="text-2xl md:text-4xl font-black mb-3 md:mb-4 tracking-tight">CUIDADO! TELA BLOQUEADA</h2>
-            <p class="text-sm md:text-lg mb-6 md:mb-10 font-medium text-red-100 text-justify leading-relaxed">Atenção! Você saiu da tela da prova ou tentou abrir outro programa. Por favor, mantenha o foco e não troque de janela para que a sua prova não seja anulada.</p>
-            <button id="btn-retornar" class="bg-white text-red-700 font-black py-3 md:py-4 px-8 md:px-12 rounded-xl md:rounded-2xl text-base md:text-xl shadow-2xl hover:bg-gray-100 transition transform hover:scale-105">Voltar para a Prova Agora</button>
-        </div>
-    </div>
-
-    <!-- SUCESSO / FINALIZAÇÃO -->
-    <div id="finish-screen" class="fixed inset-0 bg-gray-50 z-[90] hidden flex-col items-center justify-center p-4 text-center">
-        <div class="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-green-500 pop-in">
-            <div class="text-6xl md:text-7xl mb-4 md:mb-6">✅</div>
-            <h2 class="text-2xl md:text-3xl font-black text-green-600 mb-3 md:mb-4 tracking-tight">Tudo Certo!</h2>
-            <p class="text-gray-600 mb-6 md:mb-8 italic text-sm md:text-lg leading-relaxed text-justify">"Sua prova foi entregue com sucesso! O importante é nunca parar de aprender."</p>
-            <div class="bg-green-50 p-3 md:p-4 rounded-xl border border-green-100 mb-4 md:mb-6">
-                <p class="text-xs md:text-sm text-green-800 font-bold">Suas respostas já estão seguras no sistema da escola.</p>
-            </div>
-            <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest">Pode fechar o navegador e descansar.</p>
-        </div>
-    </div>
-
-    <!-- CONTEÚDO PRINCIPAL (SLIDES DA PROVA) -->
-    <div id="quiz-wrapper" class="w-full flex-1 flex flex-col items-center overflow-hidden max-h-screen">
-        <div id="quiz-content" class="max-w-5xl mx-auto p-4 md:p-6 bg-white shadow-2xl my-2 md:my-4 rounded-2xl w-full hidden border border-gray-100 flex-1 flex-col overflow-hidden max-h-[95vh] z-10">
-            
-            <div class="shrink-0 border-b border-gray-100 pb-3 mb-4 pt-2 z-20 flex flex-row justify-between items-center gap-2">
-                <div class="flex items-center gap-3 text-left overflow-hidden">
-                    <div class="hidden md:flex flex-col gap-1.5 border-r border-gray-200 pr-3">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6-eQz5cIxSNOsD93ZVZOuG9m33koJW2CsrQ&s" class="h-8 object-contain drop-shadow-sm">
-                        <img src="https://www.es.gov.br/Media/PortalES/_Profiles/c4d8c6e6/d8d1f292/escola%20do%20futuro-01.png?v=638222624000245250" class="h-5 object-contain drop-shadow-sm">
-                    </div>
-                    <div class="truncate">
-                        <h2 class="text-lg md:text-xl font-black text-red-700 truncate tracking-tight">Recuperação Trimestral</h2>
-                        <p class="text-xs md:text-sm text-gray-500 font-medium truncate">Aluno(a): <span id="header-aluno-nome" class="font-bold text-gray-800">---</span></p>
-                    </div>
-                </div>
-                <div class="text-right shrink-0 bg-gray-50 p-2 md:p-3 rounded-xl border border-gray-200 flex flex-col justify-center items-center md:items-end">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden md:block mb-0.5">Hora Agora</p>
-                    <div id="clock-display" class="font-mono text-xl md:text-2xl font-black text-red-700 tracking-tighter">00:00:00</div>
-                </div>
-            </div>
-
-            <div class="shrink-0 w-full bg-gray-100 rounded-full h-1.5 md:h-2 mb-4 md:mb-6 overflow-hidden shadow-inner">
-                <div id="progress-bar" class="bg-gradient-to-r from-red-500 to-orange-500 h-1.5 md:h-2 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-            </div>
-
-            <form id="avaliacao-form" class="flex-1 flex flex-col overflow-hidden text-left">
-                <div id="container-questoes" class="flex-1 overflow-y-auto pr-1 md:pr-2 pb-2"></div>
-                
-                <div class="shrink-0 mt-3 pt-4 border-t border-gray-100">
-                    <div class="flex justify-between items-center mb-3 md:mb-4 gap-3">
-                        <button type="button" id="btn-prev" class="flex-1 md:flex-none px-4 md:px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-1.5 text-sm md:text-base">
-                            ← <span class="hidden sm:inline">Pergunta Anterior</span>
-                        </button>
-                        <button type="button" id="btn-next" class="flex-1 md:flex-none px-6 md:px-8 py-3 bg-gray-900 text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-1.5 text-sm md:text-base">
-                            Próxima Pergunta →
-                        </button>
-                        <button type="button" id="btn-finalizar" class="hidden flex-1 md:flex-none px-6 md:px-8 py-3 bg-red-600 text-white font-black rounded-xl shadow-lg hover:bg-red-700 transition transform hover:scale-105 tracking-wide text-sm md:text-base animate-pulse">
-                            CONCLUIR PROVA ✅
-                        </button>
-                    </div>
-                    <div class="flex justify-center items-center gap-2 mt-2 md:mt-4">
-                        <span class="relative flex h-2 w-2">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                        </span>
-                        <p class="text-[8px] md:text-[10px] text-gray-400 uppercase font-bold tracking-widest">Salvando suas respostas automaticamente...</p>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -398,21 +385,122 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        window.mostrarAlerta = function(titulo, mensagem, icone = '🔔') {
-            const titleEl = document.getElementById('alert-title');
-            const msgEl = document.getElementById('alert-message');
-            const iconEl = document.getElementById('alert-icon');
-            const alertEl = document.getElementById('custom-alert');
-            if (titleEl) titleEl.textContent = titulo;
-            if (msgEl) msgEl.textContent = mensagem;
-            if (iconEl) iconEl.textContent = icone;
-            if (alertEl) alertEl.style.display = 'flex';
-        }
-        window.fecharAlerta = function() {
-            const alertEl = document.getElementById('custom-alert');
-            if (alertEl) alertEl.style.display = 'none';
+        // --- UTILITÁRIOS DOM SEGUROS ---
+        function safeBind(id, event, handler) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener(event, handler);
+            } else {
+                console.warn(`Elemento não encontrado no DOM: ${id}`);
+            }
         }
 
+        window.mostrarAlerta = function(titulo, mensagem, icone = '🔔') {
+            document.getElementById('alert-title').textContent = titulo;
+            document.getElementById('alert-message').textContent = mensagem;
+            document.getElementById('alert-icon').textContent = icone;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+        
+        window.fecharAlerta = function() {
+            document.getElementById('custom-alert').style.display = 'none';
+        }
+
+        safeBind('btn-alert-ok', 'click', window.fecharAlerta);
+
+        // --- GOOGLE GEMINI API ---
+        function getGeminiApiKey() {
+            if (typeof __app_id !== 'undefined' && __app_id) return ""; 
+            let key = sessionStorage.getItem('gemini_api_key');
+            if (!key) {
+                key = prompt("🔒 INSIRA A CHAVE DA API GOOGLE GEMINI:\n(Necessária para correção via IA)");
+                if (key) sessionStorage.setItem('gemini_api_key', key);
+            }
+            return key || "";
+        }
+
+        async function getBestGeminiModel(apiKey) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if (!response.ok) throw new Error("Falha ao buscar modelos.");
+                const data = await response.json();
+                
+                const validModels = data.models.filter(m => 
+                    m.supportedGenerationMethods.includes("generateContent") &&
+                    !m.name.includes("3.1-pro")
+                );
+                
+                const flashModel = validModels.find(m => m.name.includes("flash"));
+                return flashModel ? flashModel.name.replace('models/', '') : "gemini-1.5-flash";
+            } catch (e) {
+                console.warn("Fallback para gemini-1.5-flash devido a erro na listagem de modelos.");
+                return "gemini-1.5-flash";
+            }
+        }
+
+        async function fetchGeminiWithRetry(promptText, studentName, apiKey, maxRetries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            const modelName = await getBestGeminiModel(apiKey);
+            
+            const systemInstruction = "Você é o professor avaliador da turma, falando com o aluno na 1ª pessoa do singular. Aja de forma MUITO LEVE, POSITIVA E EMPÁTICA. NUNCA use palavras duras. SEPARE O TEXTO EM TÓPICOS usando quebras de linha duplas (\\n\\n). Estruture os tópicos EXATAMENTE assim: 'Rúbrica de Correção:', 'Pontos Fortes:' e 'Oportunidades de Melhoria:'. NÃO USE EMOJIS. Não use frases de suporte de IA. Finalize com incentivo no último parágrafo.";
+
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "nota": { type: "NUMBER" },
+                            "feedback": { type: "STRING" }
+                        }
+                    }
+                }
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (res.status === 429) {
+                        console.warn(`Rate Limit excedido para ${studentName}. Tentativa ${i+1}. Aguardando...`);
+                        await new Promise(r => setTimeout(r, delays[i]));
+                        continue;
+                    }
+                    
+                    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                    
+                    const data = await res.json();
+                    const jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
+                    return jsonResponse;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw new Error(`Falha definitiva ao corrigir prova de ${studentName}: ${error.message}`);
+                    }
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+            }
+        }
+
+        async function avaliarRespostaComIA(respostaDiscursiva, nomeAluno) {
+            const apiKey = getGeminiApiKey();
+            if(!apiKey && typeof __app_id === 'undefined') {
+                window.mostrarAlerta("Erro", "Chave da API não configurada.", "🔑");
+                return null;
+            }
+
+            const qDiscursiva = bancoDeQuestoes.find(q => q.tipo === "discursiva");
+            const prompt = `Analise a resposta do aluno ${nomeAluno} para a seguinte questão de Recuperação Trimestral (Valendo 10.0 pontos) baseada em um estudo de caso:\n\nPERGUNTA: "${qDiscursiva.pergunta}"\nINSTRUÇÃO ORIGINAL: "${qDiscursiva.instrucao}"\n\nRESPOSTA DO ALUNO: "${respostaDiscursiva}"\n\nA nota máxima possível para esta questão é 10.0. Dê uma nota justa de 0.0 a 10.0 (em incrementos de 0.1) e gere o feedback estritamente no formato solicitado. Avalie criticamente se o aluno aplicou a teoria ao cenário de 'Poder de Decisão' e 'Destino do Dinheiro'.`;
+
+            return await fetchGeminiWithRetry(prompt, nomeAluno, apiKey);
+        }
+
+        // --- CONFIGURAÇÕES FIREBASE ---
         let firebaseConfig;
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
             firebaseConfig = JSON.parse(__firebase_config);
@@ -427,267 +515,170 @@
             };
         }
         
-        const appIdStr = typeof __app_id !== 'undefined' ? __app_id : 'recuperacao-trimestral-logica';
-        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbwsoQScy57CgVj2FOZFMa-NMzNITiOy6pQkK9C4Q-_B_aHZ_bpr_AuUKTXc84BjqdwXOw/exec";
+        const appIdStr = typeof __app_id !== 'undefined' ? __app_id : 'avaliacao-logica-46f5e';
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbzk-a0yG6an5wbo7l3pEo3ra2XmLK_-0W8UFV6usfBoBQaz66qCZO_TLGh2IImNtWZp/exec";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- ALUNOS DA RECUPERAÇÃO TRIMESTRAL ---
+        // --- ALUNOS COOPERATIVISMO ---
         const bancoDeAlunos = [
-            { id: "aluno_17", nome: "LUIZ P. R. C.", senha: "29042008" },
-            { id: "aluno_28", nome: "MAYRON V. V. N. R.", senha: "18102010" },
+            { id: "aluno_01", nome: "ANNA V. T. D. S.", senha: "20122009" },
+            { id: "aluno_02", nome: "CRISTIANA S. G.", senha: "17112008" },
+            { id: "aluno_03", nome: "EDNEY D. A. S.", senha: "05092008" },
+            { id: "aluno_04", nome: "ELIANA P. D. L. C.", senha: "30122009" },
+            { id: "aluno_05", nome: "EROS P. E.", senha: "12052009" },
+            { id: "aluno_06", nome: "EVANDRO D. S. P.", senha: "04082009" },
+            { id: "aluno_07", nome: "FABIANI M. P.", senha: "10022009" },
+            { id: "aluno_08", nome: "GIULLIA T. B. D. L.", senha: "29102008" },
+            { id: "aluno_09", nome: "ISABELLY A. A. P.", senha: "06062008" },
+            { id: "aluno_10", nome: "JULIA D. D. A. P.", senha: "30032009" },
+            { id: "aluno_11", nome: "KAIQUE M. D. S.", senha: "09052008" },
+            { id: "aluno_12", nome: "KASSYANNE M. T.", senha: "06052009" },
+            { id: "aluno_13", nome: "KAUAN R. C.", senha: "26102009" },
+            { id: "aluno_14", nome: "KETELIN E. D. S.", senha: "09102009" },
+            { id: "aluno_15", nome: "KRYSTYAN A. M.", senha: "01092009" },
+            { id: "aluno_16", nome: "LAUANI S. F.", senha: "07052009" },
+            { id: "aluno_17", nome: "MAIANNY D. M.", senha: "30082009" },
+            { id: "aluno_18", nome: "MARCOS P. C. D. S.", senha: "25072008" },
+            { id: "aluno_19", nome: "MARIA E. F. S.", senha: "05072009" },
+            { id: "aluno_20", nome: "MATEUS D. S. M.", senha: "17012010" },
+            { id: "aluno_21", nome: "MATEUS F. D. S. P.", senha: "01062008" },
+            { id: "aluno_22", nome: "MIGUEL F. G. D. O.", senha: "27052009" },
+            { id: "aluno_23", nome: "MIGUEL M. D. A.", senha: "06122010" },
+            { id: "aluno_24", nome: "MIGUEL P. F. R.", senha: "17042009" },
+            { id: "aluno_25", nome: "MURILO S. D. A. C.", senha: "26052009" },
+            { id: "aluno_26", nome: "PYETRO G. G.", senha: "30082009" },
+            { id: "aluno_27", nome: "RAFAEL D. S. F.", senha: "12042009" },
+            { id: "aluno_28", nome: "RONALD M. B. M. D. S.", senha: "28062009" },
+            { id: "aluno_29", nome: "SHERON E. V. C.", senha: "01012010" },
+            { id: "aluno_30", nome: "THARCIELLY F. N.", senha: "12012010" },
+            { id: "aluno_31", nome: "VITOR D. V. M.", senha: "02032009" },
+            { id: "aluno_32", nome: "YASMIN D. B. E. B. G.", senha: "11052009" },
             { id: "aluno_test", nome: "ALUNO TESTE", senha: "123" }
         ];
 
-        // --- BANCO DE QUESTÕES BEM EXPLICADAS E DIFERENCIADAS (30 Pontos no Total) ---
+        // --- BANCO DE QUESTÕES (RECUP. TRIMESTRAL - 10 QUESTÕES) ---
         const bancoDeQuestoes = [
-            // CONJUNTO 1: Abstração / Decomposição / Padrões
             {
-                id: "q1_1", tipo: "multipla", correta: "b",
-                pergunta: "A Prefeitura de Muqui pediu para você criar um roteiro digital (um mapa) para o Encontro Nacional de Folia de Reis. Eles te deram um livro gigante com tudo: a cor da roupa dos palhaços, as letras das músicas que eles cantam, o cardápio do almoço e, finalmente, as ruas que eles vão passar e os horários.\n\nPara fazer o seu programa focado APENAS no 'Trajeto e Horários', você descartou e ignorou a cor da roupa e o almoço. Qual técnica da programação você usou aqui de forma inteligente?",
+                id: "q1", tipo: "multipla", correta: "b", pontos: 2.0,
+                pergunta: "De acordo com o texto da CoopMuqui, os produtores locais viviam uma situação de exploração. Qual foi o principal motivo estrutural que uniu tanto os moradores de Muqui quanto os 28 Pioneiros tecelões em 1844?",
                 opcoes: [
-                    "A) Reconhecimento de Padrões. Você percebeu que eles cantam a mesma música todo ano.",
-                    "B) Abstração. Você removeu da sua cabeça todos os detalhes que não importavam para focar apenas nas informações essenciais (o caminho e as horas).",
-                    "C) Decomposição. Você pegou o almoço e dividiu ele em partes menores.",
-                    "D) Ter um Fim (Finitude). Você parou de ler o livro porque cansou e encerrou o programa.",
-                    "E) Variável. Você guardou as roupas dos palhaços dentro de gavetas no computador."
+                    "A) A vontade de criar uma grande multinacional para enriquecer apenas os líderes fundadores do movimento.",
+                    "B) A necessidade de fugir de comerciantes abusivos, unindo forças econômicas para garantir preços e condições justas de sobrevivência.",
+                    "C) A ordem estrita do governo local, que obrigava todas as cidades com sítios históricos a criarem cooperativas.",
+                    "D) O desejo de monopolizar o mercado e cobrar preços 500% mais caros dos turistas que visitavam a cidade.",
+                    "E) A necessidade de acumular lucros milionários o mais rápido possível para comprar as empresas do Sr. Barreto."
                 ]
             },
             {
-                id: "q1_2", tipo: "multipla", correta: "c",
-                pergunta: "O Sítio Histórico de Muqui tem vários casarões antigos. O arquiteto da prefeitura notou algo interessante: toda vez que chove muito forte, o telhado de madeira sede sempre do mesmo lado nos casarões da Rua Direita e da Rua da Matriz. Usando a ideia de Programação, ele foi lá e já reforçou a madeira antes da próxima chuva.\n\nQual princípio da Lógica o arquiteto usou para resolver este problema no mundo real?",
+                id: "q2", tipo: "multipla", correta: "c", pontos: 2.0,
+                pergunta: "A CoopMuqui foi criada para atender as necessidades dos seus membros, enquanto o Sr. Barreto pensa como um investidor tradicional. Qual é a principal diferença de objetivo entre a cooperativa deles e uma Empresa Tradicional?",
                 opcoes: [
-                    "A) Decomposição, pois ele quebrou o telhado em pedacinhos de madeira mais fáceis de carregar.",
-                    "B) O Comando de Repetição (Loop), pois ele mandou chover várias vezes de propósito para testar.",
-                    "C) Reconhecimento de Padrões. Ele viu que o problema da chuva e da madeira se repetia sempre do mesmo jeito, e usou isso para prever e criar uma solução antes de acontecer.",
-                    "D) Abstração, porque ele ignorou que as casas eram velhas e fingiu que eram novas.",
-                    "E) Os avisos de tela (Alert), pois ele colocou uma placa perguntando para as casas se elas iam cair."
+                    "A) Cooperativas são proibidas por lei de utilizar tecnologia, enquanto empresas tradicionais usam aplicativos modernos.",
+                    "B) Numa cooperativa, todo o dinheiro gerado deve ser entregue integralmente à prefeitura da cidade.",
+                    "C) O foco da cooperativa é a prestação de serviços justos aos associados; já a empresa tradicional foca na maximização constante do lucro para os seus donos e investidores.",
+                    "D) Empresas tradicionais não pagam impostos, tornando a cooperativa muito mais cara para os trabalhadores.",
+                    "E) Não há diferença; ambas existem exclusivamente para gerar o máximo de lucro aos acionistas que detêm mais dinheiro."
                 ]
             },
             {
-                id: "q1_3", tipo: "multipla", correta: "a",
-                pergunta: "A grande Estação de Trem de Muqui vai ser restaurada e pintada. O pedreiro olhou para o tamanho da obra e ficou assustado. Ele então disse: 'É impossível fazer isso tudo de uma vez. Primeiro vamos arrumar só o chão, depois vamos arrumar só o teto e, na outra semana, pintamos as paredes'.\n\nEssa estratégia de pegar um problema enorme e dividi-lo em várias tarefas pequenas que são fáceis de resolver é conhecida na Lógica de Programação como:",
+                id: "q3", tipo: "multipla", correta: "d", pontos: 2.0,
+                pergunta: "Para a sua identidade visual, a CoopMuqui escolheu o símbolo clássico do cooperativismo: dois pinheiros inseridos num círculo. O que os 'dois pinheiros juntos' representam nesse contexto?",
                 opcoes: [
-                    "A) Decomposição.",
-                    "B) Variável Constante.",
-                    "C) Loop Infinito.",
-                    "D) Reconhecimento de Padrões.",
-                    "E) Abstração Estética."
+                    "A) A imortalidade do movimento cooperativista global.",
+                    "B) A ligação exclusiva da cooperativa com o agronegócio e a extração de madeira.",
+                    "C) A divisão da cooperativa em exatamente duas classes de membros: ricos e pobres.",
+                    "D) A união, a força coletiva e a solidariedade, mostrando que os associados se apoiam mutuamente para crescer.",
+                    "E) A necessidade de proteger o meio ambiente nas cidades históricas do Espírito Santo."
                 ]
             },
             {
-                id: "q1_4", tipo: "multipla", correta: "e",
-                pergunta: "Para a festa da cidade de Muqui, contrataram um robô de Inteligência Artificial para controlar o portão de entrada. Mas o programador esqueceu de algo básico: o robô abria o portão para as pessoas entrarem, mas nunca parou de tentar abrir, mesmo depois que a festa acabou e a rua estava vazia. O robô virou a noite toda lá abrindo o portão para os fantasmas.\n\nQual regra sagrada dos Algoritmos o programador quebrou?",
+                id: "q4", tipo: "multipla", correta: "b", pontos: 2.0,
+                pergunta: "O Sr. Barreto exigiu ter 50% dos votos de toda a cooperativa por investir R$ 500 mil. Caso a CoopMuqui obedeça aos princípios fundamentais do cooperativismo, qual deve ser a resposta do Presidente?",
                 opcoes: [
-                    "A) A regra do `prompt()`, pois o robô não perguntou o nome das pessoas que entravam.",
-                    "B) A regra da Abstração, porque o robô prestou muita atenção nos detalhes.",
-                    "C) A regra de mostrar os dados na tela do computador.",
-                    "D) A regra de não misturar texto com números.",
-                    "E) A regra de Ter um Fim (Finitude). Um algoritmo nunca pode funcionar para sempre sem parar. Ele tem de ter uma condição clara para terminar o seu trabalho."
-                ]
-            },
-
-            // CONJUNTO 2: Estruturas de Repetição / Loops e Bugs
-            {
-                id: "q2_1", tipo: "multipla", correta: "b",
-                pergunta: "No Carnaval de Muqui, o famoso Boi Pintadinho desce a rua. Você tentou fazer um código no computador que conta os passos do Boi. Usou o comando de repetição assim:\n\n`passos = 0;`\n`ENQUANTO (o_boi_estiver_andando == verdadeiro) FAÇA:`\n`passos = passos + 1;`\n\nMas você cometeu um erro feio: esqueceu de criar um sensor dentro do programa para avisar quando o boi cansou e parou de andar. O que vai acontecer com este programa no seu computador?",
-                opcoes: [
-                    "A) Vai funcionar muito bem, porque o navegador da internet é esperto e adivinha que horas o boi parou.",
-                    "B) Vai dar o erro de 'Loop Infinito'. Como o programa acha que o boi nunca parou de andar, ele vai contar passos para sempre até travar o seu computador e queimar a memória.",
-                    "C) Vai dar erro de Variável, porque somar números com `+ 1` é proibido na programação.",
-                    "D) A instrução ENQUANTO só funciona se tiver uma mensagem `alert()` pulando na tela a cada passo.",
-                    "E) O programa não vai rodar porque você não juntou (concatenou) a palavra passos com o boi."
+                    "A) Deve aceitar a exigência, pois nas cooperativas, quem injeta mais capital financeiro ganha o poder de veto nas reuniões.",
+                    "B) Deve negar a exigência, explicando que na cooperativa vigora a regra democrática de '1 pessoa = 1 voto'. Não importa o valor investido, a voz dele valerá o mesmo que a de qualquer produtor.",
+                    "C) Deve fazer uma contraproposta, oferecendo-lhe 49% dos votos, pois nenhum cooperado pode ter mais da metade absoluta do controle.",
+                    "D) Deve aceitar, mas apenas após o final do ano comercial, quando os lucros das ações já tiverem sido calculados.",
+                    "E) Deve negar a entrada do dinheiro, justificando que empresários são proibidos de se associarem a cooperativas."
                 ]
             },
             {
-                id: "q2_2", tipo: "multipla", correta: "d",
-                pergunta: "Você criou uma máquina automática para a Lanchonete da Praça de Muqui. O programa tinha um Comando de Repetição (While) para fritar 10 pastéis sozinhos:\n\n`var quantidade = 0;`\n`while (quantidade < 10) {`\n  `fritarPastel();`\n`}`\n\nQuando o pasteleiro ligou a máquina, ela não parou mais. Fritou mil pastéis até a cozinha encher de óleo e tudo quebrar. O que faltou você colocar na lógica para a máquina saber a hora de parar?",
+                id: "q5", tipo: "multipla", correta: "e", pontos: 2.0,
+                pergunta: "Alguns jovens associados compram os insumos baratos, vão embora e nunca participam das Assembleias Gerais, mas reclamam constantemente da gestão nos corredores. Qual conceito cooperativista eles estão a violar?",
                 opcoes: [
-                    "A) A palavra `while` tinha que estar em letras maiúsculas.",
-                    "B) O número 10 estava sem aspas, então a máquina achou que era uma letra.",
-                    "C) Faltou usar uma lista gigante (`array`) de pastéis.",
-                    "D) Faltou avisar a variável que ela cresceu! Em nenhum lugar dentro do comando você disse para aumentar o número de pastéis feitos (`quantidade = quantidade + 1`). Como a `quantidade` ficou parada no zero para sempre, a máquina nunca chegou em 10.",
-                    "E) Máquinas de fritar pastéis não suportam programação em JavaScript."
+                    "A) A regra do Capital Fixo, pois eles não deveriam comprar adubo sem antes pagar a taxa do governo.",
+                    "B) O Voto por Ações, já que, para terem o direito de reclamar, deveriam comprar mais cotas da CoopMuqui.",
+                    "C) A Livre Concorrência, visto que, como associados, deveriam comprar também no comércio tradicional.",
+                    "D) A regra do Conselho Fiscal, que exige que as reclamações sejam feitas por escrito e de forma anônima.",
+                    "E) O 'Papel Duplo do Associado', pois eles estão a agir apenas como 'clientes' (utilizadores) e a ignorar a sua responsabilidade como 'donos' (gestores) do negócio."
                 ]
             },
             {
-                id: "q2_3", tipo: "multipla", correta: "e",
-                pergunta: "O vereador de Muqui comprou um Drone para distribuir panfletos em 5 escolas rurais. Você escreveu o comando que repete a entrega (Loop) desta forma:\n\n`for (var escola = 5; escola > 10; escola++) {`\n  `entregarFolheto();`\n`}`\n\nVocê colocou o drone na grama, apertou ENTER, e ele desligou na hora sem entregar nem um único panfleto. Por que ele ignorou as suas ordens?",
+                id: "q6", tipo: "multipla", correta: "e", pontos: 2.0,
+                pergunta: "No fim do ano, um grupo exaltado exigiu dividir os R$ 100.000,00 imediatamente, sem reter nada, alegando ser 'lucro puro que deve ir para o bolso'. Por que eles estão tecnicamente e legalmente errados?",
                 opcoes: [
-                    "A) Porque drones não sabem ler o comando `for`, só comandos mais fáceis.",
-                    "B) Porque você não usou a função `prompt()` para perguntar ao drone se ele estava com bateria.",
-                    "C) Porque não se pode usar a matemática `++` se o número começar pelo 5.",
-                    "D) O nome 'escola' tinha que estar com aspas para o drone saber que é um texto.",
-                    "E) Erro na Condição. Você mandou o drone começar na escola 5 e disse para ele só trabalhar ENQUANTO o número da escola fosse 'MAIOR QUE 10' (`escola > 10`). Como 5 não é maior que 10, essa regra já nasce Falsa e o drone simplesmente recusa-se a começar."
+                    "A) Porque na cooperativa não se pode reter dinheiro para os membros; todo o valor deve ser doado à comunidade.",
+                    "B) Porque todo o dinheiro gerado nas cooperativas pertence integralmente ao Estado.",
+                    "C) Porque o saldo positivo gerado é chamado de 'Sobras' e só pode ser dividido entre quem for membro do Conselho de Administração.",
+                    "D) Eles não estão errados; cooperativas funcionam como empresas da Bolsa de Valores e devem distribuir 100% dos dividendos.",
+                    "E) Porque o saldo gerado é chamado de 'Sobras' e a cooperativa é obrigada, por lei, a reter uma percentagem em Fundos de Reserva (como o FATES) para garantir a estabilidade futura antes de distribuir o resto."
                 ]
             },
             {
-                id: "q2_4", tipo: "multipla", correta: "c",
-                pergunta: "Durante as nossas aulas no laboratório, passamos muito tempo 'Caçando Bugs' (erros) quando os códigos não funcionavam. Na programação profissional, chamamos a isso de 'Depuração'. O que é, na prática, fazer a Depuração do seu código?",
+                id: "q7", tipo: "multipla", correta: "b", pontos: 2.0,
+                pergunta: "O texto menciona que o saldo positivo de R$ 100.000,00 foi conferido 'centavo por centavo'. Para garantir que a CoopMuqui não sofra desvios e que as contas sejam auditadas corretamente, qual Órgão Social, formado pelos próprios membros, deve atuar de forma independente como 'cão de guarda' ou 'detetive'?",
                 opcoes: [
-                    "A) É passar um antivírus no computador para os Hackers não invadirem a nossa prova.",
-                    "B) É usar o comando especial `.toUpperCase()` para deixar tudo em caixa alta para ficar fácil de ler.",
-                    "C) É atuar como um detetive: ler o nosso próprio código com muita calma, linha por linha, para encontrar onde foi que a nossa lógica falhou e gerou o problema (Bug).",
-                    "D) É transformar tudo o que escrevemos em comandos HTML para as imagens ficarem mais bonitas.",
-                    "E) É desligar o computador e começar tudo do zero abrindo um arquivo novo."
-                ]
-            },
-
-            // CONJUNTO 3: Variáveis, Tipos de Dados e Operadores
-            {
-                id: "q3_1", tipo: "multipla", correta: "b",
-                pergunta: "O dono da padaria famosa no Centro Histórico de Muqui quis fazer um sistema que soma sozinho o valor de um Pão (R$ 15) com um Café (R$ 5). Ele digitou o código assim:\n\n`let precoPao = '15';`\n`let precoCafe = '5';`\n`let total = precoPao + precoCafe;`\n`alert(total);`\n\nMas, quando o programa rodou, em vez de mostrar '20', ele pulou na tela mostrando o número gigante '155'. Qual foi o erro simples de programação que causou essa bagunça?",
-                opcoes: [
-                    "A) Faltou usar a janela de pergunta `prompt()` para perguntar o valor exato ao cliente.",
-                    "B) Mistura de Número com Texto. Como ele colocou os números presos dentro de aspas ('15'), o computador achou que eram palavras comuns (Strings). O sinal de + só serviu para colar uma palavra na outra: '15' colado com '5' virou '155'.",
-                    "C) Ele esqueceu da regra da 'Decomposição' e não quebrou o número 15 ao meio.",
-                    "D) O comando `alert()` serve para mostrar avisos de perigo e não consegue fazer contas matemáticas fáceis.",
-                    "E) Ele deveria ter usado um comando If (Se) para perguntar para a máquina se ela queria somar de verdade."
+                    "A) A Assembleia Geral Extraordinária.",
+                    "B) O Conselho Fiscal.",
+                    "C) O Conselho de Administração.",
+                    "D) O Comitê de Marketing e Vendas.",
+                    "E) O Sindicato dos Trabalhadores Agrícolas."
                 ]
             },
             {
-                id: "q3_2", tipo: "multipla", correta: "c",
-                pergunta: "Um vigia da escola em Muqui fez um programa no computador para contar quantas vezes um aluno chato levou suspensão. Toda vez que o aluno fazia confusão, o vigia apertava um botão que ativava a regra:\n\n`var suspensoes = 0;`\n`(O botão do vigia roda isto:)`\n`suspensoes = 1;`\n\nNo final do ano, o aluno brigou 50 vezes, mas o computador mostrava que ele só tinha '1' suspensão gravada. Por que a memória do sistema não foi somando os números?",
-                opcoes: [
-                    "A) Variáveis do tipo 'var' não conseguem guardar números maiores que 10.",
-                    "B) O aluno não foi salvo dentro de uma Lista Gigante (Array).",
-                    "C) Erro de Lógica. A ordem `suspensoes = 1` apaga o passado e bota o número 1 de novo na gaveta toda vez, ela não está guardando o que já existia. Ele devia mandar o computador somar o que já tinha com mais um: `suspensoes = suspensoes + 1;`.",
-                    "D) A programação é rígida com o tamanho das letras (Case Sensitive) e a palavra devia estar em maiúsculo.",
-                    "E) A inteligência do computador protegeu o aluno e perdoou as suspensões antigas."
-                ]
-            },
-            {
-                id: "q3_3", tipo: "multipla", correta: "e",
-                pergunta: "Você é o programador do Teatro de Muqui e fez um código para verificar quem tem ingresso VIP usando a regra condicional de decisão (IF / SE):\n\n`if (ingresso == 'VIP') {`\n  `alert('Pode entrar no camarote!');`\n`}`\n\nMas você digitou apenas um sinal de igual (`=`) em vez de dois (`==`). Na noite da festa, os alunos que nem sequer tinham ingresso normal acabaram por conseguir entrar no camarote de luxo. Por que isso aconteceu?",
-                opcoes: [
-                    "A) A palavra 'VIP' tem só 3 letras e o computador não consegue ler textos curtos rápido o suficiente.",
-                    "B) Faltou usar a palavra Senão (`else`) logo em baixo do código.",
-                    "C) O aviso `alert()` estourou a segurança da internet.",
-                    "D) Como a gaveta estava aberta, qualquer um podia ver o que tinha dentro dela e copiar o ingresso.",
-                    "E) O erro é que usar um único sinal de igual (`=`) não serve para verificar ou comparar informações, serve para DAR um valor na marra. Você acabou mudando o ingresso de todo o mundo para 'VIP' sem querer no momento em que a máquina leu aquela linha."
-                ]
-            },
-            {
-                id: "q3_4", tipo: "multipla", correta: "d",
-                pergunta: "A regra de letras 'Maiúsculas e Minúsculas' (Case Sensitive) é a que mais causa dor de cabeça para os iniciantes. Se você guarda a população de Muqui assim no sistema: `let Moradores = 15000;`. E lá na frente do programa, manda o computador dividir esse número dessa forma: `moradores / 2`. O que o computador vai fazer?",
-                opcoes: [
-                    "A) Ele divide muito bem e mostra 7500, porque a máquina entende sinônimos.",
-                    "B) Ele cola os números como texto porque letras misturadas destroem a matemática.",
-                    "C) Ele finge que são duas cidades e mostra que Muqui tem 30 mil moradores.",
-                    "D) Ele trava e dá erro de que a variável não existe (Bug). O computador é literal: para ele a palavra 'Moradores' (com M grande) é totalmente diferente da palavra 'moradores' (com m pequeno). Você pediu para ele dividir algo que, aos olhos dele, ele nunca viu na vida.",
-                    "E) Ele roda normal se você colocar um `prompt()` perguntando se é a mesma palavra."
-                ]
-            },
-
-            // CONJUNTO 4: ASSOCIAÇÃO DE CONCEITOS E ESTRUTURAS (Duas perguntas de associação)
-            {
-                id: "q4_1", tipo: "associacao",
-                pergunta: "CENÁRIO DA ASSOCIAÇÃO 1 (Valendo 5,0 Pts): O App do Turista em Muqui.",
-                instrucao: "Você está ajudando a Prefeitura a criar um aplicativo para quem visita a cidade. Relacione cada ferramenta mágica da Lógica de Programação com o trabalho real que ela faz no aplicativo que você programou:",
+                id: "q8", tipo: "associacao", pontos: 3.0,
+                pergunta: "ASSOCIAÇÃO DE ÓRGÃOS E CONCEITOS (CoopMuqui)",
+                instrucao: "Conecte os órgãos e conceitos aplicados no estudo de caso da CoopMuqui às suas definições corretas.",
                 termos: [
-                    { value: "array", label: "A) Array (Lista Enorme)" },
-                    { value: "var", label: "B) Variável (Caixa de Memória)" },
-                    { value: "ifelse", label: "C) If / Else (Regra: Se/Senão)" },
-                    { value: "prompt", label: "D) Comando de Pergunta (prompt)" },
-                    { value: "alert", label: "E) Comando de Aviso (alert)" }
+                    { value: "ag", label: "Assembleia Geral" },
+                    { value: "cf", label: "Conselho Fiscal" },
+                    { value: "sobras", label: "Sobras Financeiras" },
+                    { value: "papel", label: "Papel Duplo do Associado" }
                 ],
                 lacunas: [
-                    { id: "lac0", texto: "Janela que pula na tela mandando o turista usar o teclado para ESCREVER de qual cidade ele veio." },
-                    { id: "lac1", texto: "Uma caixinha solitária no cérebro do programa que serve só para guardar e lembrar quanto dinheiro o turista tem agora no bolso." },
-                    { id: "lac2", texto: "A inteligência do App: Olha a idade do visitante. Se tiver mais de 18 anos libera a página das cervejarias locais; se não tiver, bloqueia e manda ele para a página de sorvetes." },
-                    { id: "lac3", texto: "Uma 'gaveta comprida' super forte capaz de arquivar e organizar de uma vez só os nomes das 200 fazendas mais bonitas do município." },
-                    { id: "lac4", texto: "Janela rápida que surge do nada apenas para jogar a mensagem 'Bem-vindo ao maior Sítio Histórico do Estado!' na cara do visitante e sumir quando ele clica OK." }
+                    { id: "lac0", texto: "Órgão máximo de poder, onde todos os associados da CoopMuqui devem reunir-se para votar e tomar as grandes decisões da cooperativa." },
+                    { id: "lac1", texto: "O resultado positivo gerado no final do ano de trabalho, que é devolvido aos membros de forma justa e proporcional ao que cada um operou." },
+                    { id: "lac2", texto: "O princípio que lembra aos jovens de Muqui que eles são, ao mesmo tempo, donos do negócio e utilizadores dos serviços oferecidos." },
+                    { id: "lac3", texto: "Órgão responsável por auditar, fiscalizar e conferir as contas e os balanços da cooperativa centavo por centavo." }
                 ],
-                corretas: { "lac0": "prompt", "lac1": "var", "lac2": "ifelse", "lac3": "array", "lac4": "alert" }
+                corretas: { "lac0": "ag", "lac1": "sobras", "lac2": "papel", "lac3": "cf" }
             },
             {
-                id: "q4_2", tipo: "associacao",
-                pergunta: "CENÁRIO DA ASSOCIAÇÃO 2 (Valendo 5,0 Pts): O Sistema da Biblioteca Municipal.",
-                instrucao: "Os computadores da Biblioteca de Muqui estão sendo programados pela sua turma. Conecte corretamente a peça do código àquilo que ela faz para a bibliotecária no dia a dia:",
+                id: "q9", tipo: "associacao", pontos: 3.0,
+                pergunta: "ASSOCIAÇÃO HISTÓRICA E SIMBÓLICA",
+                instrucao: "Conecte os símbolos e fatos históricos abordados em sala e mencionados no texto.",
                 termos: [
-                    { value: "alert", label: "A) Aviso seco na Tela (alert)" },
-                    { value: "prompt", label: "B) Tela de Digitação (prompt)" },
-                    { value: "array", label: "C) Lista de muitos itens (Array)" },
-                    { value: "ifelse", label: "D) O Juiz das Regras (If/Else)" },
-                    { value: "var", label: "E) Gaveta Única (Variável)" }
+                    { value: "rochdale", label: "Pioneiros de Rochdale (Inglaterra)" },
+                    { value: "pinheiros", label: "Dois Pinheiros" },
+                    { value: "circulo", label: "Círculo" },
+                    { value: "empresa", label: "Empresa Privada Tradicional (S/A)" }
                 ],
                 lacunas: [
-                    { id: "lac0", texto: "A prateleira virtual do seu código. Capaz de arrumar e lembrar o nome de todos os 5.000 livros juntos no mesmo lugar." },
-                    { id: "lac1", texto: "A inteligência lógica do código: Vê se o livro foi devolvido no prazo. Se sim, dá uma mensagem de obrigado. Senão, dá uma multa." },
-                    { id: "lac2", texto: "O comando de pop-up que pula no meio do ecrã pedindo ao leitor: 'Por favor, escreva o seu nome para pegar o livro emprestado'." },
-                    { id: "lac3", texto: "Uma gaveta solitária na memória onde guardamos uma única informação, como o valor exato da multa atual de um aluno." },
-                    { id: "lac4", texto: "O comando inofensivo de saída que simplesmente emite a notificação em pop-up: 'Livro devolvido com sucesso!', para o utilizador dar OK." }
+                    { id: "lac0", texto: "Forma geométrica presente na logomarca que representa a imortalidade, a eternidade e o ciclo contínuo do movimento." },
+                    { id: "lac1", texto: "O grupo histórico de trabalhadores que, enfrentando exploração severa, fundou a primeira cooperativa moderna e justa em 1844." },
+                    { id: "lac2", texto: "O modelo de negócio ambicionado pelo Sr. Barreto, que visa o controle por quem tem mais dinheiro e foca exclusivamente na maximização do lucro." },
+                    { id: "lac3", texto: "As árvores desenhadas na porta da CoopMuqui, escolhidas por serem resilientes, representando união, força e apoio mútuo." }
                 ],
-                corretas: { "lac0": "array", "lac1": "ifelse", "lac2": "prompt", "lac3": "var", "lac4": "alert" }
+                corretas: { "lac0": "circulo", "lac1": "rochdale", "lac2": "empresa", "lac3": "pinheiros" }
             },
             {
-                id: "q4_3", tipo: "associacao",
-                pergunta: "CENÁRIO DA ASSOCIAÇÃO 3 (Valendo 5,0 Pts): Transporte Escolar de Muqui.",
-                instrucao: "A app de rastreio dos autocarros amarelos (ônibus) das escolas rurais precisa ser codificada. Cada componente do código tem um papel estrito. Associe o conceito correto a cada situação descrita pelo motorista:",
-                termos: [
-                    { value: "var", label: "A) Declarar uma Variável" },
-                    { value: "prompt", label: "B) Comando prompt()" },
-                    { value: "ifelse", label: "C) Estrutura If / Else" },
-                    { value: "array", label: "D) Array (Vetor)" },
-                    { value: "alert", label: "E) Comando alert()" }
-                ],
-                lacunas: [
-                    { id: "lac0", texto: "O comando de interação que obriga o condutor a inserir (escrever) num pop-up flutuante quantos litros de combustível foram colocados na bomba." },
-                    { id: "lac1", texto: "A regra de ouro de inteligência: Lê o combustível atual. Se for maior que 10 litros, prossegue a viagem; se for menor, para no posto imediatamente." },
-                    { id: "lac2", texto: "A 'coleção' suprema capaz de armazenar e empilhar a rota inteira do dia (Passo a Passo: Fazenda, Praça, Sítio Histórico, Escola) no mesmo pacote." },
-                    { id: "lac3", texto: "A função mais básica de saída de dados, que apenas 'esbarra' no utilizador com a mensagem limpa: 'Atenção! Pneus calibrados.' no meio da tela." },
-                    { id: "lac4", texto: "O ato de nomear uma simples caixa de memória RAM (Ex: `let assentosVazios = 15;`) que será usada para somar e subtrair alunos a cada paragem." }
-                ],
-                corretas: { "lac0": "prompt", "lac1": "ifelse", "lac2": "array", "lac3": "alert", "lac4": "var" }
-            },
-            {
-                id: "q4_4", tipo: "associacao",
-                pergunta: "CENÁRIO DA ASSOCIAÇÃO 4 (Valendo 5,0 Pts): A Loja de Lembranças e Artesanato.",
-                instrucao: "Uma loja do Sítio Histórico decidiu migrar do caderninho para um sistema em JavaScript. Como Engenheiro(a) de Software, precisa escolher a ferramenta certa para as necessidades do artesão. Associe a técnica JavaScript com o seu equivalente na loja:",
-                termos: [
-                    { value: "ifelse", label: "A) Condicional If/Else" },
-                    { value: "alert", label: "B) alert()" },
-                    { value: "var", label: "C) var / let (Variável)" },
-                    { value: "array", label: "D) Array (Lista)" },
-                    { value: "prompt", label: "E) prompt()" }
-                ],
-                lacunas: [
-                    { id: "lac0", texto: "O gaveteiro de informações do código. Espaço volátil usado para registrar o valor atual e momentâneo do Troco do cliente, que muda a cada compra." },
-                    { id: "lac1", texto: "A caixa pop-up que aborda o artesão logo de manhã exigindo que ele digite (com o teclado) o preço do item que vai ser vendido." },
-                    { id: "lac2", texto: "O gigantesco organizador de múltiplos dados usado pelo artesão para listar os 40 tipos de máscaras de Boi Pintadinho que ele tem em estoque no mesmo pacote unificado." },
-                    { id: "lac3", texto: "A espinha dorsal de pensamento da loja: Confere se o cliente comprou mais de 100 reais. Se sim, dá 10% de desconto. Se não, não dá nada." },
-                    { id: "lac4", texto: "A caixa de notificação seca que desponta na tela no fim do expediente apenas para mostrar a frase estática: 'Caixa Fechado com Sucesso', pedindo confirmação." }
-                ],
-                corretas: { "lac0": "var", "lac1": "prompt", "lac2": "array", "lac3": "ifelse", "lac4": "alert" }
-            },
-
-            // CONJUNTO 5: DISCURSIVA E PRÁTICA (10.0 Pontos -> Update: vai valer 6.0 Pontos se a associação valer 10)
-            // Espera, a prova terá 7 de Múltipla, 2 de Associação e 1 Discursiva.
-            {
-                id: "q5_1", tipo: "discursiva",
-                pergunta: "CENÁRIO PRÁTICO (Valendo 6,0 Pts): O Controle do Cinema no Sítio Histórico.",
-                instrucao: "O Festival de Cinema de Muqui vai passar um filme de terror proibido para menores de 18 anos. Você é o Chefe da Informática e precisa criar o código (ou explicar muito bem como a lógica funciona passo a passo) para fazer a 'Catraca Digital' que barra quem não tem idade.\n\nSiga obrigatoriamente estes 3 passos para ganhar os 6 pontos:\n\n1) PERGUNTA INICIAL: Mostre como o programa faz uma janela aparecer na tela mandando a pessoa DIGITAR a idade dela. Lembre-se de avisar que essa idade tem que ficar salva na memória (Variável).\n2) O JUIZ DA CATRACA: Escreva a regra inteligente (O famoso Se / Senão) que testa: O número que a pessoa digitou é MAIOR OU IGUAL (>=) a 18?\n3) AS DUAS RESPOSTAS: Mostre o que o computador avisa se a regra for verdadeira ('Sua entrada está liberada') e o que ele avisa na tela se for falso ('Você é muito novo, vá embora').",
-                dica: "DICA QUENTE PARA RECUPERAR A NOTA:\n> Você precisa mostrar que sabe para que serve o 'var' e o 'prompt()'.\n> Você tem de mostrar o 'If' com a regrinha do 18 dentro dos parênteses, seguido do 'else'.\n> Você tem de mostrar que o 'alert()' fica dentro do 'if' para avisar o pessoal."
-            },
-            {
-                id: "q5_2", tipo: "discursiva",
-                pergunta: "CENÁRIO PRÁTICO (Valendo 6,0 Pts): O Novo Radar de Trânsito de Muqui.",
-                instrucao: "A prefeitura instalou um radar fotográfico de alta tecnologia e pediu para você (o programador oficial da cidade) construir o 'cérebro' do radar que manda as multas.\n\nEscreva os comandos em código JavaScript (ou explique muito bem o passo a passo com o nome das ferramentas lógicas) seguindo as 3 exigências abaixo para ganhar os 6 pontos:\n\n1) GUARDAR O NÚMERO: Mostre como abrir a janelinha (prompt) pedindo para a polícia digitar a VELOCIDADE que o carro passou, guardando isso numa gaveta de memória (variável).\n2) A BALANÇA DA LEI: O limite é estritamente 60 km/h. Escreva a regra condicional que testa: A velocidade que foi salva na gaveta é MAIOR (>) que 60?\n3) O GRITO FINAL: Diga como o sistema usa essa regra. Se for verdadeira, ele joga o aviso 'Multa Registrada!' na cara da polícia. Senão (se for falso e o carro estiver devagar), ele joga o aviso 'Tudo ok, o motorista é bom'.",
-                dica: "DICA QUENTE PARA RECUPERAR A NOTA:\n> Quero ver você misturando o 'var/let' com a janelinha do 'prompt()'.\n> Depois monte a sua estrutura 'if' (verificando se o número passou de 60) e o irmão dele, o 'else'.\n> Dentro de cada porta do 'if / else', coloque a caixa estática do 'alert()' com as frases pedidas."
-            },
-            {
-                id: "q5_3", tipo: "discursiva",
-                pergunta: "CENÁRIO PRÁTICO (Valendo 6,0 Pts): Os Descontos da Feira de Artesanato.",
-                instrucao: "A Feira de Muqui tem uma nova regra para atrair turistas: Todo cliente que gastar 100 reais ou mais, ganha uma máscara do Boi Pintadinho de brinde. Mas os vendedores não sabem fazer a conta rápido. Crie o aplicativo que os ajuda!\n\nTranscreva os comandos de código em JavaScript (ou explique de forma extremamente lógica e técnica) para atingir as 3 metas abaixo para fechar a prova:\n\n1) CAÇANDO DADOS: O App tem de abrir uma caixa pedindo para o vendedor digitar 'Quanto o turista pagou?'. Guarde o valor que o vendedor digitar dentro do sistema da forma certa.\n2) A CONTA INTELIGENTE: Use a regra que ensinamos para o computador se perguntar sozinho: Esse valor é MAIOR OU IGUAL a 100?\n3) O PRÊMIO NA TELA: Baseado na conta, o programa tem que avisar as coisas na tela: Se for 100 ou mais, jogue o aviso 'Dar brinde ao Turista VIP'. Caso a pessoa tenha gastado pouquinho (falso), emita o aviso 'Apenas agradecer e dar tchau'.",
-                dica: "DICA QUENTE PARA RECUPERAR A NOTA:\n> Você precisa dominar a dupla 'Variável' + 'prompt()'.\n> Faça a grande divisão das águas da Lógica: A estrutura 'If / Else' que olha para o número 100.\n> Mostre as mensagens de saída usando a função 'alert()' trancada dentro da resposta do 'if'."
-            },
-            {
-                id: "q5_4", tipo: "discursiva",
-                pergunta: "CENÁRIO PRÁTICO (Valendo 6,0 Pts): O Guarda do Museu do Sítio Histórico.",
-                instrucao: "O Museu de Muqui instituiu uma lei rigorosa: Apenas idosos têm direito a isenção de bilhete (Gratuidade). O programador antigo foi despedido por deixar todo mundo entrar sem pagar. Crie a proteção lógica em JavaScript!\n\nPrograme ou descreva o passo a passo absoluto usando Lógica Computacional para as 3 fases do portão virtual:\n\n1) PERGUNTA OBRIGATÓRIA: O código tem de apresentar na tela a questão de captura: 'Digite a sua idade em anos'. Esse dado TEM de ser armazenado e lembrado numa gaveta de sistema.\n2) A CONDIÇÃO DA LEI: Abra a estrutura de verificação inteligente para aferir se a idade sugada é MAIOR OU IGUAL a 60 anos, que é o marco oficial da terceira idade no Brasil.\n3) CANCELA DIGITAL: Mediante o resultado acima, jogue um aviso seco na tela exibindo 'Entrada Gratuita Liberada' se for verdadeira, ou um aviso exibindo 'Por favor, pague 10 Reais no caixa' se a condição for falsa.",
-                dica: "DICA HACKER: O seu cérebro de programador precisa desenhar:\n> A união mortal entre 'var/let' e o mestre da sucção de dados 'prompt()'.\n> O juiz cego 'if / else' fazendo o teste lógico (idade >= 60) entre os parênteses.\n> As sirenes digitais 'alert()' cravadas dentro das chaves { } para gritar a sentença final."
+                id: "q10", tipo: "discursiva", pontos: 10.0,
+                pergunta: "MISSÃO DISCURSIVA FINAL: Análise Crítica de Cenário",
+                instrucao: "Imagine um cenário alternativo onde a CoopMuqui desiste de ser uma cooperativa, aceita a proposta milionária do Sr. Barreto e transforma-se numa Empresa Privada Tradicional (S/A), tendo ele como dono maioritário das ações.\n\nEscreva um texto claro e detalhado analisando como a dinâmica da instituição mudaria de forma dramática nestes dois pontos centrais:\n\n1) PODER DE DECISÃO: Como as decisões passariam a ser tomadas nas reuniões? De quem passaria a ser a voz mais forte na empresa?\n2) DESTINO DO DINHEIRO: O que aconteceria com os R$ 100.000,00 gerados no final do ano? A divisão do dinheiro ('lucro' vs 'sobras') continuaria a ser justa e igualitária?",
+                dica: "DICA DE OURO: Lembre-se de explicar, com as suas próprias palavras, a diferença entre o Voto Democrático (1=1) e o Voto por Capital. Além disso, mencione para quem vai a maior parte dos lucros quando uma empresa tem um investidor gigante que detém mais de 50% dela."
             }
         ];
 
@@ -719,21 +710,12 @@
             progressBar: document.getElementById('progress-bar')
         };
 
-        const safeBind = (id, event, handler) => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener(event, handler);
-        };
-
-        safeBind('btn-fechar-alerta', 'click', window.fecharAlerta);
-
-        if (ui.selAluno) {
-            bancoDeAlunos.sort((a,b) => (a.nome || "").localeCompare(b.nome || "")).forEach(a => {
-                const opt = document.createElement('option');
-                opt.value = a.id;
-                opt.textContent = a.nome;
-                ui.selAluno.appendChild(opt);
-            });
-        }
+        bancoDeAlunos.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.id;
+            opt.textContent = a.nome;
+            ui.selAluno.appendChild(opt);
+        });
 
         async function doAuth() {
             try {
@@ -744,244 +726,95 @@
             return await signInAnonymously(auth);
         }
 
-        const delay = ms => new Promise(res => setTimeout(res, ms));
-
-        function getGeminiApiKey() {
-            let key = sessionStorage.getItem('gemini_api_key');
-            if (!key) {
-                key = prompt("🔒 Autenticação de IA\nPor favor, insira a sua chave da API do Google Gemini para habilitar a correção inteligente:");
-                if (key) sessionStorage.setItem('gemini_api_key', key);
+        safeBind('btn-login', 'click', async () => {
+            const id = ui.selAluno.value;
+            const pass = ui.inputSenha.value.trim();
+            
+            if (!id || !pass) {
+                ui.loginErr.textContent = "⚠️ Por favor, selecione seu nome e digite a senha.";
+                ui.loginErr.classList.remove('hidden');
+                return;
             }
-            return key;
-        }
 
-        let cachedGeminiModel = null;
+            const aluno = bancoDeAlunos.find(a => a.id === id);
+            if (aluno.senha !== pass) {
+                ui.loginErr.textContent = "❌ Senha incorreta. Verifique sua data de nascimento.";
+                ui.loginErr.classList.remove('hidden');
+                return;
+            }
 
-        async function getBestGeminiModel(apiKey) {
-            if (cachedGeminiModel) return cachedGeminiModel;
+            ui.loginErr.classList.add('hidden');
+            ui.btnLogin.innerHTML = `A conectar <span class="animate-spin ml-2">⏳</span>`;
             
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                if (!response.ok) {
-                    cachedGeminiModel = "gemini-1.5-flash"; 
-                    return cachedGeminiModel;
-                }
-
-                const data = await response.json();
-                const validModels = (data.models || []).filter(m => 
-                    m.supportedGenerationMethods && 
-                    m.supportedGenerationMethods.includes("generateContent") &&
-                    m.name.includes("gemini")
-                );
+                const cred = await doAuth();
+                authUserId = cred.user.uid;
+                alunoLogado = aluno;
                 
-                let bestModel = validModels.find(m => m.name === "models/gemini-1.5-flash");
-                if (!bestModel) bestModel = validModels.find(m => m.name.includes("flash")); 
-                
-                cachedGeminiModel = bestModel ? bestModel.name.replace('models/', '') : "gemini-1.5-flash";
-                return cachedGeminiModel;
-            } catch (e) {
-                cachedGeminiModel = "gemini-1.5-flash";
-                return cachedGeminiModel;
+                // NOTA: USANDO COLEÇÃO ISOLADA 'config_recuperacao_trimestral_coop'
+                const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_trimestral_coop', 'status'));
+                globalStatus = snap.exists() ? snap.data().estado : "fechado";
+
+                ui.login.style.display = 'none';
+                rotearUsuario();
+            } catch (e) { 
+                mostrarAlerta("Erro de Ligação", "Não foi possível contactar o servidor. Tente novamente.", "🔌");
+                ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
             }
-        }
-
-        async function fetchGeminiWithRetry(payload) {
-            const apiKey = getGeminiApiKey();
-            if (!apiKey) throw new Error("Chave de API do Gemini não fornecida. Operação cancelada.");
-
-            const modelName = await getBestGeminiModel(apiKey);
-            let url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            
-            if (typeof __app_id !== 'undefined') {
-                url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            }
-
-            const retries = [1000, 2000, 4000, 8000, 16000];
-
-            for (let i = 0; i < retries.length; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        if (response.status === 400 && typeof __app_id === 'undefined') {
-                            sessionStorage.removeItem("gemini_api_key");
-                        }
-                        if (response.status === 429) {
-                            if (i < retries.length - 1) {
-                                console.warn(`⚠️ Rate Limit atingido (429). Retentando em ${retries[i]}ms...`);
-                                await delay(retries[i]);
-                                continue;
-                            } else {
-                                throw new Error(`Cota da API excedida (HTTP 429). O modelo selecionado não possui quota gratuita ou o limite de requisições por minuto foi atingido.\n\nDetalhe do erro: ${errText}`);
-                            }
-                        }
-                        throw new Error(`HTTP ${response.status}: ${errText}`);
-                    }
-                    return await response.json();
-                } catch (e) {
-                    if (i === retries.length - 1) throw e;
-                    await delay(retries[i]);
-                }
-            }
-        }
-
-        async function avaliarRespostaComIA(respostaDiscursiva, nomeAluno, questaoTextoObj) {
-            const prompt = `A questão era:\n${questaoTextoObj.instrucao}\n\nA resposta do aluno (${nomeAluno}) foi:\n"${respostaDiscursiva}"`;
-
-            const systemInstructionText = `Você é o professor avaliador de lógica de programação da turma, falando diretamente com seu aluno na 1ª pessoa do singular. A sua tarefa é corrigir a resposta do aluno para uma questão discursiva que vale de 0 a 6.0 pontos na prova de recuperação trimestral. Considere acertos parciais. Dê notas fracionadas (ex: 2.0, 3.5, 4.0, 5.5). Zere a nota apenas se o aluno deixou em branco ou fugiu totalmente do tema da lógica exigida (prompt, variáveis, if/else, alert).\n\nREGRAS DE FEEDBACK VISUAL E TOM DE VOZ:\n- Inicie SEMPRE o texto exatamente com 'Olá, ${nomeAluno}.'\n- O seu tom deve ser MUITO LEVE, POSITIVO E EMPÁTICO. Eles são alunos iniciantes do ensino médio tentando recuperar a nota trimestral. NUNCA use palavras duras.\n- SEPARE O TEXTO EM TÓPICOS usando quebras de linha duplas (\\n\\n).\n- Estruture o feedback usando os seguintes tópicos textuais:\n  * 'Rúbrica de Correção:': Detalhe a pontuação obtida em cada critério esperado da questão, justificando a nota final em 6.0.\n  * 'Pontos Fortes:'\n  * 'Oportunidades de Melhoria:'\n- NÃO USE EMOJIS.\n- NUNCA use frases genéricas de IA como 'estou aqui para ajudar'.\n- Finalize sempre com uma breve afirmação de incentivo focada no esforço de aprendizagem.`;
-
-            const payload = {
-                systemInstruction: {
-                    parts: [{text: systemInstructionText}]
-                },
-                contents: [{parts: [{text: prompt}]}],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "OBJECT",
-                        properties: {
-                            nota: { type: "NUMBER", description: "Nota decimal de 0.0 a 6.0" },
-                            feedback: { type: "STRING", description: "Feedback construtivo e objetivo para o aluno" }
-                        },
-                        required: ["nota", "feedback"]
-                    }
-                }
-            };
-
-            const dataAPI = await fetchGeminiWithRetry(payload);
-            if (!dataAPI.candidates || dataAPI.candidates.length === 0) {
-                throw new Error("A resposta foi bloqueada por filtros de segurança ou retornou vazia.");
-            }
-            let resultText = dataAPI.candidates[0].content.parts[0].text;
-            resultText = resultText.replace(/```json/gi, '').replace(/```/g, '').trim();
-            
-            const parsed = JSON.parse(resultText);
-            
-            if (typeof parsed.nota !== 'number' || !parsed.feedback || parsed.feedback.trim() === "") {
-                throw new Error("A IA devolveu dados incompletos ou em branco.");
-            }
-            
-            return parsed;
-        }
-
-        if (ui.btnLogin) {
-            ui.btnLogin.addEventListener('click', async () => {
-                const id = ui.selAluno?.value;
-                const pass = ui.inputSenha?.value?.trim();
-                
-                if (!id || !pass) {
-                    if (ui.loginErr) {
-                        ui.loginErr.textContent = "⚠️ Por favor, selecione seu nome e digite a senha.";
-                        ui.loginErr.classList.remove('hidden');
-                    }
-                    return;
-                }
-
-                const aluno = bancoDeAlunos.find(a => a.id === id);
-                if (aluno.senha !== pass) {
-                    if (ui.loginErr) {
-                        ui.loginErr.textContent = "❌ Senha incorreta. Verifique se os números estão corretos.";
-                        ui.loginErr.classList.remove('hidden');
-                    }
-                    return;
-                }
-
-                if (ui.loginErr) ui.loginErr.classList.add('hidden');
-                if (ui.btnLogin) ui.btnLogin.innerHTML = `Conectando <span class="animate-spin ml-2">⏳</span>`;
-                
-                try {
-                    const cred = await doAuth();
-                    authUserId = cred.user.uid;
-                    alunoLogado = aluno;
-                    
-                    const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
-                    globalStatus = snap.exists() ? snap.data().estado : "fechado";
-
-                    if (ui.login) ui.login.style.display = 'none';
-                    rotearUsuario();
-                } catch (e) { 
-                    window.mostrarAlerta("Erro de Ligação", "A internet falhou ao tentar conectar com a escola. Tente novamente.", "🔌");
-                    if (ui.btnLogin) ui.btnLogin.innerHTML = `Entrar na Prova <span>🚀</span>`; 
-                }
-            });
-        }
+        });
 
         async function rotearUsuario() {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id));
+            // NOTA: USANDO COLEÇÃO ISOLADA 'exames_recuperacao_trimestral_coop'
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', alunoLogado.id));
             const data = snap.exists() ? snap.data() : null;
 
             if (data && data.finalizado) {
                 if (globalStatus === "resultados" || globalStatus === "notas") {
-                    if (ui.results) ui.results.style.display = 'flex';
+                    ui.results.style.display = 'flex';
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0)));
+                    document.getElementById('res-nota-total').textContent = total.toFixed(1).replace('.', ',');
+                    document.getElementById('res-aluno-nome').textContent = alunoLogado.nome;
                     
-                    const nAuto = (data.notaAutomatica || 0) + (data.notaAssociacao || 0);
-                    const nDisc = parseFloat(data.notaDiscursiva) || 0;
-                    const total = nAuto + nDisc;
-                    
-                    const resTotalEl = document.getElementById('res-nota-total');
-                    if (resTotalEl) resTotalEl.textContent = total.toFixed(2).replace('.', ',');
-                    
-                    const resNomeEl = document.getElementById('res-aluno-nome');
-                    if (resNomeEl) resNomeEl.textContent = alunoLogado.nome;
-
-                    const btnVerProva = document.getElementById('btn-ver-prova-corrigida');
-                    if (btnVerProva) {
-                        if (globalStatus === "notas") {
-                            btnVerProva.style.display = 'none';
-                        } else {
-                            btnVerProva.style.display = 'flex';
-                            btnVerProva.onclick = () => {
-                                if (ui.results) ui.results.style.display = 'none';
-                                renderizarProvaRevisao(data, false);
-                            };
-                        }
+                    const btnVer = document.getElementById('btn-ver-prova-corrigida');
+                    if (globalStatus === "notas") {
+                        btnVer.classList.add('hidden');
+                    } else {
+                        btnVer.classList.remove('hidden');
+                        btnVer.onclick = () => renderizarProvaRevisao(data, false);
                     }
                 } else {
-                    window.mostrarAlerta("Avaliação Entregue", "Você já entregou esta prova. Guardamos suas respostas em segurança. Aguarde o professor liberar as notas.", "✅");
-                    if (ui.login) ui.login.style.display = 'flex';
-                    if (ui.btnLogin) ui.btnLogin.innerHTML = `Entrar na Prova <span>🚀</span>`; 
+                    mostrarAlerta("Avaliação Concluída", "Já entregou esta recuperação. As suas respostas estão guardadas em segurança. Aguarde que o professor liberte o acesso aos resultados.", "✅");
+                    ui.login.style.display = 'flex';
+                    ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
                 }
                 return;
             }
 
-            if (globalStatus === "fechado") { 
-                window.mostrarAlerta("Prova Fechada", "O professor bloqueou o acesso no momento. Aguarde ele liberar a entrada para começar.", "🔒");
-                if (ui.login) ui.login.style.display = 'flex';
-                if (ui.btnLogin) ui.btnLogin.innerHTML = `Entrar na Prova <span>🚀</span>`; 
+            if (globalStatus === "fechado" || globalStatus === "resultados" || globalStatus === "notas") { 
+                mostrarAlerta("Acesso Restrito", "A recuperação encontra-se bloqueada para novas submissões no momento.", "🔒");
+                ui.login.style.display = 'flex';
+                ui.btnLogin.innerHTML = `Aceder à Recuperação <span>🚀</span>`; 
                 return; 
             }
 
-            const headerNome = document.getElementById('header-aluno-nome');
-            if (headerNome) headerNome.textContent = alunoLogado.nome;
-            
+            document.getElementById('header-aluno-nome').textContent = alunoLogado.nome;
             prepararQuestoes(data);
-            if (ui.start) ui.start.style.display = 'flex';
+            ui.start.style.display = 'flex';
         }
 
         function prepararQuestoes(data) {
             if (data && data.ordem) {
                 ordemQuestoes = data.ordem; 
             } else {
-                // Seleção Aleatória de 10 Questões (7 Múltiplas, 2 Associação, 1 Discursiva)
-                const mcPool = bancoDeQuestoes.filter(q => q.tipo === "multipla").sort(() => Math.random() - 0.5);
-                const assocPool = bancoDeQuestoes.filter(q => q.tipo === "associacao").sort(() => Math.random() - 0.5);
-                const discPool = bancoDeQuestoes.filter(q => q.tipo === "discursiva").sort(() => Math.random() - 0.5);
-                
-                const selectedMC = mcPool.slice(0, 7).map(q => q.id);
-                const selectedAssoc = assocPool.slice(0, 2).map(q => q.id);
-                const selectedDisc = discPool.slice(0, 1).map(q => q.id);
-                
-                ordemQuestoes = [...selectedMC, ...selectedAssoc, ...selectedDisc];
+                // Recuperação Trimestral: Embaralha Múltipla escolha e Associação (1 a 9). Discursiva no final (id q10).
+                let m = bancoDeQuestoes.filter(q => q.tipo !== "discursiva").map(q => q.id).sort(() => Math.random() - 0.5);
+                let rest = bancoDeQuestoes.filter(q => q.tipo === "discursiva").map(q => q.id);
+                ordemQuestoes = [...m, ...rest];
                 salvarProgresso(false); 
             }
             desenharQuestoes();
             
-            if(data && data.respostas && ui.form) {
+            if(data && data.respostas) {
                 Object.keys(data.respostas).forEach(key => {
                     const el = ui.form.elements[key];
                     if(el) el.value = data.respostas[key];
@@ -993,55 +826,41 @@
             let html = "";
             ordemQuestoes.forEach((id, idx) => {
                 const q = bancoDeQuestoes.find(b => b.id === id);
-                if (!q) return;
-
                 const hidden = idx === 0 ? "" : "hidden";
                 
-                let pontuacao = "";
-                if (q.tipo === "multipla") pontuacao = "2,0 Pts";
-                else if (q.tipo === "associacao") pontuacao = "5,0 Pts";
-                else if (q.tipo === "discursiva") pontuacao = "6,0 Pts";
-
-                const badgePontos = `<span class="inline-block bg-red-100 text-red-800 text-[10px] md:text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-red-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                let ptLabel = q.pontos === 1.0 ? "1,0 Pt" : `${q.pontos.toFixed(1).replace('.', ',')} Pts`;
+                const badgePontos = `<span class="inline-block bg-amber-100 text-amber-800 text-[10px] md:text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-amber-200 mt-1 md:mt-0">Valendo ${ptLabel}</span>`;
                 
                 html += `<div id="slide-${idx}" class="slide-question ${hidden} slide-fade min-h-[50vh] md:min-h-[60vh]">`;
                 
                 if(q.tipo === "multipla") {
-                    html += `<p class="font-black text-xl md:text-2xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-red-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="font-black text-xl md:text-2xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify whitespace-pre-wrap"><span class="text-amber-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
                     html += `<div class="space-y-3 md:space-y-4">`;
-                    
-                    let ops = [...q.opcoes];
-                    for (let i = ops.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [ops[i], ops[j]] = [ops[j], ops[i]];
-                    }
-
-                    ops.forEach((op, i) => {
-                        const originalValue = String.fromCharCode(97 + q.opcoes.indexOf(op));
-                        
+                    q.opcoes.forEach((op, i) => {
+                        const v = String.fromCharCode(97 + i);
                         html += `
                             <label class="relative block cursor-pointer group">
-                                <input type="radio" name="${q.id}" value="${originalValue}" class="peer sr-only radio-custom">
-                                <div class="p-3 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl bg-white transition-all group-hover:border-blue-300 flex items-center gap-3 md:gap-4">
+                                <input type="radio" name="${q.id}" value="${v}" class="peer sr-only radio-custom">
+                                <div class="p-3 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl bg-white transition-all group-hover:border-amber-400 flex items-center gap-3 md:gap-4">
                                     <div class="radio-indicator w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-300 flex items-center justify-center transition-colors relative flex-shrink-0">
                                         <div class="w-2.5 h-2.5 md:w-3 md:h-3 bg-white rounded-full opacity-0 transform scale-0 transition-all duration-200 absolute"></div>
                                     </div>
-                                    <span class="text-sm md:text-base text-gray-700 font-bold group-hover:text-blue-700 peer-checked:text-blue-800 text-justify leading-relaxed">${op.substring(3)}</span>
+                                    <span class="text-sm md:text-base text-gray-700 font-bold group-hover:text-amber-700 peer-checked:text-amber-800 text-justify leading-relaxed">${op}</span>
                                 </div>
                             </label>
                         `;
                     });
                     html += `</div>`;
                 } else if(q.tipo === "associacao") {
-                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-red-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-amber-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
                     html += `<p class="text-xs md:text-sm text-gray-500 mb-4 md:mb-6 font-bold italic text-justify leading-relaxed">${q.instrucao}</p>`;
                     html += `<div class="grid gap-4 md:gap-6">`;
                     q.lacunas.forEach((l, i) => {
                         html += `
-                            <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border-2 border-gray-100 shadow-sm transition hover:shadow-md hover:border-blue-100">
+                            <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border-2 border-gray-100 shadow-sm transition hover:shadow-md hover:border-amber-100">
                                 <p class="mb-3 md:mb-4 text-sm md:text-base text-gray-800 font-bold text-justify leading-relaxed">${l.texto}</p>
                                 <select name="${q.id}_lacuna${i}" class="select-associacao shadow-sm text-sm md:text-base">
-                                    <option value="">-- Clique e escolha o correto --</option>
+                                    <option value="">-- Clique aqui e selecione o conceito --</option>
                                     ${q.termos.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
                                 </select>
                             </div>
@@ -1049,52 +868,38 @@
                     });
                     html += `</div>`;
                 } else if(q.tipo === "discursiva") {
-                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-red-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
-                    html += `<p class="text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed font-medium text-justify">${q.instrucao}</p>`;
-                    html += `<div class="bg-red-900 p-4 md:p-6 rounded-xl md:rounded-2xl text-red-100 font-mono text-xs md:text-sm mb-4 md:mb-6 shadow-inner border-l-8 border-red-400 text-justify leading-relaxed">💡 ${q.dica}</div>`;
-                    html += `<textarea name="${q.id}" rows="8" class="w-full p-4 md:p-6 border-2 border-gray-200 rounded-xl md:rounded-3xl font-mono text-xs md:text-sm focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition shadow-sm resize-none whitespace-pre-wrap" placeholder="Escreva o seu raciocínio lógico aqui..."></textarea>`;
+                    html += `<p class="font-black text-xl md:text-2xl mb-3 md:mb-4 text-justify"><span class="text-amber-600 mr-2">Q${idx+1}.</span> ${q.pergunta} ${badgePontos}</p>`;
+                    html += `<p class="text-sm md:text-base text-gray-700 mb-4 md:mb-6 leading-relaxed font-medium text-justify whitespace-pre-wrap">${q.instrucao}</p>`;
+                    html += `<div class="bg-amber-900 p-4 md:p-6 rounded-xl md:rounded-2xl text-amber-100 font-mono text-xs md:text-sm mb-4 md:mb-6 shadow-inner border-l-8 border-amber-400 text-justify leading-relaxed">💡 ${q.dica}</div>`;
+                    html += `<textarea name="${q.id}" rows="8" class="w-full p-4 md:p-6 border-2 border-gray-200 rounded-xl md:rounded-3xl font-mono text-xs md:text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition shadow-sm resize-y" placeholder="Construa sua explicação crítica e raciocínio aqui..."></textarea>`;
                 }
                 html += `</div>`;
             });
-            
-            const contQuestoes = document.getElementById('container-questoes');
-            if (contQuestoes) contQuestoes.innerHTML = html;
+            document.getElementById('container-questoes').innerHTML = html;
             atualizarNavegacao();
         }
 
         function mudarSlide(dir) {
-            const currentSlide = document.getElementById(`slide-${slideAtualIndex}`);
-            if (currentSlide) currentSlide.classList.add('hidden');
-            
+            document.getElementById(`slide-${slideAtualIndex}`).classList.add('hidden');
             slideAtualIndex += dir;
-            
-            const nextSlide = document.getElementById(`slide-${slideAtualIndex}`);
-            if (nextSlide) nextSlide.classList.remove('hidden');
-            
+            document.getElementById(`slide-${slideAtualIndex}`).classList.remove('hidden');
             atualizarNavegacao();
             salvarProgresso(false); 
         }
 
         function atualizarNavegacao() {
-            const btnPrev = document.getElementById('btn-prev');
-            if (btnPrev) btnPrev.disabled = slideAtualIndex === 0;
-            
+            document.getElementById('btn-prev').disabled = slideAtualIndex === 0;
             const isLast = slideAtualIndex === ordemQuestoes.length - 1;
-            
-            const btnNext = document.getElementById('btn-next');
-            if (btnNext) btnNext.classList.toggle('hidden', isLast);
-            
-            const btnFin = document.getElementById('btn-finalizar');
-            if (btnFin) btnFin.classList.toggle('hidden', !isLast);
-            
-            if (ui.progressBar) ui.progressBar.style.width = `${((slideAtualIndex + 1) / ordemQuestoes.length) * 100}%`;
+            document.getElementById('btn-next').classList.toggle('hidden', isLast);
+            document.getElementById('btn-finalizar').classList.toggle('hidden', !isLast);
+            ui.progressBar.style.width = `${((slideAtualIndex + 1) / ordemQuestoes.length) * 100}%`;
         }
 
         safeBind('btn-prev', 'click', () => mudarSlide(-1));
         safeBind('btn-next', 'click', () => mudarSlide(1));
 
         async function salvarProgresso(final = false, pAuto = 0, pAsc = 0) {
-            if(!alunoLogado || !ui.form) return;
+            if(!alunoLogado) return;
             const respostas = Object.fromEntries(new FormData(ui.form).entries());
             const docData = {
                 alunoId: alunoLogado.id, 
@@ -1108,59 +913,46 @@
                 docData.notaAutomatica = pAuto;
                 docData.notaAssociacao = pAsc;
             }
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoLogado.id), docData, { merge: true });
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', alunoLogado.id), docData, { merge: true });
         }
 
-        safeBind('btn-finalizar', 'click', () => {
-            const modal = document.getElementById('confirm-submit-modal');
-            if (modal) modal.style.display = 'flex';
-        });
-
-        safeBind('btn-confirm-no', 'click', () => {
-            const modal = document.getElementById('confirm-submit-modal');
-            if (modal) modal.style.display = 'none';
-        });
+        safeBind('btn-finalizar', 'click', () => document.getElementById('confirm-submit-modal').style.display = 'flex');
+        safeBind('btn-confirm-no', 'click', () => document.getElementById('confirm-submit-modal').style.display = 'none');
         
         safeBind('btn-confirm-yes', 'click', async () => {
             isExamActive = false; 
             
             const btnYes = document.getElementById('btn-confirm-yes');
-            if (btnYes) {
-                btnYes.innerHTML = `Enviando respostas... <span class="animate-spin ml-2">⏳</span>`;
-                btnYes.disabled = true;
-            }
+            btnYes.innerHTML = `A processar Transmissão... <span class="animate-spin ml-2">⏳</span>`;
+            btnYes.disabled = true;
 
-            const fd = ui.form ? new FormData(ui.form) : new FormData();
-            let nAuto = 0; let nAsc = 0;
+            const fd = new FormData(ui.form);
+            let nAuto = 0;
+            let nAsc = 0;
             let relatorio = "";
-            let repDiscursiva = "";
             
-            ordemQuestoes.forEach((qId, index) => {
-                const q = bancoDeQuestoes.find(b => b.id === qId);
-                if (!q) return;
-
+            // --- CÁLCULO DAS NOTAS PELA ESTRUTURA Q.PONTOS ---
+            bancoDeQuestoes.forEach((q, index) => {
                 if(q.tipo === "multipla") { 
                     const respAluno = fd.get(q.id);
                     const acertou = respAluno === q.correta;
                     
-                    if(acertou) {
-                        nAuto += 2.0; 
-                    }
+                    if(acertou) nAuto += q.pontos; 
                     
                     const icone = acertou ? "✅ ACERTOU" : "❌ ERROU";
                     const textoMarcado = respAluno ? respAluno.toUpperCase() : "EM BRANCO";
                     relatorio += `Q${index+1} - ${icone}\nMarcou: ${textoMarcado} | Correta: ${q.correta.toUpperCase()}\n\n`;
-                    
-                } else if(q.tipo === "associacao") {
+                }
+                else if(q.tipo === "associacao") {
                     relatorio += `\n--- ASSOCIAÇÃO ---\n`;
+                    const pointPerLacuna = q.pontos / q.lacunas.length;
+                    
                     q.lacunas.forEach((l, i) => { 
                         const respAluno = fd.get(`${q.id}_lacuna${i}`);
                         const correta = q.corretas[`lac${i}`];
                         const hit = respAluno === correta;
                         
-                        if(hit) {
-                            nAsc += 1.0; 
-                        }
+                        if(hit) nAsc += pointPerLacuna; 
                         
                         const icone = hit ? "✅" : "❌";
                         const nomeTermo = q.termos.find(t=>t.value===respAluno)?.label || "Vazio";
@@ -1168,16 +960,10 @@
                         relatorio += `Lacuna ${i+1}: ${icone} Marcou: [${nomeTermo}] (Certa: [${nomeCorreta}])\n`;
                     });
                     relatorio += `\n`;
-                } else if (q.tipo === "discursiva") {
-                    repDiscursiva = fd.get(q.id) || "Em branco ou não respondeu.";
                 }
             });
 
-            nAuto = parseFloat(nAuto.toFixed(2));
-            nAsc = parseFloat(nAsc.toFixed(2));
-
             const sendPromise = salvarProgresso(true, nAuto, nAsc);
-            
             await Promise.race([
                 sendPromise,
                 new Promise(resolve => setTimeout(resolve, 3500))
@@ -1185,10 +971,10 @@
 
             const payload = {
                 data_hora: new Date().toLocaleString('pt-BR'),
-                nome: alunoLogado.nome,
-                nota_total: (nAuto + nAsc).toFixed(2).replace('.', ','),
+                nome: alunoLogado.nome + " [RECUP TRIMESTRAL]",
+                nota_total: (nAuto + nAsc).toFixed(2),
                 relatorio_respostas: relatorio,
-                resposta_discursiva: repDiscursiva 
+                resposta_discursiva: fd.get("q10") || "Em branco ou não respondeu." 
             };
 
             fetch(googleSheetsUrl, {
@@ -1197,54 +983,42 @@
                 body: JSON.stringify(payload)
             }).catch(e => console.log("Registo de backup ignorado."));
 
-            const modal = document.getElementById('confirm-submit-modal');
-            if (modal) modal.style.display = 'none';
-            
-            if (ui.quiz) ui.quiz.style.display = 'none';
-            if (ui.finish) ui.finish.style.display = 'flex';
+            document.getElementById('confirm-submit-modal').style.display = 'none';
+            ui.quiz.style.display = 'none';
+            ui.finish.style.display = 'flex';
             if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
         });
 
-        const btnIniciarEl = document.getElementById('btn-iniciar');
-        if (btnIniciarEl) {
-            btnIniciarEl.addEventListener('click', () => {
-                document.documentElement.requestFullscreen().catch(()=>{});
-                if (ui.start) ui.start.style.display = 'none';
-                if (ui.quiz) {
-                    ui.quiz.classList.remove('hidden');
-                    ui.quiz.style.display = 'flex';
-                }
-                isExamActive = true;
-                
-                clockInterval = setInterval(() => {
-                    const clock = document.getElementById('clock-display');
-                    if (clock) clock.textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                }, 1000);
-            });
-        }
+        safeBind('btn-iniciar', 'click', () => {
+            document.documentElement.requestFullscreen().catch(()=>{});
+            ui.start.style.display = 'none';
+            ui.quiz.classList.remove('hidden');
+            isExamActive = true;
+            
+            clockInterval = setInterval(() => {
+                document.getElementById('clock-display').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
+        });
 
-        const btnRetornarEl = document.getElementById('btn-retornar');
-        if (btnRetornarEl) {
-            btnRetornarEl.addEventListener('click', () => document.documentElement.requestFullscreen().catch(()=>{}));
-        }
+        safeBind('btn-retornar', 'click', () => document.documentElement.requestFullscreen().catch(()=>{}));
 
         ['fullscreenchange', 'webkitfullscreenchange'].forEach(e => {
             document.addEventListener(e, () => {
                 const isFull = document.fullscreenElement || document.webkitIsFullScreen;
                 if(!isFull && isExamActive) {
-                    if (ui.warning) ui.warning.style.display = 'flex';
-                    if (ui.quiz) ui.quiz.classList.add('blurred-screen');
+                    ui.warning.style.display = 'flex';
+                    ui.quiz.classList.add('blurred-screen');
                 } else {
-                    if (ui.warning) ui.warning.style.display = 'none';
-                    if (ui.quiz) ui.quiz.classList.remove('blurred-screen');
+                    ui.warning.style.display = 'none';
+                    ui.quiz.classList.remove('blurred-screen');
                 }
             });
         });
 
         window.onblur = () => { 
             if(isExamActive) {
-                if (ui.warning) ui.warning.style.display = 'flex'; 
-                if (ui.quiz) ui.quiz.classList.add('blurred-screen');
+                ui.warning.style.display = 'flex'; 
+                ui.quiz.classList.add('blurred-screen');
                 if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
             }
         };
@@ -1266,153 +1040,37 @@
         };
         document.oncontextmenu = (e) => { e.preventDefault(); return false; };
 
-        // =========================================================================
-        // PAINEL DO PROFESSOR E CORREÇÃO
-        // =========================================================================
-        const handleBatchGrading = async () => {
-            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames'));
-            
-            let examsToCorrect = [];
-            
-            const apenasPendentes = confirm("Deseja corrigir com Inteligência Artificial APENAS as provas PENDENTES (sem nota)?\n\n[OK] - Corrigir apenas quem ainda não tem nota/feedback.\n[Cancelar] - Ir para opção de corrigir todas.");
-            
-            if (apenasPendentes) {
-                snap.forEach(d => {
-                    const data = d.data();
-                    const semCorrecaoValida = data.notaDiscursiva === undefined || data.notaDiscursiva === null || !data.feedbackProfessor || String(data.feedbackProfessor).trim() === "";
-                    if(data.finalizado && semCorrecaoValida) {
-                        examsToCorrect.push({docId: d.id, ...data});
-                    }
-                });
-            } else {
-                const corrigirTodas = confirm("ATENÇÃO: Deseja REAVALIAR TODAS AS PROVAS?\n\nIsso irá sobrescrever todas as notas discursivas e feedbacks antigos!\n\n[OK] - Sim, reavaliar tudo.\n[Cancelar] - Abortar operação.");
-                if (!corrigirTodas) return;
-                
-                snap.forEach(d => {
-                    const data = d.data();
-                    if(data.finalizado) {
-                        examsToCorrect.push({docId: d.id, ...data});
-                    }
-                });
-            }
-
-            if(examsToCorrect.length === 0) {
-                window.mostrarAlerta("Tudo Certo!", "Não há provas disponíveis para correção com esse critério no momento.", "✅");
-                return;
-            }
-
-            const btn1 = document.getElementById('btn-prof-corrigir-todos');
-            const btn2 = document.getElementById('btn-corrigir-lote-ia');
-            const originalText1 = btn1 ? btn1.innerHTML : "";
-            const originalText2 = btn2 ? btn2.innerHTML : "";
-            
-            const updateBtnText = (text) => {
-                if (btn1) btn1.innerHTML = text;
-                if (btn2) btn2.innerHTML = `<span class="text-2xl group-hover:scale-110 transition">✨</span><span class="text-xs md:text-sm text-center">${text}</span>`;
-            }
-
-            const batchOverlay = document.getElementById('batch-ia-overlay');
-            const batchStatus = document.getElementById('batch-ia-status');
-            const batchCountdown = document.getElementById('batch-ia-countdown');
-            const batchWarning = document.getElementById('batch-ia-warning');
-
-            let falhas = 0;
-            
-            if (batchOverlay) batchOverlay.style.display = 'flex';
-            
-            for(let i = 0; i < examsToCorrect.length; i++) {
-                if (i > 0 && i % 10 === 0) {
-                    if (batchStatus) batchStatus.textContent = "Evitando limite do Google. Protegendo a API...";
-                    if (batchCountdown) batchCountdown.style.display = 'block';
-                    if (batchWarning) batchWarning.style.display = 'block';
-                    
-                    for (let sec = 60; sec > 0; sec--) {
-                        if (batchCountdown) batchCountdown.textContent = sec;
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                    }
-                    
-                    if (batchCountdown) batchCountdown.style.display = 'none';
-                    if (batchWarning) batchWarning.style.display = 'none';
-                }
-
-                const exam = examsToCorrect[i];
-                if (batchStatus) batchStatus.textContent = `A corrigir ${exam.alunoNome} (${i+1} de ${examsToCorrect.length})...`;
-                updateBtnText(`A corrigir ${i+1}/${examsToCorrect.length} ⏳`);
-                
-                const discQId = exam.ordem.find(id => {
-                    const q = bancoDeQuestoes.find(b => b.id === id);
-                    return q && q.tipo === "discursiva";
-                });
-                const discQ = bancoDeQuestoes.find(q => q.id === discQId);
-                let respostaDiscursivaAluno = exam.respostas[discQId] || "";
-                
-                try {
-                    const parsed = await avaliarRespostaComIA(respostaDiscursivaAluno, exam.alunoNome, discQ);
-                    
-                    const nAuto = (exam.notaAutomatica||0) + (exam.notaAssociacao||0);
-                    const finalNota = nAuto + parsed.nota;
-
-                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', exam.docId), {
-                        notaDiscursiva: parsed.nota,
-                        feedbackProfessor: parsed.feedback, 
-                        notaFinal: finalNota
-                    });
-                } catch(e) {
-                    console.error("Erro ao corrigir " + exam.alunoNome, e);
-                    falhas++;
-                }
-            }
-
-            if (batchOverlay) batchOverlay.style.display = 'none';
-            if (btn1) btn1.innerHTML = originalText1;
-            if (btn2) btn2.innerHTML = originalText2;
-            
-            if (falhas > 0) {
-                window.mostrarAlerta("Correção Concluída", `Processo finalizado, mas ocorreram falhas na comunicação com a IA em ${falhas} exame(s). Verifique se a chave da API é válida.`, "⚠️");
-            } else {
-                window.mostrarAlerta("Correção Concluída", "As provas foram corrigidas com sucesso de forma estruturada e automática.", "🎉");
-            }
-            carregarRelatorioProf();
-        };
-
-        safeBind('btn-prof-corrigir-todos', 'click', handleBatchGrading);
-        safeBind('btn-corrigir-lote-ia', 'click', handleBatchGrading);
-
-        safeBind('btn-login-prof-trigger', 'click', () => { if(ui.modalProf) ui.modalProf.style.display = 'flex'; });
-        safeBind('btn-prof-cancel', 'click', () => { if(ui.modalProf) ui.modalProf.style.display = 'none'; });
+        // --- PAINEL DOCENTE ---
+        safeBind('btn-login-prof-trigger', 'click', () => ui.modalProf.style.display = 'flex');
+        safeBind('btn-prof-cancel', 'click', () => ui.modalProf.style.display = 'none');
         
         safeBind('btn-prof-entrar', 'click', async () => {
             const errorMsg = document.getElementById('prof-login-error');
-            const passInput = document.getElementById('prof-senha-input');
-            
-            if(passInput && passInput.value !== "R@prova1412!!") {
-                if(errorMsg) errorMsg.classList.remove('hidden');
+            if(document.getElementById('prof-senha-input').value !== "R@prova1412!!") {
+                errorMsg.classList.remove('hidden');
                 return;
             }
-            
-            if(errorMsg) errorMsg.classList.add('hidden');
-            if(ui.modalProf) ui.modalProf.style.display = 'none';
-            if(ui.login) ui.login.style.display = 'none';
+            errorMsg.classList.add('hidden');
+            ui.modalProf.style.display = 'none';
+            ui.login.style.display = 'none';
             await doAuth(); 
             
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'));
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_trimestral_coop', 'status'));
             if(snap.exists()) globalStatus = snap.data().estado;
             
-            if(ui.prof) ui.prof.style.display = 'flex';
+            ui.prof.style.display = 'flex';
             carregarRelatorioProf();
             atualizarVisorStatus();
         });
 
         async function mudarStatusGlobal(st) {
-            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config', 'status'), { estado: st });
+            await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'config_recuperacao_trimestral_coop', 'status'), { estado: st });
             globalStatus = st;
             atualizarVisorStatus();
         }
 
         function atualizarVisorStatus() {
             const disp = document.getElementById('prof-status-display');
-            if (!disp) return;
-            
             disp.textContent = globalStatus;
             
             if (globalStatus === 'aberto') { disp.className = 'text-xl md:text-2xl font-black uppercase tracking-tighter text-green-600'; }
@@ -1430,20 +1088,15 @@
 
         async function carregarRelatorioProf() {
             const container = document.getElementById('lista-alunos-container');
-            if (!container) return;
-            
             container.innerHTML = `<div class="flex justify-center p-8"><span class="animate-spin text-4xl">⚙️</span></div>`;
             
-            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames'));
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop'));
             let html = "";
             snap.forEach(d => {
                 const data = d.data();
                 if(data.finalizado) {
-                    const nAuto = (data.notaAutomatica || 0) + (data.notaAssociacao || 0);
-                    const nDisc = parseFloat(data.notaDiscursiva) || 0;
-                    const total = (nAuto + nDisc).toFixed(2).replace('.', ',');
-                    
-                    const corrigida = (typeof data.notaDiscursiva === 'number' && data.feedbackProfessor && data.feedbackProfessor.trim() !== "");
+                    const total = (data.notaFinal || ((data.notaAutomatica||0) + (data.notaAssociacao||0) + (data.notaDiscursiva||0))).toFixed(1);
+                    const corrigida = data.notaDiscursiva !== undefined;
                     
                     html += `
                         <div class="flex flex-col md:flex-row justify-between md:items-center bg-white p-4 md:p-5 rounded-xl md:rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition gap-3 md:gap-4">
@@ -1453,11 +1106,11 @@
                                     <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded bg-gray-100 border ${corrigida?'text-green-600 border-green-200':'text-yellow-600 border-yellow-200'}">
                                         ${corrigida?'✓ Corrigida':'⏳ Aguardar Correção'}
                                     </span>
-                                    <span class="text-xs md:text-sm font-bold text-gray-600">Nota: <span class="text-red-700">${total}</span> / 30.0</span>
+                                    <span class="text-xs md:text-sm font-bold text-gray-600">Nota: <span class="text-amber-700">${total}</span> / 30.0</span>
                                 </div>
                             </div>
                             <div class="flex gap-2 md:gap-3">
-                                <button onclick="window.abrirCorrecao('${data.alunoId}')" class="flex-1 md:flex-none bg-red-50 text-red-700 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-black hover:bg-red-600 hover:text-white transition shadow-sm border border-red-200 hover:border-transparent">Sua Correção</button>
+                                <button onclick="window.abrirCorrecao('${data.alunoId}')" class="flex-1 md:flex-none bg-amber-50 text-amber-700 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-black hover:bg-amber-600 hover:text-white transition shadow-sm border border-amber-200 hover:border-transparent">Revisar / Corrigir</button>
                             </div>
                         </div>
                     `;
@@ -1465,27 +1118,101 @@
             });
             container.innerHTML = html || `
                 <div class="bg-white p-6 md:p-10 rounded-xl md:rounded-2xl border border-gray-200 text-center text-sm md:text-base text-gray-500 font-bold shadow-sm">
-                    📭 Nenhuma prova foi entregue até ao momento.
+                    📭 Nenhuma prova trimestral entregue.
                 </div>`;
         }
 
         window.abrirCorrecao = async (id) => {
-            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', id));
+            const snap = await getDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', id));
             if(snap.exists()) {
                 alunoCorrecaoAtual = id;
-                if (ui.prof) ui.prof.style.display = 'none';
+                ui.prof.style.display = 'none';
                 renderizarProvaRevisao(snap.data(), true);
             }
         };
 
-        function renderizarProvaRevisao(data, isTeacher) {
-            if (ui.review) ui.review.style.display = 'flex';
+        // LÓGICA BATCH IA
+        safeBind('btn-prof-lote-ia', 'click', async () => {
+            const apiKey = getGeminiApiKey();
+            if (!apiKey && typeof __app_id === 'undefined') return;
+
+            const snap = await getDocs(collection(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop'));
+            let provasParaCorrigir = [];
+            let docsData = [];
+
+            snap.forEach(d => docsData.push({ id: d.id, ...d.data() }));
             
-            const nomeEl = document.getElementById('review-nome-aluno');
-            if (nomeEl) nomeEl.textContent = data.alunoNome;
+            if (confirm("Deseja corrigir APENAS as provas pendentes (sem nota/feedback)?")) {
+                provasParaCorrigir = docsData.filter(d => d.finalizado && d.notaDiscursiva === undefined);
+            } else {
+                if (confirm("ATENÇÃO: Irá sobrescrever TODAS as correções. Deseja prosseguir e reavaliar toda a turma?")) {
+                    provasParaCorrigir = docsData.filter(d => d.finalizado);
+                } else {
+                    return; 
+                }
+            }
 
+            if (provasParaCorrigir.length === 0) {
+                return window.mostrarAlerta("Lote Vazio", "Não existem provas adequadas para correção neste lote.", "ℹ️");
+            }
+
+            const overlay = document.getElementById('batch-overlay');
+            const msgEl = document.getElementById('batch-msg');
+            const progressEl = document.getElementById('batch-progress');
+            const countEl = document.getElementById('batch-count');
+            
+            overlay.style.display = 'flex';
+            let concluidas = 0;
+
+            for (let i = 0; i < provasParaCorrigir.length; i++) {
+                const prova = provasParaCorrigir[i];
+                
+                if (i > 0 && i % 10 === 0) {
+                    for(let s = 60; s > 0; s--) {
+                        msgEl.innerHTML = `Proteção Google AI (Rate Limit).<br>Aguarde <span class="font-black text-amber-600">${s}s</span> para retomar...`;
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
+
+                msgEl.textContent = `A analisar prova de: ${prova.alunoNome}...`;
+                
+                try {
+                    const respostaAluno = prova.respostas['q10'] || "Sem resposta.";
+                    const objIA = await avaliarRespostaComIA(respostaAluno, prova.alunoNome);
+                    
+                    if (objIA && objIA.nota !== undefined && objIA.feedback) {
+                        const nAuto = (prova.notaAutomatica || 0) + (prova.notaAssociacao || 0);
+                        const nFinal = nAuto + objIA.nota;
+                        
+                        await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', prova.id), {
+                            notaDiscursiva: objIA.nota,
+                            feedbackProfessor: objIA.feedback,
+                            notaFinal: nFinal
+                        });
+                    }
+                } catch(e) {
+                    console.error("Falha ao corrigir aluno:", prova.alunoNome, e);
+                }
+
+                concluidas++;
+                progressEl.style.width = `${(concluidas / provasParaCorrigir.length) * 100}%`;
+                countEl.textContent = `${concluidas} / ${provasParaCorrigir.length} concluídas`;
+            }
+
+            overlay.style.display = 'none';
+            window.mostrarAlerta("Correção Concluída", "O lote de provas de recuperação foi analisado com sucesso pela Inteligência Artificial.", "✅");
+            carregarRelatorioProf();
+        });
+
+        function renderizarProvaRevisao(data, isTeacher) {
+            ui.review.style.display = 'flex';
+            document.getElementById('review-nome-aluno').textContent = data.alunoNome;
+            
             const displayNota = document.getElementById('review-nota-total');
-
+            
+            // ============================================================
+            // RECALCULAR NOTA AUTOMÁTICA
+            // ============================================================
             const recalcularNotaAutomatica = () => {
                 let nAuto = 0;
                 let nAsc = 0;
@@ -1494,22 +1221,22 @@
                     const q = bancoDeQuestoes.find(b => b.id === id);
                     if (!q) return;
 
+                    // QUESTÕES MÚLTIPLA ESCOLHA
                     if (q.tipo === "multipla") {
                         const selectEl = document.getElementById(`prof-edit-${id}`);
                         const resposta = selectEl ? selectEl.value : data.respostas[id];
-
                         if (resposta === q.correta) {
-                            if (q.id.startsWith("q1_")) nAuto += 2.0; 
-                            else if (q.id.startsWith("q2_") || q.id.startsWith("q3_")) nAuto += 2.0; 
+                            nAuto += q.pontos;
                         }
-                    }
+                    } 
+                    // QUESTÕES DE ASSOCIAÇÃO
                     else if (q.tipo === "associacao") {
+                        const pointPerLacuna = q.pontos / q.lacunas.length;
                         q.lacunas.forEach((l, i) => {
                             const selectEl = document.getElementById(`prof-edit-${id}_lacuna${i}`);
                             const resposta = selectEl ? selectEl.value : data.respostas[`${id}_lacuna${i}`];
-
                             if (resposta === q.corretas[`lac${i}`]) {
-                                if (q.id.startsWith("q4_")) nAsc += 1.0; 
+                                nAsc += pointPerLacuna;
                             }
                         });
                     }
@@ -1518,53 +1245,41 @@
                 return { nAuto, nAsc };
             };
 
-            window.atualizarNotaEmTempoReal = () => {
+            // ============================================================
+            // ATUALIZA NOTA NA TELA
+            // ============================================================
+            const updateNotaDisplay = () => {
                 const { nAuto, nAsc } = recalcularNotaAutomatica();
                 const nD = parseFloat(document.getElementById('input-nota-disc')?.value || data.notaDiscursiva || 0);
-
-                if (displayNota) {
-                    displayNota.textContent = (nAuto + nAsc + nD).toFixed(2).replace('.', ',');
-                }
+                displayNota.textContent = (nAuto + nAsc + nD).toFixed(1).replace('.', ',');
             };
 
+            window.atualizarNotaEmTempoReal = updateNotaDisplay;
+
             let html = "";
-            let respostaDiscursivaAluno = ""; 
-            let discQObj = null;
-
-            data.ordem.forEach((id) => {
+            data.ordem.forEach((id, idx) => {
                 const q = bancoDeQuestoes.find(b => b.id === id);
-                if (!q) return;
-
+                if(!q) return;
                 const respAluno = data.respostas[id];
-
-                if (q.tipo === "discursiva") {
-                    respostaDiscursivaAluno = respAluno || "";
-                    discQObj = q;
-                }
-
-                let pontuacao = "";
-                if (q.tipo === "multipla") pontuacao = "2,0 Pts";
-                else if (q.tipo === "associacao") pontuacao = "5,0 Pts";
-                else if (q.tipo === "discursiva") pontuacao = "6,0 Pts";
-
-                const badgePontos = `<span class="inline-block bg-red-100 text-red-800 text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-red-200 mt-1 md:mt-0">Valendo ${pontuacao}</span>`;
+                
+                let ptLabel = q.pontos === 1.0 ? "1,0 Pt" : `${q.pontos.toFixed(1).replace('.', ',')} Pts`;
+                const badgePontos = `<span class="inline-block bg-amber-100 text-amber-800 text-[9px] md:text-[10px] font-black uppercase tracking-widest px-2 md:px-3 py-1 rounded-full ml-2 md:ml-3 align-middle shadow-sm border border-amber-200 mt-1 md:mt-0">Valendo ${ptLabel}</span>`;
                 
                 html += `<div class="p-5 md:p-8 bg-gray-50 rounded-2xl md:rounded-3xl border border-gray-200 shadow-sm mb-6">`;
-                html += `<p class="font-black text-lg md:text-xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify"><span class="text-red-600 mr-2 text-xl md:text-2xl">•</span> ${q.pergunta} ${badgePontos}</p>`;
+                html += `<p class="font-black text-lg md:text-xl text-gray-800 mb-4 md:mb-6 leading-relaxed text-justify whitespace-pre-wrap"><span class="text-amber-600 mr-2 text-xl md:text-2xl">•</span> ${q.pergunta} ${badgePontos}</p>`;
+                
+                if(q.tipo === "multipla") {
 
-                if (q.tipo === "multipla") {
                     if (isTeacher) {
                         html += `
-                            <div class="mb-4 p-4 bg-amber-50 rounded-xl border border-amber-200 shadow-sm">
-                                <label class="block text-xs font-bold mb-2 text-amber-900 uppercase tracking-widest">
-                                    ✏️ ALTERAR RESPOSTA:
-                                </label>
-                                <select id="prof-edit-${id}" class="w-full p-3 rounded-lg border-2 border-amber-300 focus:outline-none focus:border-amber-500 font-medium text-gray-700" onchange="window.atualizarNotaEmTempoReal()">
+                            <div class="mb-4 p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+                                <label class="block text-xs font-bold mb-2">✏️ ALTERAR RESPOSTA:</label>
+                                <select id="prof-edit-${id}" class="w-full p-2 rounded-lg border border-amber-300 outline-none focus:ring-2 focus:ring-amber-500" onchange="window.atualizarNotaEmTempoReal()">
                                     <option value="">-- Sem resposta --</option>
                                     ${q.opcoes.map((op, i) => {
                                         const v = String.fromCharCode(97 + i);
-                                        const selected = (v === respAluno) ? 'selected' : '';
-                                        return `<option value="${v}" ${selected}>${v.toUpperCase()} - ${op.substring(3, 40)}...</option>`;
+                                        const selected = v === respAluno ? 'selected' : '';
+                                        return `<option value="${v}" ${selected}>${v.toUpperCase()} - ${op}</option>`;
                                     }).join('')}
                                 </select>
                             </div>
@@ -1575,8 +1290,7 @@
                         const valOpcao = String.fromCharCode(97 + i);
                         const isSelecionada = valOpcao === respAluno;
                         const isOpcaoCerta = valOpcao === q.correta;
-                        const opText = op.substring(3);
-
+                        
                         let css = "p-4 md:p-5 rounded-xl md:rounded-2xl mb-2 md:mb-3 text-xs md:text-sm border-2 transition flex items-start gap-2 md:gap-3 ";
                         if(isOpcaoCerta) {
                             css += "bg-green-50 border-green-500 font-bold text-green-900 ";
@@ -1590,223 +1304,191 @@
                         if(isOpcaoCerta) icone = "✅";
                         else if(isSelecionada) icone = "❌";
 
-                        html += `<div class="${css}"><span class="flex-shrink-0 text-sm md:text-base">${icone}</span> <span class="text-justify leading-relaxed">${opText}</span></div>`;
+                        html += `<div class="${css}"><span class="flex-shrink-0 text-sm md:text-base">${icone}</span> <span class="text-justify leading-relaxed">${op}</span></div>`;
                     });
                 } 
-                else if (q.tipo === "associacao") {
+                else if(q.tipo === "associacao") {
                     q.lacunas.forEach((l, i) => {
                         const valMarcado = data.respostas[`${id}_lacuna${i}`];
                         const valCerto = q.corretas[`lac${i}`];
                         const isOk = valMarcado === valCerto;
-
+                        
                         html += `
                             <div class="mb-3 md:mb-4 p-4 md:p-5 rounded-xl md:rounded-2xl border-l-4 md:border-l-8 ${isOk?'border-green-500 bg-green-50':'border-red-500 bg-red-50'}">
                                 <p class="text-xs md:text-sm font-black text-gray-700 mb-2 text-justify">${l.texto}</p>
                                 <p class="text-sm md:text-base text-gray-800">Aluno marcou: <span class="font-black bg-white px-2 py-1 rounded border">${q.termos.find(t=>t.value===valMarcado)?.label || 'Deixou em branco'}</span> ${isOk?'✅':'❌'}</p>
                                 ${!isOk ? `<p class="text-[10px] md:text-xs text-green-700 mt-2 font-black uppercase tracking-widest">O Correto seria: ${q.termos.find(t=>t.value===valCerto)?.label}</p>` : ''}
+                            </div>
                         `;
 
                         if (isTeacher) {
                             html += `
-                                <div class="mt-3 p-3 bg-amber-50 rounded-xl border border-amber-200 shadow-sm">
-                                    <label class="block text-[10px] font-bold mb-2 text-amber-900 uppercase tracking-widest">
-                                        ✏️ ALTERAR LACUNA ${i+1}:
-                                    </label>
-                                    <select id="prof-edit-${id}_lacuna${i}" class="w-full p-2 rounded-lg border border-amber-300 text-sm focus:outline-none focus:border-amber-500 font-medium text-gray-700" onchange="window.atualizarNotaEmTempoReal()">
+                                <div class="mt-2 mb-4 p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+                                    <label class="block text-xs font-bold mb-2">✏️ ALTERAR RESPOSTA DA LACUNA ${i+1}:</label>
+                                    <select id="prof-edit-${id}_lacuna${i}" class="w-full p-2 rounded-lg border border-amber-300 outline-none focus:ring-2 focus:ring-amber-500" onchange="window.atualizarNotaEmTempoReal()">
                                         <option value="">-- Sem resposta --</option>
                                         ${q.termos.map(t => {
-                                            const selected = (t.value === valMarcado) ? 'selected' : '';
+                                            const selected = t.value === valMarcado ? 'selected' : '';
                                             return `<option value="${t.value}" ${selected}>${t.label}</option>`;
                                         }).join('')}
                                     </select>
                                 </div>
                             `;
                         }
-                        html += `</div>`;
                     });
-                } 
+                }
                 else if (q.tipo === "discursiva") {
                     if (isTeacher) {
                         html += `
-                            <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200 shadow-sm">
-                                <label class="block text-xs font-bold mb-2 text-amber-900 uppercase tracking-widest">
-                                    ✏️ EDITAR TEXTO DO ALUNO:
-                                </label>
-                                <textarea id="edit-discursiva-${id}" rows="6" class="w-full p-3 border-2 border-amber-300 rounded-lg focus:outline-none focus:border-amber-500 font-mono text-sm shadow-inner">${respAluno || ''}</textarea>
+                            <div class="mb-4 p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+                                <label class="block text-xs font-bold mb-2">✏️ ALTERAR TEXTO DO ALUNO:</label>
+                                <textarea id="edit-discursiva-${id}" class="w-full p-2 rounded-lg border border-amber-300 resize-y outline-none focus:ring-2 focus:ring-amber-500" rows="6">${respAluno || ''}</textarea>
                             </div>
                         `;
-                    } else {
-                        html += `<div class="p-5 md:p-8 bg-white border-2 border-gray-200 rounded-2xl md:rounded-3xl font-mono text-xs md:text-sm shadow-inner whitespace-pre-wrap leading-relaxed text-gray-700 text-justify">${respAluno || '--- Nenhuma resposta escrita ---'}</div>`;
                     }
+                    html += `<div id="resposta-discursiva-aluno" class="p-5 md:p-8 bg-white border-2 border-gray-200 rounded-2xl md:rounded-3xl font-mono text-xs md:text-sm shadow-inner whitespace-pre-wrap leading-relaxed text-gray-700 text-justify">${respAluno || '--- Nenhuma resposta escrita ---'}</div>`;
                 }
                 html += `</div>`;
             });
-
-            const cont = document.getElementById('review-content');
-            if (cont) cont.innerHTML = html;
-
-            window.atualizarNotaEmTempoReal(); 
+            
+            document.getElementById('review-content').innerHTML = html;
 
             if(isTeacher) {
-                document.getElementById('area-correcao-prof')?.classList.remove('hidden');
-                document.getElementById('area-feedback-aluno')?.classList.add('hidden');
+                document.getElementById('area-correcao-prof').classList.remove('hidden');
+                document.getElementById('area-feedback-aluno').classList.add('hidden');
                 
-                const inputNotaDisc = document.getElementById('input-nota-disc');
-                if (inputNotaDisc) {
-                    inputNotaDisc.value = data.notaDiscursiva !== undefined ? data.notaDiscursiva : 0;
-                    inputNotaDisc.addEventListener('input', window.atualizarNotaEmTempoReal);
-                }
+                document.getElementById('input-nota-disc').value = data.notaDiscursiva !== undefined ? data.notaDiscursiva : 0;
+                document.getElementById('input-feedback-prof').value = data.feedbackProfessor || "";
+                
+                document.getElementById('input-nota-disc').oninput = updateNotaDisplay;
+                updateNotaDisplay();
 
-                const inputFeedbackProf = document.getElementById('input-feedback-prof');
-                if (inputFeedbackProf) {
-                    inputFeedbackProf.value = data.feedbackProfessor || "";
-                }
+                // Sugerir Correção com IA
+                document.getElementById('btn-sugerir-ia').onclick = async () => {
+                    const apiKey = getGeminiApiKey();
+                    if (!apiKey && typeof __app_id === 'undefined') return;
 
-                const btnIaAssist = document.getElementById('btn-sugerir-ia');
-                if (btnIaAssist) {
-                    const novoBtnIaAssist = btnIaAssist.cloneNode(true);
-                    btnIaAssist.parentNode.replaceChild(novoBtnIaAssist, btnIaAssist);
+                    const btnIA = document.getElementById('btn-sugerir-ia');
+                    btnIA.innerHTML = "A analisar... ⏳";
+                    btnIA.disabled = true;
+
+                    // Busca do texto editado se existir, senão pega a resposta salva
+                    const txtElement = document.getElementById('edit-discursiva-q10');
+                    const respostaAluno = txtElement ? txtElement.value : (data.respostas['q10'] || "Sem resposta.");
                     
-                    novoBtnIaAssist.addEventListener('click', async () => {
-                        const textoOriginal = novoBtnIaAssist.innerHTML;
-                        novoBtnIaAssist.innerHTML = `<span class="animate-spin text-xl">⏳</span> A analisar resposta...`;
-                        novoBtnIaAssist.disabled = true;
-
-                        const txtEditado = document.getElementById(`edit-discursiva-${discQObj.id}`);
-                        const textoParaIA = txtEditado ? txtEditado.value : respostaDiscursivaAluno;
-
-                        try {
-                            const parsed = await avaliarRespostaComIA(textoParaIA, data.alunoNome, discQObj);
-                            if (inputNotaDisc) inputNotaDisc.value = parsed.nota;
-                            if (inputFeedbackProf) inputFeedbackProf.value = parsed.feedback;
-                            window.atualizarNotaEmTempoReal();
-                            
-                            window.mostrarAlerta("Análise Concluída", "A IA sugeriu uma nota e um feedback estruturado. Reveja as informações e clique em 'Salvar Correção'.", "🤖");
-                        } catch (err) {
-                            console.error("Erro da IA:", err);
-                            window.mostrarAlerta("Falha no Assistente", `Não foi possível obter a correção. Detalhe do erro: ${err.message}`, "⚠️");
-                        } finally {
-                            novoBtnIaAssist.innerHTML = textoOriginal;
-                            novoBtnIaAssist.disabled = false;
+                    try {
+                        const objIA = await avaliarRespostaComIA(respostaAluno, data.alunoNome);
+                        if (objIA && objIA.nota !== undefined && objIA.feedback) {
+                            document.getElementById('input-nota-disc').value = objIA.nota;
+                            document.getElementById('input-feedback-prof').value = objIA.feedback;
+                            updateNotaDisplay();
+                            window.mostrarAlerta("Sucesso", "Sugestão aplicada. Lembre-se de clicar em Guardar.", "🤖");
+                        } else {
+                            throw new Error("Formato de retorno da IA inválido.");
                         }
-                    });
-                }
-
-                const btnExcluir = document.getElementById('btn-excluir-revisao');
-                if (btnExcluir) {
-                    const novoBtnExcluir = btnExcluir.cloneNode(true);
-                    btnExcluir.parentNode.replaceChild(novoBtnExcluir, btnExcluir);
+                    } catch (e) {
+                        window.mostrarAlerta("Erro na IA", e.message, "❌");
+                    }
                     
-                    novoBtnExcluir.addEventListener('click', async () => {
-                        const isConfirmed = confirm(`PERIGO EXTREMO: Deseja apagar a prova de ${data.alunoNome} inteira do servidor e permitir que este refaça?`);
-                        if(!isConfirmed) return;
-                        
-                        novoBtnExcluir.innerHTML = "A apagar o Registo... ⏳";
-                        await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual));
-                        window.mostrarAlerta("Prova Removida", "A entrega deste aluno foi destruída. O acesso já está liberado novamente para ele.", "🗑️");
-                        
-                        if (ui.review) ui.review.style.display = 'none';
-                        if (ui.prof) ui.prof.style.display = 'flex';
-                        carregarRelatorioProf();
-                    });
-                }
+                    btnIA.innerHTML = "✨ Sugerir Correção com IA";
+                    btnIA.disabled = false;
+                };
 
-                const btnSalvar = document.getElementById('btn-salvar-correcao');
-                if (btnSalvar) {
-                    const novoBtnSalvar = btnSalvar.cloneNode(true);
-                    btnSalvar.parentNode.replaceChild(novoBtnSalvar, btnSalvar);
+                document.getElementById('btn-excluir-revisao').onclick = async () => {
+                    const isConfirmed = confirm(`PERIGO EXTREMO: Deseja apagar a prova de ${data.alunoNome} inteira do servidor e permitir que este refaça?`);
+                    if(!isConfirmed) return;
                     
-                    novoBtnSalvar.addEventListener('click', async () => {
-                        try {
-                            const novasRespostas = { ...data.respostas };
+                    document.getElementById('btn-excluir-revisao').innerHTML = "A apagar o Registo... ⏳";
+                    await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', alunoCorrecaoAtual));
+                    window.mostrarAlerta("Prova Removida", "A entrega deste aluno foi destruída. O acesso já está libertado novamente para ele.", "🗑️");
+                    
+                    ui.review.style.display = 'none';
+                    ui.prof.style.display = 'flex';
+                    carregarRelatorioProf();
+                };
 
-                            data.ordem.forEach((id) => {
-                                const q = bancoDeQuestoes.find(b => b.id === id);
-                                if (!q) return;
+                document.getElementById('btn-salvar-correcao').onclick = async () => {
+                    try {
+                        // NOVAS RESPOSTAS EDITADAS
+                        const novasRespostas = { ...data.respostas };
 
-                                if (q.tipo === "multipla") {
-                                    const selectEl = document.getElementById(`prof-edit-${id}`);
+                        data.ordem.forEach((id) => {
+                            const q = bancoDeQuestoes.find(b => b.id === id);
+                            if (!q) return;
+
+                            // MÚLTIPLA ESCOLHA
+                            if (q.tipo === "multipla") {
+                                const selectEl = document.getElementById(`prof-edit-${id}`);
+                                if (selectEl) {
+                                    novasRespostas[id] = selectEl.value;
+                                }
+                            }
+                            // ASSOCIAÇÃO
+                            else if (q.tipo === "associacao") {
+                                q.lacunas.forEach((l, i) => {
+                                    const selectEl = document.getElementById(`prof-edit-${id}_lacuna${i}`);
                                     if (selectEl) {
-                                        novasRespostas[id] = selectEl.value;
+                                        novasRespostas[`${id}_lacuna${i}`] = selectEl.value;
                                     }
+                                });
+                            }
+                            // DISCURSIVA
+                            else if (q.tipo === "discursiva") {
+                                const txt = document.getElementById(`edit-discursiva-${id}`);
+                                if (txt) {
+                                    novasRespostas[id] = txt.value;
                                 }
-                                else if (q.tipo === "associacao") {
-                                    q.lacunas.forEach((l, i) => {
-                                        const selectEl = document.getElementById(`prof-edit-${id}_lacuna${i}`);
-                                        if (selectEl) {
-                                            novasRespostas[`${id}_lacuna${i}`] = selectEl.value;
-                                        }
-                                    });
-                                }
-                                else if (q.tipo === "discursiva") {
-                                    const txt = document.getElementById(`edit-discursiva-${id}`);
-                                    if (txt) {
-                                        novasRespostas[id] = txt.value;
-                                    }
-                                }
-                            });
+                            }
+                        });
 
-                            data.respostas = novasRespostas;
+                        // RECALCULAR NOTAS
+                        const { nAuto, nAsc } = recalcularNotaAutomatica();
+                        const val = parseFloat(document.getElementById('input-nota-disc').value || 0);
 
-                            const { nAuto, nAsc } = recalcularNotaAutomatica();
-
-                            const val = parseFloat(document.getElementById('input-nota-disc')?.value || 0);
-                            if(isNaN(val) || val < 0 || val > 10) return window.mostrarAlerta("Erro", "A nota da questão escrita deve ser entre 0 e 10.0", "⚠️");
-                            
-                            const feed = document.getElementById('input-feedback-prof')?.value || "";
-                            
-                            const notaFinalNova = nAuto + nAsc + val;
-                            
-                            novoBtnSalvar.innerHTML = "Salvando Nota... ⏳";
-                            
-                            await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames', alunoCorrecaoAtual), {
-                                respostas: novasRespostas,
-                                notaAutomatica: nAuto,
-                                notaAssociacao: nAsc,
-                                notaDiscursiva: val,
-                                feedbackProfessor: feed,
-                                notaFinal: notaFinalNova,
-                                ajustadoPeloProfessor: true,
-                                dataAjuste: new Date().toISOString()
-                            });
-                            
-                            novoBtnSalvar.innerHTML = "💾 Salvar Correção";
-                            window.mostrarAlerta("Sucesso!", "Respostas e nota atualizadas para " + notaFinalNova.toFixed(2).replace('.', ','), "✅");
-                            
-                            if (ui.review) ui.review.style.display = 'none';
-                            if (ui.prof) ui.prof.style.display = 'flex';
-                            carregarRelatorioProf(); 
-                        } catch (err) {
-                            window.mostrarAlerta("Erro", err.message, "❌");
-                        }
-                    });
-                }
+                        if(isNaN(val) || val < 0 || val > 10.0) return window.mostrarAlerta("Erro de Digitação", "A nota discursiva deve ser entre 0 e 10.0", "⚠️");
+                        
+                        const feed = document.getElementById('input-feedback-prof').value;
+                        const notaFinalNova = nAuto + nAsc + val;
+                        
+                        document.getElementById('btn-salvar-correcao').innerHTML = "A guardar Consolidação... ⏳";
+                        
+                        // SALVAR NO FIREBASE
+                        await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'exames_recuperacao_trimestral_coop', alunoCorrecaoAtual), {
+                            respostas: novasRespostas,
+                            notaAutomatica: nAuto,
+                            notaAssociacao: nAsc,
+                            notaDiscursiva: val,
+                            feedbackProfessor: feed,
+                            notaFinal: notaFinalNova,
+                            ajustadoPeloProfessor: true,
+                            dataAjuste: new Date().toISOString()
+                        });
+                        
+                        document.getElementById('btn-salvar-correcao').innerHTML = "💾 Guardar Nota e Feedback";
+                        window.mostrarAlerta("Correção Guardada!", "A nota do aluno foi consolidada para " + notaFinalNova.toFixed(1), "✅");
+                        
+                        ui.review.style.display = 'none';
+                        ui.prof.style.display = 'flex';
+                        carregarRelatorioProf(); 
+                    } catch (err) {
+                        window.mostrarAlerta("Erro", err.message, "❌");
+                        document.getElementById('btn-salvar-correcao').innerHTML = "💾 Guardar Nota e Feedback";
+                    }
+                };
             } else {
-                document.getElementById('area-correcao-prof')?.classList.add('hidden');
-                document.getElementById('area-feedback-aluno')?.classList.remove('hidden');
-                
-                const vDisc = document.getElementById('view-nota-disc');
-                if (vDisc) vDisc.textContent = (data.notaDiscursiva||0).toFixed(2).replace('.', ',');
-                
-                const vFeed = document.getElementById('view-feedback-texto');
-                if (vFeed) vFeed.textContent = data.feedbackProfessor || "Nenhum comentário adicional.";
-                
-                window.atualizarNotaEmTempoReal(); 
+                document.getElementById('area-correcao-prof').classList.add('hidden');
+                document.getElementById('area-feedback-aluno').classList.remove('hidden');
+                document.getElementById('view-nota-disc').textContent = (data.notaDiscursiva||0).toFixed(1);
+                document.getElementById('view-feedback-texto').textContent = data.feedbackProfessor || "Nenhum comentário adicional gerado pela docência.";
+                updateNotaDisplay(); 
             }
         }
 
-        const btnFecharReviewEl = document.getElementById('btn-fechar-review');
-        if (btnFecharReviewEl) {
-            btnFecharReviewEl.addEventListener('click', () => {
-                if (ui.review) ui.review.style.display = 'none';
-                if(alunoLogado && (globalStatus === 'resultados' || globalStatus === 'notas')) {
-                    if (ui.results) ui.results.style.display = 'flex';
-                }
-                else {
-                    if (ui.prof) ui.prof.style.display = 'flex';
-                }
-            });
-        }
+        safeBind('btn-fechar-review', 'click', () => {
+            ui.review.style.display = 'none';
+            if(alunoLogado && (globalStatus === 'resultados' || globalStatus === 'notas')) ui.results.style.display = 'flex';
+            else ui.prof.style.display = 'flex';
+        });
 
     </script>
 </body>
